@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS users(
+    username TEXT UNIQUE PRIMARY KEY NOT NULL,
+    telegram_chat_id INTEGER UNIQUE NOT NULL,
+    telegram_first_name TEXT NOT NULL,
+    telegram_last_name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS polls(
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    text TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS answers(
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    poll_id INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    CONSTRAINT fk_poll FOREIGN KEY(poll_id) REFERENCES polls(id)
+ );
+
+CREATE TABLE IF NOT EXISTS votes(
+    username TEXT NOT NULL,
+    poll_id INTEGER NOT NULL,
+    answer_id INTEGER NOT NULL,
+    time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(username, poll_id),
+    CONSTRAINT fk_user FOREIGN KEY(username) REFERENCES users(username),
+    CONSTRAINT fk_poll FOREIGN KEY(poll_id) REFERENCES polls(id),
+    CONSTRAINT fk_answer FOREIGN KEY(answer_id) REFERENCES answers(id)
+ );
+
