@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 DATABASE_URL = r"postgres://ygfwwmmx:XIkJFcKU_UpbPNqWhNXL4jjWwUrVPfl2@rosie.db.elephantsql.com/ygfwwmmx"
 
+
 class IntegretyError:
     pass
 
