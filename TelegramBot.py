@@ -10,8 +10,8 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-br = '\n'
-apst = '\''
+NL = '\n'
+BOT_TOKEN = "5026874157:AAGLISmllwAvfOGq6lB5OqxRfOF_wufIJWA"
 
 
 def parse_registration_message(message: str):
@@ -42,49 +42,42 @@ def register(update: Update, context: CallbackContext) -> None:
     try:
         user_id = parse_registration_message(update.effective_message.text)
     except ValueError as e:
-        update.message.reply_text(f'Failed! 😩 {br}Please supply exactly one user name. Received {e.args[0] - 1}')
+        update.message.reply_text(f'Failed! 😩 {NL}Please supply exactly one user name. Received {e.args[0] - 1}')
         return
-    update.message.reply_text(fr'Success! 😄 {br}*{user_id}* has been registered.', parse_mode='Markdown')
+    update.message.reply_text(fr'Success! 😄 {NL}*{user_id}* has been registered.', parse_mode='Markdown')
 
 
 def remove(update: Update, context: CallbackContext) -> None:
     try:
         user_id = parse_registration_message(update.effective_message.text)
     except ValueError as e:
-        update.message.reply_text(f'Failed! 😩 {br}Please supply exactly one user name. Received {e.args[0] - 1}')
+        update.message.reply_text(f'Failed! 😩 {NL}Please supply exactly one user name. Received {e.args[0] - 1}')
         return
-    update.message.reply_text(fr'Success! 😄 {br}*{user_id}* has been removed.', parse_mode='Markdown')
+    update.message.reply_text(fr'Success! 😄 {NL}*{user_id}* has been removed.', parse_mode='Markdown')
 
 
-def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
+class TelegramBot(Updater):
+    def __init__(self):
+        super().__init__(BOT_TOKEN)
 
+        # on different commands - answer in Telegram
+        self.dispatcher.add_handler(CommandHandler("start", start))
+        self.dispatcher.add_handler(CommandHandler("register", register))
+        self.dispatcher.add_handler(CommandHandler("remove", remove))
 
-def main() -> None:
-    """Start the bot."""
-    # Create the Updater and pass it your bot's token.
-    updater = Updater("5026874157:AAGLISmllwAvfOGq6lB5OqxRfOF_wufIJWA")
+        # on non command i.e message - echo the message on Telegram
+        self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
 
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    def run(self):
+        # Start the Bot
+        self.start_polling()
 
-    # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("register", register))
-    dispatcher.add_handler(CommandHandler("remove", remove))
-
-    # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
-
-    # Start the Bot
-    updater.start_polling()
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+        # Run the bot until you press Ctrl-C or the process receives SIGINT,
+        # SIGTERM or SIGABRT. This should be used most of the time, since
+        # start_polling() is non-blocking and will stop the bot gracefully.
+        self.idle()
 
 
 if __name__ == '__main__':
-    main()
+    bot = TelegramBot()
+    bot.run()
