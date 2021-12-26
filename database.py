@@ -7,9 +7,12 @@ DATABASE_URL = r"postgres://ygfwwmmx:XIkJFcKU_UpbPNqWhNXL4jjWwUrVPfl2@rosie.db.e
 url = up.urlparse(DATABASE_URL)
 
 
-class IntegretyError:
+class UsernameAlreadyExists(BaseException):
     pass
 
+
+class ChatIDAlreadyExists(BaseException):
+    pass
 
 
 class Database:
@@ -52,17 +55,27 @@ class Database:
                 return user.username
             except BaseException as e:
                 cur.execute("ROLLBACK")
+                raise e
 
     def delete_user(self, user: User) -> bool:
         with self._conn.cursor() as cur:
             cur.execute("DELETE FROM users WHERE username = %s and telegram_chat_id = %s", (user.username, user.telegram_chat_id))
             return cur.rowcount > 0
 
-    def get_user(self, username: str) -> User:
+    def get_user_from_username(self, username: str) -> User:
         with self._conn.cursor() as cur:
             cur.execute(
                 "SELECT username, telegram_chat_id, telegram_first_name, telegram_last_name FROM users WHERE username = %s",
                 (username,))
+            row = cur.fetchone()
+            if row:
+                return User(*row)
+
+    def get_user_from_chat_id(self, chat_id: int) -> User:
+        with self._conn.cursor() as cur:
+            cur.execute(
+                "SELECT username, telegram_chat_id, telegram_first_name, telegram_last_name FROM users WHERE telegram_chat_id = %s",
+                (chat_id,))
             row = cur.fetchone()
             if row:
                 return User(*row)

@@ -23,7 +23,6 @@ def remove(user):
         return False
 
 
-
 bot = tb.TelegramBot(tb.create_register(register), tb.create_remove(remove))
 
 
@@ -33,9 +32,10 @@ def index():
 
 
 @app.route('/user/<name>')
-def user(name):
+def user_route(name):
     return f'<h1>Hello, {name}</h1>'
 
 
 if __name__ == '__main__':
+    bot.run()
     app.run(debug=True)
