@@ -1,13 +1,14 @@
 from flask import Flask
 from flask import request
-import database
+from database import *
 import telegram_bot
 from datatypes import User
 from config import BOT_TOKEN, URL
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 bot = telegram_bot.TelegramBot()
-db = database.Database()
+db = Database()
 
 
 @app.route('/')
@@ -23,28 +24,26 @@ def respond():
                 telegram_first_name=request.values['telegram_first_name'],
                 telegram_last_name=request.values['telegram_last_name'])
     if method == 'register':
-        return {"status": register_db(user)}
+        try:
+            with db:
+                status = db.add_user(user)
+            return {"status": status}
+        except UsernameAlreadyExists as e:
+            return {"status": False, "reason": type(e).__name__}
+        except ChatIDAlreadyExists as e:
+            return {"status": False, "reason": type(e).__name__, "data": e.args[0]}
     elif method == 'remove':
-        return {"status": remove_db(user)}
-
-
-def register_db(user):
-    try:
-        with db:
-            db.add_user(user)
-        return True
-    except BaseException:
-        return False
-
-
-def remove_db(user):
-    try:
-        with db:
-            return db.delete_user(user)
-    except BaseException:
-        return False
+        try:
+            with db:
+                status = db.delete_user(user)
+            return {"status": status}
+        except UserNotExist as e:
+            return {"status": False, "reason": type(e).__name__}
+        except UnauthorizedDeletion as e:
+            return {"status": False, "reason": type(e).__name__}
 
 
 if __name__ == '__main__':
     bot.run(threaded=True)
-    app.run()
+    url = urlparse(URL)
+    app.run(host=url.hostname, port=url.port)

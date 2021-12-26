@@ -56,20 +56,35 @@ def user_handler(update: Update, context: CallbackContext) -> None:
     except BadUsername as e:
         update.message.reply_text(
             f'Failed! 😩\n'
-            f'{e.username} doesn\'t match user\'s syntax')
+            f'\'{e.username}\' doesn\'t match the user\'s syntax')
         return
     except NoUsername:
         update.message.reply_text(
             f'Failed! 😩\n'
-            f'No Username has been given')
+            f'No username has been given')
         return
-    result = requests.post(f'{URL}{BOT_TOKEN}', parsed_request)
-    if result:
+    result = requests.post(f'{URL}{BOT_TOKEN}', parsed_request).json()
+
+    if result['status']:
         update.message.reply_text(f'Success! 😄\n'
-                                  f'*{username}* has been {method}ed.', parse_mode='Markdown')
-    else:
+                                  f'*{username}* has been {method.rstrip("e")}ed.', parse_mode='Markdown')
+
+    elif result['reason'] == "UsernameAlreadyExists":
         update.message.reply_text(f'Failed! 😩\n'
-                                  f'Please supply exactly one user name. Received Error')
+                                  f'Username already exists')
+
+    elif result['reason'] == "ChatIDAlreadyExists":
+        registered_name = result['data']
+        update.message.reply_text(f'Failed! 😩\n'
+                                  f'You are already registered under \'{registered_name}\'')
+
+    elif result['reason'] == "UserNotExist":
+        update.message.reply_text(f'Failed! 😩\n'
+                                  f'We couldn\'t find \'{username}\' in our systems')
+
+    elif result['reason'] == "UnauthorizedDeletion":
+        update.message.reply_text(f'Failed! 😩\n'
+                                  f'The username you are trying to delete is belong to another user')
 
 
 class TelegramBot(Updater):

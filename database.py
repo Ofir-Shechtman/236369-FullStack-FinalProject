@@ -1,5 +1,5 @@
 import psycopg2
-
+from psycopg2.errors import UniqueViolation
 import urllib.parse as up
 from datatypes import User, Poll, Answer, Vote
 
@@ -12,6 +12,14 @@ class UsernameAlreadyExists(BaseException):
 
 
 class ChatIDAlreadyExists(BaseException):
+    pass
+
+
+class UserNotExist(BaseException):
+    pass
+
+
+class UnauthorizedDeletion(BaseException):
     pass
 
 
@@ -46,18 +54,27 @@ class Database:
         with self._conn.cursor() as cursor:
             cursor.execute(command)
 
-    def add_user(self, user: User) -> str:
+    def add_user(self, user: User) -> bool:
         with self._conn.cursor() as cur:
             try:
                 cur.execute(
                     "INSERT INTO users (username, telegram_chat_id, telegram_first_name, telegram_last_name) VALUES(%s, %s, %s, %s)",
                     (user.username, user.telegram_chat_id, user.telegram_first_name, user.telegram_last_name))
-                return user.username
-            except BaseException as e:
+                return True
+            except UniqueViolation as e:
                 cur.execute("ROLLBACK")
-                raise e
+                if e.diag.constraint_name == 'users_telegram_chat_id_key':
+                    registered_name = self.get_user_from_chat_id(user.telegram_chat_id).username
+                    raise ChatIDAlreadyExists(registered_name)
+                if e.diag.constraint_name == 'users_pkey':
+                    raise UsernameAlreadyExists
 
     def delete_user(self, user: User) -> bool:
+        user_on_db = self.get_user_from_username(user.username)
+        if not user_on_db:
+            raise UserNotExist
+        elif user_on_db.telegram_chat_id != user.telegram_chat_id:
+            raise UnauthorizedDeletion
         with self._conn.cursor() as cur:
             cur.execute("DELETE FROM users WHERE username = %s and telegram_chat_id = %s", (user.username, user.telegram_chat_id))
             return cur.rowcount > 0
