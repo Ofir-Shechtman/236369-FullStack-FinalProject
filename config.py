@@ -1,0 +1,2 @@
+BOT_TOKEN = "5026874157:AAGLISmllwAvfOGq6lB5OqxRfOF_wufIJWA"
+URL = "http://127.0.0.1:5000/"
