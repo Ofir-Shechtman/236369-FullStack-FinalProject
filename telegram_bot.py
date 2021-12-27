@@ -21,68 +21,40 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Welcome to Ben & Ofir\'s awesome polling system.\n'
                               f'You can control me by sending these commands: ')
     update.message.reply_text(
-        f'/register <user-name> - Register to start answering polls via telegram.\n'
-        f' <user-name> in smart polling system\n\n'
-        f'/remove <user-name> - To stop getting polls queries.\n'
-        f' <user-name> in smart polling system\n\n'
+        f'/register - Register to start answering polls via telegram.\n'
+        f'/remove - To stop getting polls queries.\n'
         f'/start - Use start anytime to see this menu again'
     )
 
 
 def parse_request(update: Update):
-    try:
-        method, username = update.effective_message.text.split(' ', 1)
-    except ValueError:
-        raise NoUsername()
-    if not CHECK_USERNAME.match(username):
-        raise BadUsername(username)
+    method = update.effective_message.text.split(' ')[0]
     telegram_user = update.effective_user
     parsed_request = {"method": method.lstrip('/'),
-                      "username": username,
-                      "telegram_chat_id": int(telegram_user.id),
-                      "telegram_first_name": telegram_user.first_name,
-                      "telegram_last_name": telegram_user.last_name
+                      "chat_id": int(telegram_user.id),
+                      "first_name": telegram_user.first_name,
+                      "last_name": telegram_user.last_name
                       }
     return parsed_request
 
 
 def user_handler(update: Update, context: CallbackContext) -> None:
-    try:
-        parsed_request = parse_request(update)
-        method = parsed_request['method']
-        username = parsed_request['username']
-    except BadUsername as e:
-        update.message.reply_text(
-            f'Failed! 😩\n'
-            f'\'{e.username}\' doesn\'t match the user\'s syntax')
-        return
-    except NoUsername:
-        update.message.reply_text(
-            f'Failed! 😩\n'
-            f'No username has been given')
-        return
+    parsed_request = parse_request(update)
+    method = parsed_request['method']
+    chat_id = parsed_request['chat_id']
     result = requests.post(f'{URL}{BOT_TOKEN}', parsed_request).json()
 
     if result['status']:
         update.message.reply_text(f'Success! 😄\n'
-                                  f'*{username}* has been {method.rstrip("e")}ed.', parse_mode='Markdown')
+                                  f'*{chat_id}* has been {method.rstrip("e")}ed.', parse_mode='Markdown')
 
-    elif result['reason'] == "UsernameAlreadyExists":
+    elif result['reason'] == "ChatIdExist":
         update.message.reply_text(f'Failed! 😩\n'
-                                  f'Username already exists')
+                                  f'You are already registered')
 
-    elif result['reason'] == "ChatIDAlreadyExists":
-        registered_name = result['data']
+    elif result['reason'] == "ChatIdNotExist":
         update.message.reply_text(f'Failed! 😩\n'
-                                  f'You are already registered under \'{registered_name}\'')
-
-    elif result['reason'] == "UserNotExist":
-        update.message.reply_text(f'Failed! 😩\n'
-                                  f'We couldn\'t find \'{username}\' in our systems')
-
-    elif result['reason'] == "UnauthorizedDeletion":
-        update.message.reply_text(f'Failed! 😩\n'
-                                  f'The username you are trying to delete is belong to another user')
+                                  f'You are not registered')
 
 
 class TelegramBot(Updater):
