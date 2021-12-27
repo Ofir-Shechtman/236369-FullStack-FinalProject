@@ -84,8 +84,3 @@ def delete_user(chat_id: int) -> None:
     except Exception:
         _db.session.rollback()
         raise DBUnknownError
-
-
-if __name__ == '__main__':
-    _db.drop_all()
-    _db.create_all()

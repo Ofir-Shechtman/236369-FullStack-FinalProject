@@ -56,7 +56,7 @@ class TelegramBot(Updater):
         self.dispatcher.add_handler(CommandHandler("start", start))
         self.dispatcher.add_handler(CommandHandler("register", user_handler))
         self.dispatcher.add_handler(CommandHandler("remove", user_handler))
-        # on non command i.e message - echo the message on Telegram
+        # on non command i.e. message - echo the message on Telegram
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
 
     def run(self):
