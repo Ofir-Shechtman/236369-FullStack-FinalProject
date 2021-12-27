@@ -2,7 +2,7 @@ from flask import Flask
 from flask import request
 from config import BOT_TOKEN, URL, DATABASE_URL
 from urllib.parse import urlparse
-from database import init, add_user, delete_user, DBUserExists, DBUserNotFound, DBUnknownError
+from database import init, add_user, delete_user, DBUserExists, DBUserNotFound
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
@@ -37,4 +37,3 @@ def respond():
 if __name__ == '__main__':
     url = urlparse(URL)
     app.run(host=url.hostname, port=url.port, debug=True)
-

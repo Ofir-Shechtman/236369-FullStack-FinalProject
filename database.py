@@ -69,7 +69,7 @@ def add_user(chat_id: int, first_name: str, last_name: str) -> None:
     except IntegrityError:
         _db.session.rollback()
         raise DBUserExists
-    except BaseException as e:
+    except BaseException:
         _db.session.rollback()
         raise DBUnknownError
 
@@ -81,7 +81,7 @@ def delete_user(chat_id: int) -> None:
     try:
         _db.session.delete(user)
         _db.session.commit()
-    except Exception as e:
+    except Exception:
         _db.session.rollback()
         raise DBUnknownError
 
