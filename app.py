@@ -44,6 +44,5 @@ def respond():
 
 
 if __name__ == '__main__':
-    bot.run(threaded=True)
     url = urlparse(URL)
-    app.run(host=url.hostname, port=url.port)
+    app.run(host=url.hostname, port=url.port, debug=True)

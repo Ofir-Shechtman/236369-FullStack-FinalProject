@@ -1,6 +1,4 @@
 import logging
-import threading
-
 import requests
 from datatypes import CHECK_USERNAME, BadUsername
 from telegram import Update, ForceReply
@@ -97,18 +95,9 @@ class TelegramBot(Updater):
         # on non command i.e message - echo the message on Telegram
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
 
-    def run(self, threaded=False):
-        if threaded:
-            t = threading.Thread(target=self.start_polling)
-            t.start()
-            t.join()
-        else:
-            self.start_polling()
-            self.idle()
-
-    def sent_poll(self):
-        # TODO how to (chat_id?)
-        pass
+    def run(self):
+        self.start_polling()
+        self.idle()
 
 
 if __name__ == '__main__':
