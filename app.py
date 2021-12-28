@@ -19,11 +19,10 @@ def index():
 def respond():
     method = request.values['method']
     if method == 'register':
-        last_name = request.values['last_name'] if 'last_name' in request.values.keys() else None
         try:
-            add_user(chat_id=int(request.values['chat_id']),
-                     first_name=request.values['first_name'],
-                     last_name=last_name)
+            add_user(chat_id=int(request.values.get('chat_id')),
+                     first_name=request.values.get('first_name'),
+                     last_name=request.values.get('last_name'))
         except DBUserExists as e:
             return {"status": False, "reason": type(e).__name__}
     elif method == 'remove':
