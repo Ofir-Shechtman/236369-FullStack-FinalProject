@@ -5,7 +5,7 @@ import os
 
 SCHEMA = 'schema.sql'
 COMMAND = 'sqlacodegen {database_url} --tables {tables} > {output_filename}'
-TABLES = ['votes', 'answers', 'polls', 'users']
+TABLES = ['poll_answer', 'poll_option', 'polls', 'users']
 FILENAME = 'models.py'
 
 
@@ -29,6 +29,7 @@ def reset_database():
                             host=url.hostname,
                             )
     drop_database(conn, TABLES)
+    conn.commit()
     create_tables(conn, SCHEMA)
     conn.commit()
     conn.close()

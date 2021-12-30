@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Identity, Integer, Text, text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, ForeignKeyConstraint, Integer, Numeric, String, Text, text
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -7,45 +7,51 @@ Base = declarative_base()
 class Polls(Base):
     __tablename__ = 'polls'
 
-    id = Column(Integer, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=2147483647, cycle=False, cache=1), primary_key=True)
-    content = Column(Text, nullable=False)
-    time_created = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
+    poll_id = Column(Text, primary_key=True)
+    question = Column(String(300), nullable=False)
+    message_id = Column(Integer, nullable=False)
+    allows_multiple_answers = Column(Boolean, nullable=False)
+    open_date = Column(DateTime(True), nullable=False)
+    close_date = Column(DateTime(True))
 
-    answers = relationship('Answers', back_populates='poll')
-    votes = relationship('Votes', back_populates='poll')
+    poll_option = relationship('PollOption', back_populates='poll')
+    poll_answer = relationship('PollAnswer', back_populates='poll')
 
 
 class Users(Base):
     __tablename__ = 'users'
 
-    chat_id = Column(BigInteger, primary_key=True)
+    chat_id = Column(Numeric, primary_key=True)
     first_name = Column(Text, nullable=False)
+    is_active = Column(Boolean, nullable=False, server_default=text('true'))
     last_name = Column(Text)
     time_created = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
 
-    votes = relationship('Votes', back_populates='chat')
+    poll_answer = relationship('PollAnswer', back_populates='chat')
 
 
-class Answers(Base):
-    __tablename__ = 'answers'
+class PollOption(Base):
+    __tablename__ = 'poll_option'
 
-    id = Column(Integer, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=2147483647, cycle=False, cache=1), primary_key=True)
-    poll_id = Column(ForeignKey('polls.id'), nullable=False)
-    content = Column(Text, nullable=False)
-    time_created = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
+    option_id = Column(Integer, primary_key=True, nullable=False)
+    poll_id = Column(ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
+    content = Column(String(300), nullable=False)
 
-    poll = relationship('Polls', back_populates='answers')
-    votes = relationship('Votes', back_populates='answer')
+    poll = relationship('Polls', back_populates='poll_option')
+    poll_answer = relationship('PollAnswer', back_populates='poll_option')
 
 
-class Votes(Base):
-    __tablename__ = 'votes'
+class PollAnswer(Base):
+    __tablename__ = 'poll_answer'
+    __table_args__ = (
+        ForeignKeyConstraint(['option_id', 'poll_id'], ['poll_option.option_id', 'poll_option.poll_id']),
+    )
 
     chat_id = Column(ForeignKey('users.chat_id'), primary_key=True, nullable=False)
-    poll_id = Column(ForeignKey('polls.id'), primary_key=True, nullable=False)
-    answer_id = Column(ForeignKey('answers.id'), nullable=False)
-    time_created = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
+    poll_id = Column(ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
+    option_id = Column(Integer, primary_key=True, nullable=False)
+    time_answered = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
 
-    answer = relationship('Answers', back_populates='votes')
-    chat = relationship('Users', back_populates='votes')
-    poll = relationship('Polls', back_populates='votes')
+    chat = relationship('Users', back_populates='poll_answer')
+    poll_option = relationship('PollOption', back_populates='poll_answer')
+    poll = relationship('Polls', back_populates='poll_answer')
