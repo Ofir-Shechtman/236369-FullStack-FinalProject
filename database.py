@@ -34,7 +34,7 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
 
 
 def delete_user(chat_id: int) -> None:
-    user = Users.query.filter_by(chat_id=chat_id).first()
+    user = _db.session.query(Users).filter_by(chat_id=chat_id).first()
     if not user:
         raise DBUserNotFound
     try:

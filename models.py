@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Identity, Integer, Text, text
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Identity, Integer, Text, text
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -18,7 +18,7 @@ class Polls(Base):
 class Users(Base):
     __tablename__ = 'users'
 
-    chat_id = Column(Integer, primary_key=True)
+    chat_id = Column(BigInteger, primary_key=True)
     first_name = Column(Text, nullable=False)
     last_name = Column(Text)
     time_created = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
