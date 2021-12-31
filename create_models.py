@@ -5,7 +5,7 @@ import os
 
 SCHEMA = 'schema.sql'
 COMMAND = 'sqlacodegen {database_url} --tables {tables} > {output_filename}'
-TABLES = ['poll_answer', 'poll_option', 'polls', 'users']
+TABLES = ['poll_answers', 'poll_options', 'poll_receivers', 'polls', 'users']
 FILENAME = 'models.py'
 
 

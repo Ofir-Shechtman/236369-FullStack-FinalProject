@@ -7,30 +7,40 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 CREATE TABLE IF NOT EXISTS polls(
-    poll_id TEXT PRIMARY KEY NOT NULL, -- Telegram poll_id is str
+    poll_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     question VARCHAR(300) NOT NULL, -- Limit from Telegram API
-    message_id INTEGER NOT NULL,
     allows_multiple_answers BOOLEAN NOT NULL,
-    open_date TIMESTAMP WITH TIME ZONE NOT NULL,
     close_date TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS poll_option(
+CREATE TABLE IF NOT EXISTS poll_receivers(
+    chat_id NUMERIC NOT NULL,
+    poll_id INTEGER NOT NULL,
+    message_id INTEGER NOT NULL,
+    telegram_poll_id TEXT NOT NULL, -- Telegram poll_id is str
+    time_sent TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(chat_id, poll_id),
+    UNIQUE (chat_id, message_id),
+    UNIQUE (chat_id, telegram_poll_id),
+    CONSTRAINT fk_user FOREIGN KEY(chat_id) REFERENCES users(chat_id),
+    CONSTRAINT fk_poll FOREIGN KEY(poll_id) REFERENCES polls(poll_id)
+);
+
+CREATE TABLE IF NOT EXISTS poll_options(
     option_id INTEGER NOT NULL,
-    poll_id TEXT NOT NULL,
+    poll_id INTEGER NOT NULL,
     content VARCHAR(300) NOT NULL, -- Limit from Telegram API,
     PRIMARY KEY(option_id, poll_id),
     CONSTRAINT fk_poll FOREIGN KEY(poll_id) REFERENCES polls(poll_id)
  );
 
-CREATE TABLE IF NOT EXISTS poll_answer(
+CREATE TABLE IF NOT EXISTS poll_answers(
     chat_id NUMERIC NOT NULL,
-    poll_id TEXT NOT NULL,
+    poll_id INTEGER NOT NULL,
     option_id INTEGER NOT NULL,
     time_answered TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(chat_id, poll_id, option_id),
-    CONSTRAINT fk_user FOREIGN KEY(chat_id) REFERENCES users(chat_id),
-    CONSTRAINT fk_poll FOREIGN KEY(poll_id) REFERENCES polls(poll_id),
-    CONSTRAINT fk_answer FOREIGN KEY(option_id, poll_id) REFERENCES poll_option(option_id, poll_id)
+    CONSTRAINT fk_poll_receiver FOREIGN KEY(chat_id, poll_id) REFERENCES poll_receivers(chat_id, poll_id),
+    CONSTRAINT fk_answer FOREIGN KEY(option_id, poll_id) REFERENCES poll_options(option_id, poll_id)
  );
 
