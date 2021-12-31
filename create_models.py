@@ -43,5 +43,8 @@ def create_models(install: bool):
 
 
 if __name__ == '__main__':
+    print('reset_database...')
     reset_database()
+    print('create_models...')
     create_models(False)
+    print('DONE')
