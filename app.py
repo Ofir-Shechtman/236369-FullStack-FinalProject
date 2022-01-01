@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+import os
+
+from flask import Flask, render_template, request, send_from_directory
 from config import BOT_TOKEN, URL, DATABASE_URL
 from urllib.parse import urlparse
 import database as db
@@ -51,6 +53,12 @@ def respond() -> Status:
     else:
         raise Exception
     return Status('SUCCESS')
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 def _send_bot_post(method: str, query: dict):
