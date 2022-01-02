@@ -157,10 +157,10 @@ class TelegramBot(Updater):
         self.dispatcher.add_handler(CommandHandler("start", start))
         self.dispatcher.add_handler(CommandHandler("register", register))
         self.dispatcher.add_handler(CommandHandler("remove", remove))
-        # self.dispatcher.add_handler(CommandHandler("poll", poll))
-        # self.dispatcher.add_handler(CommandHandler("inline", inline))
-        # self.dispatcher.add_handler(CallbackQueryHandler(button))
-        # self.dispatcher.add_handler(PollAnswerHandler(receive_poll_answer))
+        self.dispatcher.add_handler(CommandHandler("poll", poll))
+        self.dispatcher.add_handler(CommandHandler("inline", inline))
+        self.dispatcher.add_handler(CallbackQueryHandler(button))
+        self.dispatcher.add_handler(PollAnswerHandler(receive_poll_answer))
         # on non command i.e. message - echo the message on Telegram
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
 

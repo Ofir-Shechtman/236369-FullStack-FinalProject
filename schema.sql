@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS poll_answers(
     option_id INTEGER NOT NULL,
     time_answered TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(user_id, poll_id, option_id),
+--     CONSTRAINT fk_user_pa FOREIGN KEY(user_id) REFERENCES users(user_id),
+--     CONSTRAINT fk_poll_pa FOREIGN KEY(poll_id) REFERENCES polls(poll_id),
     CONSTRAINT fk_poll_receiver_pa FOREIGN KEY(user_id, poll_id) REFERENCES poll_receivers(user_id, poll_id),
     CONSTRAINT fk_option_pa FOREIGN KEY(option_id, poll_id) REFERENCES poll_options(option_id, poll_id)
  );
