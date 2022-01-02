@@ -67,11 +67,12 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
         user = _get_user(chat_id)
         if user.is_active:
             raise UserAlreadyActive
-        user.is_active = False
+        user.is_active = True
+        _db.session.commit()
         return
     except UserNotFound:
         pass
-    new_user = Users(chat_id=chat_id, first_name=first_name, last_name=last_name)
+    new_user = Users(user_id=chat_id, first_name=first_name, last_name=last_name)
     try:
         _db.session.add(new_user)
         _db.session.commit()
@@ -84,7 +85,7 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
 
 
 def _get_user(chat_id):
-    user = _db.session.query(Users).filter_by(chat_id=chat_id).first()
+    user = _db.session.query(Users).filter_by(user_id=chat_id).first()
     if not user:
         raise UserNotFound
     return user
@@ -123,7 +124,7 @@ def _get_option(poll_id, option_id):
 
 
 def _get_poll_receiver(chat_id, telegram_poll_id):
-    poll_receiver = _db.session.query(PollReceivers).filter_by(chat_id=chat_id, telegram_poll_id=telegram_poll_id).first()
+    poll_receiver = _db.session.query(PollReceivers).filter_by(user_id=chat_id, telegram_poll_id=telegram_poll_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
@@ -134,7 +135,7 @@ def add_answer(chat_id, telegram_poll_id, option_id):
     _get_user(chat_id)
     poll_receiver = _get_poll_receiver(chat_id, telegram_poll_id)
     _get_option(poll_receiver.poll_id, option_id)
-    new_answer = PollAnswers(chat_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
+    new_answer = PollAnswers(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     try:
         _db.session.add(new_answer)
         _db.session.commit()
@@ -147,7 +148,7 @@ def add_answer(chat_id, telegram_poll_id, option_id):
 
 
 def _get_answer(chat_id, poll_id, answer_index):
-    answer = _db.session.query(PollAnswers).filter_by(chat_id=chat_id, poll_id=poll_id,
+    answer = _db.session.query(PollAnswers).filter_by(user_id=chat_id, poll_id=poll_id,
                                                       answer_index=answer_index).first()
     if not answer:
         raise AnswerNotFound
@@ -198,7 +199,7 @@ def send_poll(poll_id, receivers):
 def add_poll_receiver(chat_id, poll_id, message_id, telegram_poll_id):
     _get_user(chat_id)
     get_poll(poll_id)
-    new_poll_receiver = PollReceivers(chat_id=chat_id, poll_id=poll_id, message_id=message_id, telegram_poll_id=telegram_poll_id)
+    new_poll_receiver = PollReceivers(user_id=chat_id, poll_id=poll_id, message_id=message_id, telegram_poll_id=telegram_poll_id)
     try:
         _db.session.add(new_poll_receiver)
         _db.session.commit()
