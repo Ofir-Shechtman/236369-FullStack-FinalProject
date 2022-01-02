@@ -85,7 +85,7 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
 
 
 def _get_user(chat_id):
-    user = _db.session.query(Users).filter_by(user_id=chat_id).first()
+    user = _db.session.query(Users).get(chat_id)
     if not user:
         raise UserNotFound
     return user
@@ -110,21 +110,21 @@ def delete_user(chat_id: int) -> None:
 
 
 def get_poll(poll_id):
-    poll = _db.session.query(Polls).filter_by(poll_id=poll_id).first()
+    poll = _db.session.query(Polls).get(poll_id)
     if not poll:
         raise PollNotFound
     return poll
 
 
 def _get_option(poll_id, option_id):
-    option = _db.session.query(PollOptions).filter_by(poll_id=poll_id, option_id=option_id).first()
+    option = _db.session.query(PollOptions).get(poll_id, option_id)
     if not option:
         raise OptionNotFound
     return option
 
 
 def _get_poll_receiver(chat_id, telegram_poll_id):
-    poll_receiver = _db.session.query(PollReceivers).filter_by(user_id=chat_id, telegram_poll_id=telegram_poll_id).first()
+    poll_receiver = _db.session.query(PollReceivers).get(chat_id, telegram_poll_id)
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
@@ -209,11 +209,6 @@ def add_poll_receiver(chat_id, poll_id, message_id, telegram_poll_id):
     except BaseException:
         _db.session.rollback()
         raise UnknownError
-
-
-def get_poll_receivers(poll_id):
-    poll_receivers = _db.session.query(PollReceivers).filter_by(poll_id=poll_id)
-    return poll_receivers.all()
 
 
 def stop_poll(poll: Polls):

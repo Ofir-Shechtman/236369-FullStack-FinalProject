@@ -23,7 +23,7 @@ def index():
             _send_message(chat_id=569667677, text="Hello World!")
         elif request.form.get('poll'):
             poll_id = send_poll(receivers=[569667677, 2123387537], question="How are you today?", options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True)
-            # stop_poll(poll_id)
+            stop_poll(poll_id)
         elif request.form.get('inline'):
             send_inline_keyboard(receivers=[569667677, 2123387537], question="How are you today?", options=["Good!", "Great!", "Fantastic!"])
 
@@ -100,9 +100,8 @@ def send_poll(receivers, question: str, options: List[str], close_date: int = No
 def stop_poll(poll_id):
     poll = db.get_poll(poll_id)
     db.stop_poll(poll)
-    poll_receivers = db.get_poll_receivers(poll.poll_id)
-    for poll_receiver in poll_receivers:
-        _bot_stop_poll(poll_receiver.chat_id, poll_receiver.message_id)
+    for poll_receiver in poll.poll_receivers:
+        _bot_stop_poll(poll_receiver.user_id, poll_receiver.message_id)
 
 
 def send_inline_keyboard(receivers, question: str, options: List[str]):
