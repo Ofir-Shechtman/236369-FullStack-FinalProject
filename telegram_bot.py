@@ -136,8 +136,9 @@ class TelegramBot(Updater):
         # on non command i.e. message - echo the message on Telegram
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
 
-        self.bot.set_my_commands([BotCommand("register", "to register to  the system")])
-        # BotCommand("remove", "to unregister to the system")
+        self.bot.set_my_commands([BotCommand("start", "See the menu"),
+                                  BotCommand("register", "Subscribe to our polling system"),
+                                  BotCommand("remove", "Unsubscribe from our polling system")])
 
     def run(self):
         self.start_polling()
