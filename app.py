@@ -22,8 +22,10 @@ def index():
         if request.form.get('message'):
             _send_message(chat_id=569667677, text="Hello World!")
         elif request.form.get('poll'):
-            poll_id = send_poll(receivers=[569667677], question="How are you today?", options=["Good!", "Great!"])
+            poll_id = send_poll(receivers=[569667677, 2123387537], question="How are you today?", options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True)
             # stop_poll(poll_id)
+        elif request.form.get('inline'):
+            send_inline_keyboard(receivers=[569667677, 2123387537], question="How are you today?", options=["Good!", "Great!", "Fantastic!"])
 
     elif request.method == 'GET':
         return render_template('index.html')
@@ -78,7 +80,7 @@ def _bot_stop_poll(chat_id, message_id):
     return _send_bot_post("stopPoll", locals())
 
 
-def _send_message(chat_id: int, text: str):
+def _send_message(chat_id: int, text: str, reply_markup=None):
     return _send_bot_post("sendMessage", locals())
 
 
@@ -101,6 +103,25 @@ def stop_poll(poll_id):
     poll_receivers = db.get_poll_receivers(poll.poll_id)
     for poll_receiver in poll_receivers:
         _bot_stop_poll(poll_receiver.chat_id, poll_receiver.message_id)
+
+
+def send_inline_keyboard(receivers, question: str, options: List[str]):
+    reply_markup = {
+            "inline_keyboard": [
+                [
+                    {"text": "Yes", "url": "http://www.google.com/"},
+                    {"text": "No", "url": "http://www.google.com/"}
+                ]
+            ]
+        }
+    print(reply_markup)
+    reply_markup = {
+        "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(options)]
+    }
+    print(reply_markup)
+    for chat_id in receivers:
+        result = _send_message(chat_id, question, reply_markup=json.dumps(reply_markup))
+    return 0
 
 
 if __name__ == '__main__':

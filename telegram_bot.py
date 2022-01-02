@@ -3,7 +3,8 @@ import requests
 from telegram import Update, Poll, ParseMode
 from telegram.bot import BotCommand
 from config import BOT_TOKEN, URL
-from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from statuses import Method, Status, ReturnMessage
 
 # Enable logging
@@ -123,6 +124,31 @@ def poll(update: Update, context: CallbackContext) -> None:
     }
     context.bot_data.update(payload)
 
+def inline(update: Update, context: CallbackContext) -> None:
+    """Sends a message with three inline buttons attached."""
+    keyboard = [
+        [
+            InlineKeyboardButton("Option 1", callback_data='1'),
+            InlineKeyboardButton("Option 2", callback_data='2'),
+        ],
+        [InlineKeyboardButton("Option 3", callback_data='3')],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text('Please choose:', reply_markup=reply_markup)
+
+
+def button(update: Update, context: CallbackContext) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
+
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
+
+    query.edit_message_text(text=f"Selected option: {query.data}")
+
 
 class TelegramBot(Updater):
     def __init__(self):
@@ -132,6 +158,8 @@ class TelegramBot(Updater):
         self.dispatcher.add_handler(CommandHandler("register", register))
         self.dispatcher.add_handler(CommandHandler("remove", remove))
         self.dispatcher.add_handler(CommandHandler("poll", poll))
+        self.dispatcher.add_handler(CommandHandler("inline", inline))
+        self.dispatcher.add_handler(CallbackQueryHandler(button))
         self.dispatcher.add_handler(PollAnswerHandler(receive_poll_answer))
         # on non command i.e. message - echo the message on Telegram
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
