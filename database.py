@@ -117,27 +117,30 @@ def get_poll(poll_id):
 
 
 def _get_option(poll_id, option_id):
-    option = _db.session.query(PollOptions).get(poll_id, option_id)
+    option = _db.session.query(PollOptions).get((option_id, poll_id))
     if not option:
         raise OptionNotFound
     return option
 
 
-def _get_poll_receiver(chat_id, telegram_poll_id):
-    poll_receiver = _db.session.query(PollReceivers).get(chat_id, telegram_poll_id)
+def _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id):
+    poll_receiver = _db.session.query(PollReceivers).filter_by(user_id=chat_id, telegram_poll_id=telegram_poll_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
 
 
-def add_answer(chat_id, telegram_poll_id, option_id):
+def _get_poll_receiver_by_message_id(chat_id, message_id):
+    poll_receiver = _db.session.query(PollReceivers).filter_by(user_id=chat_id, message_id=message_id).first()
+    if not poll_receiver:
+        raise PollNotSent
+    return poll_receiver
+
+
+def _add_answer(answer: PollAnswers):
     # TODO: unactive user can answer poll?
-    _get_user(chat_id)
-    poll_receiver = _get_poll_receiver(chat_id, telegram_poll_id)
-    _get_option(poll_receiver.poll_id, option_id)
-    new_answer = PollAnswers(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     try:
-        _db.session.add(new_answer)
+        _db.session.add(answer)
         _db.session.commit()
     except IntegrityError:
         _db.session.rollback()
@@ -145,6 +148,22 @@ def add_answer(chat_id, telegram_poll_id, option_id):
     except BaseException:
         _db.session.rollback()
         raise UnknownError
+
+
+def add_answer_by_poll_id(chat_id, telegram_poll_id, option_id):
+    _get_user(chat_id)
+    poll_receiver = _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id)
+    _get_option(poll_receiver.poll_id, option_id)
+    new_answer = PollAnswers(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
+    _add_answer(new_answer)
+
+
+def add_answer_by_message_id(chat_id, message_id, option_id):
+    _get_user(chat_id)
+    poll_receiver = _get_poll_receiver_by_message_id(chat_id, message_id)
+    _get_option(poll_receiver.poll_id, option_id)
+    new_answer = PollAnswers(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
+    _add_answer(new_answer)
 
 
 def _get_answer(chat_id, poll_id, answer_index):
@@ -199,7 +218,8 @@ def send_poll(poll_id, receivers):
 def add_poll_receiver(chat_id, poll_id, message_id, telegram_poll_id):
     _get_user(chat_id)
     get_poll(poll_id)
-    new_poll_receiver = PollReceivers(user_id=chat_id, poll_id=poll_id, message_id=message_id, telegram_poll_id=telegram_poll_id)
+    new_poll_receiver = PollReceivers(user_id=chat_id, poll_id=poll_id, message_id=message_id,
+                                      telegram_poll_id=telegram_poll_id)
     try:
         _db.session.add(new_poll_receiver)
         _db.session.commit()

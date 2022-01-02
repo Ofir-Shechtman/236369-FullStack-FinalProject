@@ -3,7 +3,8 @@ import requests
 from telegram import Update, Poll, ParseMode
 from telegram.bot import BotCommand
 from config import BOT_TOKEN, URL
-from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext, \
+    CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from statuses import Method, Status, ReturnMessage
 
@@ -23,6 +24,11 @@ def parse_request(update: Update, method: Method):
         answer = update.poll_answer
         parsed_request.update({"answers": answer.option_ids,
                                "poll_id": answer.poll_id})
+    elif method == "button":
+        query = update.callback_query
+        query.answer()
+        parsed_request.update({"answers": query.data,
+                               "message_id": query.message.message_id})
     return parsed_request
 
 
@@ -124,6 +130,7 @@ def poll(update: Update, context: CallbackContext) -> None:
     }
     context.bot_data.update(payload)
 
+
 def inline(update: Update, context: CallbackContext) -> None:
     """Sends a message with three inline buttons attached."""
     keyboard = [
@@ -138,8 +145,8 @@ def inline(update: Update, context: CallbackContext) -> None:
 
     update.message.reply_text('Please choose:', reply_markup=reply_markup)
 
-
-def button(update: Update, context: CallbackContext) -> None:
+@post
+def button(update: Update, context: CallbackContext, result) -> None:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
 

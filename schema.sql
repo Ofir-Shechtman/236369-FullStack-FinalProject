@@ -17,11 +17,10 @@ CREATE TABLE IF NOT EXISTS poll_receivers(
     user_id NUMERIC NOT NULL,
     poll_id INTEGER NOT NULL,
     message_id INTEGER NOT NULL,
-    telegram_poll_id TEXT NOT NULL, -- Telegram poll_id is str, return value from PollAnswerHandler
+    telegram_poll_id TEXT, -- Telegram poll_id is str, return value from PollAnswerHandler
     time_sent TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(user_id, poll_id),
     UNIQUE (user_id, message_id),
-    UNIQUE (user_id, telegram_poll_id),
     CONSTRAINT fk_user_pr FOREIGN KEY(user_id) REFERENCES users(user_id),
     CONSTRAINT fk_poll_pr FOREIGN KEY(poll_id) REFERENCES polls(poll_id)
 );

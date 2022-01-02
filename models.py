@@ -42,13 +42,12 @@ class PollReceivers(Base):
     __tablename__ = 'poll_receivers'
     __table_args__ = (
         UniqueConstraint('user_id', 'message_id'),
-        UniqueConstraint('user_id', 'telegram_poll_id')
     )
 
     user_id = Column(ForeignKey('users.user_id'), primary_key=True, nullable=False)
     poll_id = Column(ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
     message_id = Column(Integer, nullable=False)
-    telegram_poll_id = Column(Text, nullable=False)
+    telegram_poll_id = Column(Text, nullable=True)
     time_sent = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
 
     poll = relationship('Polls', back_populates='poll_receivers')
