@@ -1,68 +1,80 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Integer, Numeric, String, Text, UniqueConstraint, text
-from sqlalchemy.orm import declarative_base, relationship
+# coding: utf-8
+from flask_sqlalchemy import SQLAlchemy
 
-Base = declarative_base()
-
-
-class Polls(Base):
-    __tablename__ = 'polls'
-
-    poll_id = Column(Integer, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=2147483647, cycle=False, cache=1), primary_key=True)
-    question = Column(String(300), nullable=False)
-    allows_multiple_answers = Column(Boolean, nullable=False)
-    close_date = Column(DateTime(True))
-
-    poll_options = relationship('PollOptions', back_populates='poll')
-    poll_receivers = relationship('PollReceivers', back_populates='poll')
+db = SQLAlchemy()
 
 
-class Users(Base):
-    __tablename__ = 'users'
+class Admin(db.Model):
+    __tablename__ = 'admins'
 
-    user_id = Column(Numeric, primary_key=True)
-    first_name = Column(Text, nullable=False)
-    is_active = Column(Boolean, nullable=False, server_default=text('true'))
-    last_name = Column(Text)
-    time_created = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
+    admin_id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    username = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.String(30), nullable=False)
+    created_by = db.Column(db.ForeignKey('admins.admin_id'))
+    time_created = db.Column(db.DateTime(True), server_default=db.FetchedValue())
 
-    poll_receivers = relationship('PollReceivers', back_populates='user')
-
-
-class PollOptions(Base):
-    __tablename__ = 'poll_options'
-
-    option_id = Column(Integer, primary_key=True, nullable=False)
-    poll_id = Column(ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
-    content = Column(String(300), nullable=False)
-
-    poll = relationship('Polls', back_populates='poll_options')
+    parent = db.relationship('Admin', remote_side=[admin_id], primaryjoin='Admin.created_by == Admin.admin_id',
+                             backref='admins')
 
 
-class PollReceivers(Base):
-    __tablename__ = 'poll_receivers'
-    __table_args__ = (
-        UniqueConstraint('user_id', 'message_id'),
-    )
-
-    user_id = Column(ForeignKey('users.user_id'), primary_key=True, nullable=False)
-    poll_id = Column(ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
-    message_id = Column(Integer, nullable=False)
-    telegram_poll_id = Column(Text, nullable=True)
-    time_sent = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
-
-    poll = relationship('Polls', back_populates='poll_receivers')
-    user = relationship('Users', back_populates='poll_receivers')
-    poll_answers = relationship('PollAnswers', backref='poll_receivers')
-
-
-class PollAnswers(Base):
+class PollAnswer(db.Model):
     __tablename__ = 'poll_answers'
     __table_args__ = (
-        ForeignKeyConstraint(('option_id', 'poll_id'), ['poll_options.option_id', 'poll_options.poll_id']),
-        ForeignKeyConstraint(('user_id', 'poll_id'), ['poll_receivers.user_id', 'poll_receivers.poll_id'])
+        db.ForeignKeyConstraint(['option_id', 'poll_id'], ['poll_options.option_id', 'poll_options.poll_id']),
+        db.ForeignKeyConstraint(['user_id', 'poll_id'], ['poll_receivers.user_id', 'poll_receivers.poll_id'])
     )
 
-    user_id = Column(Numeric, primary_key=True, nullable=False)
-    poll_id = Column(Integer, primary_key=True, nullable=False)
-    option_id = Column(Integer, primary_key=True, nullable=False)
-    time_answered = Column(DateTime(True), server_default=text('CURRENT_TIMESTAMP'))
+    user_id = db.Column(db.Numeric, primary_key=True, nullable=False)
+    poll_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    option_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    time_answered = db.Column(db.DateTime(True), server_default=db.FetchedValue())
+
+
+class PollOption(db.Model):
+    __tablename__ = 'poll_options'
+
+    option_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    poll_id = db.Column(db.ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
+    content = db.Column(db.String(300), nullable=False)
+
+    poll = db.relationship('Poll', primaryjoin='PollOption.poll_id == Poll.poll_id', backref='poll_options')
+
+
+class PollReceiver(db.Model):
+    __tablename__ = 'poll_receivers'
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'message_id'),
+    )
+
+    user_id = db.Column(db.ForeignKey('users.user_id'), primary_key=True, nullable=False)
+    poll_id = db.Column(db.ForeignKey('polls.poll_id'), primary_key=True, nullable=False)
+    message_id = db.Column(db.Integer, nullable=False)
+    telegram_poll_id = db.Column(db.Text)
+    time_sent = db.Column(db.DateTime(True), server_default=db.FetchedValue())
+    sent_by = db.Column(db.ForeignKey('admins.admin_id'), nullable=False)
+
+    poll = db.relationship('Poll', primaryjoin='PollReceiver.poll_id == Poll.poll_id', backref='poll_receivers')
+    admin = db.relationship('Admin', primaryjoin='PollReceiver.sent_by == Admin.admin_id', backref='poll_receivers')
+    user = db.relationship('User', primaryjoin='PollReceiver.user_id == User.user_id', backref='poll_receivers')
+
+
+class Poll(db.Model):
+    __tablename__ = 'polls'
+
+    poll_id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    question = db.Column(db.String(300), nullable=False)
+    allows_multiple_answers = db.Column(db.Boolean, nullable=False)
+    close_date = db.Column(db.DateTime(True))
+    created_by = db.Column(db.ForeignKey('admins.admin_id'), nullable=False)
+
+    admin = db.relationship('Admin', primaryjoin='Poll.created_by == Admin.admin_id', backref='polls')
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    user_id = db.Column(db.Numeric, primary_key=True)
+    first_name = db.Column(db.Text, nullable=False)
+    last_name = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, nullable=False, server_default=db.FetchedValue())
+    time_created = db.Column(db.DateTime(True), server_default=db.FetchedValue())

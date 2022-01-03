@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
-from models import Users, Polls, PollOptions, PollAnswers, PollReceivers
+from models import User, Poll, PollOption, PollAnswer, PollReceiver
 import datetime
 
 _db = SQLAlchemy()
@@ -72,7 +72,7 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
         return
     except UserNotFound:
         pass
-    new_user = Users(user_id=chat_id, first_name=first_name, last_name=last_name)
+    new_user = User(user_id=chat_id, first_name=first_name, last_name=last_name)
     try:
         _db.session.add(new_user)
         _db.session.commit()
@@ -85,7 +85,7 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
 
 
 def _get_user(chat_id):
-    user = _db.session.query(Users).get(chat_id)
+    user = _db.session.query(User).get(chat_id)
     if not user:
         raise UserNotFound
     return user
@@ -110,34 +110,34 @@ def delete_user(chat_id: int) -> None:
 
 
 def get_poll(poll_id):
-    poll = _db.session.query(Polls).get(poll_id)
+    poll = _db.session.query(Poll).get(poll_id)
     if not poll:
         raise PollNotFound
     return poll
 
 
 def _get_option(poll_id, option_id):
-    option = _db.session.query(PollOptions).get((option_id, poll_id))
+    option = _db.session.query(PollOption).get((option_id, poll_id))
     if not option:
         raise OptionNotFound
     return option
 
 
 def _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id):
-    poll_receiver = _db.session.query(PollReceivers).filter_by(user_id=chat_id, telegram_poll_id=telegram_poll_id).first()
+    poll_receiver = _db.session.query(PollReceiver).filter_by(user_id=chat_id, telegram_poll_id=telegram_poll_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
 
 
 def _get_poll_receiver_by_message_id(chat_id, message_id):
-    poll_receiver = _db.session.query(PollReceivers).filter_by(user_id=chat_id, message_id=message_id).first()
+    poll_receiver = _db.session.query(PollReceiver).filter_by(user_id=chat_id, message_id=message_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
 
 
-def _add_answer(answer: PollAnswers):
+def _add_answer(answer: PollAnswer):
     # TODO: unactive user can answer poll?
     try:
         _db.session.add(answer)
@@ -154,7 +154,7 @@ def add_answer_by_poll_id(chat_id, telegram_poll_id, option_id):
     _get_user(chat_id)
     poll_receiver = _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id)
     _get_option(poll_receiver.poll_id, option_id)
-    new_answer = PollAnswers(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
+    new_answer = PollAnswer(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     _add_answer(new_answer)
 
 
@@ -162,20 +162,20 @@ def add_answer_by_message_id(chat_id, message_id, option_id):
     _get_user(chat_id)
     poll_receiver = _get_poll_receiver_by_message_id(chat_id, message_id)
     _get_option(poll_receiver.poll_id, option_id)
-    new_answer = PollAnswers(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
+    new_answer = PollAnswer(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     _add_answer(new_answer)
 
 
 def _get_answer(chat_id, poll_id, answer_index):
-    answer = _db.session.query(PollAnswers).filter_by(user_id=chat_id, poll_id=poll_id,
+    answer = _db.session.query(PollAnswer).filter_by(user_id=chat_id, poll_id=poll_id,
                                                       answer_index=answer_index).first()
     if not answer:
         raise AnswerNotFound
     return answer
 
 
-def _add_only_poll(question, allows_multiple_answers, close_date):
-    new_poll = Polls(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date)
+def _add_only_poll(question, allows_multiple_answers, close_date, created_by):
+    new_poll = Poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date, created_by=created_by)
     try:
         _db.session.add(new_poll)
         _db.session.commit()
@@ -190,7 +190,7 @@ def _add_only_poll(question, allows_multiple_answers, close_date):
 
 def _add_option(option_id, poll_id, content):
     get_poll(poll_id)
-    new_option = PollOptions(option_id=option_id, poll_id=poll_id, content=content)
+    new_option = PollOption(option_id=option_id, poll_id=poll_id, content=content)
     try:
         _db.session.add(new_option)
         _db.session.commit()
@@ -202,24 +202,18 @@ def _add_option(option_id, poll_id, content):
         raise UnknownError
 
 
-def add_poll(question, options, allows_multiple_answers=False, close_date=None):
-    poll_id = _add_only_poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date)
+def add_poll(question, options, created_by, allows_multiple_answers=False, close_date=None):
+    poll_id = _add_only_poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date, created_by=created_by)
     for option_index, option in enumerate(options):
         _add_option(option_index, poll_id, option)
     return poll_id
 
 
-def send_poll(poll_id, receivers):
-    get_poll(poll_id)
-    for chat_id in receivers:
-        add_poll_receiver(chat_id, poll_id)
-
-
-def add_poll_receiver(chat_id, poll_id, message_id, telegram_poll_id):
+def add_poll_receiver(chat_id, poll_id, sent_by, message_id, telegram_poll_id):
     _get_user(chat_id)
     get_poll(poll_id)
-    new_poll_receiver = PollReceivers(user_id=chat_id, poll_id=poll_id, message_id=message_id,
-                                      telegram_poll_id=telegram_poll_id)
+    new_poll_receiver = PollReceiver(user_id=chat_id, poll_id=poll_id, message_id=message_id,
+                                      telegram_poll_id=telegram_poll_id, sent_by=sent_by)
     try:
         _db.session.add(new_poll_receiver)
         _db.session.commit()
@@ -231,5 +225,5 @@ def add_poll_receiver(chat_id, poll_id, message_id, telegram_poll_id):
         raise UnknownError
 
 
-def stop_poll(poll: Polls):
+def stop_poll(poll: Poll):
     poll.close_date = datetime.datetime.now()

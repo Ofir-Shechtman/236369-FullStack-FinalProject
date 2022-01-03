@@ -23,11 +23,11 @@ def index():
             _send_message(chat_id=569667677, text="Hello World!")
         elif request.form.get('poll'):
             poll_id = send_poll(receivers=[569667677], question="How are you today?",
-                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True)
-            stop_poll(poll_id)
+                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=1)
+            # stop_poll(poll_id)
         elif request.form.get('inline'):
             send_poll(receivers=[569667677], question="How are you today?", options=["Good!", "Great!", "Fantastic!"],
-                      inline=True)
+                      inline=True, admin_id=1)
 
     elif request.method == 'GET':
         return render_template('index.html')
@@ -90,9 +90,9 @@ def _send_message(chat_id: int, text: str, reply_markup=None):
     return _send_bot_post("sendMessage", locals())
 
 
-def send_poll(receivers, question: str, options: List[str], close_date: int = None,
+def send_poll(receivers, question: str, options: List[str], admin_id, close_date: int = None,
               allows_multiple_answers: bool = False, inline: bool = False):
-    poll_id = db.add_poll(question=question, options=options, close_date=close_date if not inline else None,
+    poll_id = db.add_poll(question=question, options=options, created_by=admin_id, close_date=close_date if not inline else None,
                           allows_multiple_answers=allows_multiple_answers and not inline)
     for chat_id in receivers:
         if inline:
@@ -105,7 +105,7 @@ def send_poll(receivers, question: str, options: List[str], close_date: int = No
             result = _bot_send_poll(chat_id, question, options, close_date,
                                     allows_multiple_answers)
         data = result.json().get('result')
-        db.add_poll_receiver(chat_id=chat_id, poll_id=poll_id,
+        db.add_poll_receiver(chat_id=chat_id, poll_id=poll_id, sent_by=admin_id,
                              telegram_poll_id=data['poll']['id'] if not inline else None,
                              message_id=data['message_id'])
     return poll_id
