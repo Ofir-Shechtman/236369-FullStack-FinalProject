@@ -1,5 +1,5 @@
 export const Pages: { [id: string] : number; } = {'About': 0,
-                                                  'AddNewAdmin': 1,
-                                                  'AddNewPoll': 2,
-                                                  'MyPolls': 3,
-                                                  'PollView': 4};
+                                                  'Add New Admin': 1,
+                                                  'Add New Poll': 2,
+                                                  'My Polls': 3,
+                                                  'Poll View': 4};

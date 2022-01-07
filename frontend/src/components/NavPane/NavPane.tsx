@@ -15,7 +15,7 @@ export const NavPane: React.FC<NavPaneProps> = ({
     }
 
     return (
-        <div className='nav-tab'>
+        <div className='NavPane'>
             {Object.keys(Pages).map(page =>
                 <button key={page} className='nav-button' onClick={() => handlePageChange(page)}>
                     {page}

@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import {Header} from "./components/Header/Header";
-import {NavPane} from "./components/NavPane/NavPane";
 import {PageLayout} from "./components/Pages/PageLayout";
 
 function App() {
@@ -29,13 +28,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Header/>
-        <NavPane changePage={changePage}/>
-        <PageLayout page={page}/>
-        <button className='add-button' onClick={addCharacter}> MyButton </button>
-        <p>The current time is {currentTime}.</p>
-      </header>
+      <Header changePage={changePage}/>
+      <PageLayout page={page}/>
+      <button className='add-button' onClick={addCharacter}> MyButton </button>
+      <p>The current time is {currentTime}.</p>
     </div>
   );
 }
