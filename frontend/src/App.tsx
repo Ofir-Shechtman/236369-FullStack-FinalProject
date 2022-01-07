@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
+import {Header} from "./components/Header/Header";
+import {NavPane} from "./components/NavPane/NavPane";
+import {PageLayout} from "./components/Pages/PageLayout";
 
 function App() {
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -11,8 +14,14 @@ function App() {
       setCurrentTime(data.time);
     });
   }, []);
-// axios.post('https://reqres.in/api/articles', article)
-//         .then(response => setArticleId(response.data.id));
+
+  const [page, setPage] = React.useState<number>(0);
+
+  const changePage = (newPage: number) => {
+    setPage(newPage);
+    // Think about validations...
+  }
+
   const addCharacter = () => {
     const article = { title: 'React Hooks POST Request Example' };
     axios.post('http://127.0.0.1:5000/button', article)
@@ -21,18 +30,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Header/>
+        <NavPane changePage={changePage}/>
+        <PageLayout page={page}/>
         <button className='add-button' onClick={addCharacter}> MyButton </button>
         <p>The current time is {currentTime}.</p>
       </header>

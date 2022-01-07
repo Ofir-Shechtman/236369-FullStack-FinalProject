@@ -9,6 +9,7 @@ import { PollView } from './PollView/PollView';
 export interface PageLayoutProps {
     page: number;
 }
+
 export const PageLayout: React.FC<PageLayoutProps> = ({
                                                           page,
                                                       }) => {
