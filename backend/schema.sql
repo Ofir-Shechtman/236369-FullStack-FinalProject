@@ -1,13 +1,11 @@
 CREATE TABLE IF NOT EXISTS admins(
     admin_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    username VARCHAR(30) NOT NULL,
+    username VARCHAR(30) UNIQUE NOT NULL,
     password VARCHAR(30) NOT NULL,
     created_by INTEGER,
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(admin_id)
 );
-
-INSERT INTO admins(username, password, time_created) VALUES ('superadmin', 'superadmin', NULL);
 
 
 CREATE TABLE IF NOT EXISTS users(
@@ -57,7 +55,6 @@ CREATE TABLE IF NOT EXISTS poll_answers(
     option_id INTEGER NOT NULL,
     time_answered TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(user_id, poll_id, option_id),
---     CONSTRAINT fk_poll_pr FOREIGN KEY(poll_id) REFERENCES polls(poll_id),
     CONSTRAINT fk_poll_receiver_pa FOREIGN KEY(user_id, poll_id) REFERENCES poll_receivers(user_id, poll_id),
     CONSTRAINT fk_option_pa FOREIGN KEY(option_id, poll_id) REFERENCES poll_options(option_id, poll_id)
  );

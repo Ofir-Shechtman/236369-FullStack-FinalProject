@@ -1,7 +1,7 @@
 import os
 
-from flask import Flask, render_template, request, send_from_directory
-from config import BOT_TOKEN, URL, DATABASE_URL
+from flask import Flask, render_template, request, send_from_directory, Response
+from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN
 from urllib.parse import urlparse
 import database as db
 import requests
@@ -13,8 +13,24 @@ from statuses import Status
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-db.init(app)
+super_admin_id = db.init(app, SUPER_ADMIN)
 
+@app.before_request
+def oauth_verify(*args, **kwargs):
+    """Ensure the oauth authorization header is set"""
+    if request.method in ['OPTIONS', ]:
+        response = Response("OK")
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
+
+
+@app.route("/button", methods=['POST'])
+def button():
+    if request.method == 'POST':
+        print(request.get_json().get('title'))
+        return Response("OK")
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -23,15 +39,20 @@ def index():
             _send_message(chat_id=569667677, text="Hello World!")
         elif request.form.get('poll'):
             poll_id = send_poll(receivers=[569667677], question="How are you today?",
-                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=1)
+                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=super_admin_id)
             # stop_poll(poll_id)
         elif request.form.get('inline'):
             send_poll(receivers=[569667677], question="How are you today?", options=["Good!", "Great!", "Fantastic!"],
-                      inline=True, admin_id=1)
+                       inline=True, admin_id=super_admin_id)
 
     elif request.method == 'GET':
         return render_template('index.html')
     return render_template('index.html')
+
+
+@app.route('/api/time')
+def get_current_time():
+    return {'time': 9}
 
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])

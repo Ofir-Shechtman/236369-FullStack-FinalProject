@@ -1,13 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
-from models import User, Poll, PollOption, PollAnswer, PollReceiver
+from models import Admin, User, Poll, PollOption, PollAnswer, PollReceiver
 import datetime
 
 _db = SQLAlchemy()
 
 
-def init(app):
+def init(app, super_admin):
     _db.init_app(app)
+    username, password = super_admin
+    with app.app_context():
+        try:
+            return _get_admin(username)
+        except AdminNotFound:
+            return add_admin(username, password, None)
 
 
 class UserNotFound(BaseException):
@@ -23,6 +29,14 @@ class UserAlreadyActive(BaseException):
 
 
 class UserExists(BaseException):
+    pass
+
+
+class AdminNotFound(BaseException):
+    pass
+
+
+class AdminExists(BaseException):
     pass
 
 
@@ -60,6 +74,20 @@ class PollNotSent(BaseException):
 
 class UnknownError(BaseException):
     pass
+
+
+def add_admin(username: str, password: str, admin_id: str) -> Admin:
+    admin = Admin(username=username, password=password, admin_id=admin_id)
+    try:
+        _db.session.add(admin)
+        _db.session.commit()
+        return admin
+    except IntegrityError:
+        _db.session.rollback()
+        raise UserExists
+    except BaseException:
+        _db.session.rollback()
+        raise UnknownError
 
 
 def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
@@ -124,10 +152,18 @@ def _get_option(poll_id, option_id):
 
 
 def _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id):
-    poll_receiver = _db.session.query(PollReceiver).filter_by(user_id=chat_id, telegram_poll_id=telegram_poll_id).first()
+    poll_receiver = _db.session.query(PollReceiver).filter_by(user_id=chat_id,
+                                                              telegram_poll_id=telegram_poll_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
+
+
+def _get_admin(username):
+    admin = _db.session.query(Admin).filter_by(username=username).first()
+    if not admin:
+        raise AdminNotFound
+    return admin.admin_id
 
 
 def _get_poll_receiver_by_message_id(chat_id, message_id):
@@ -168,14 +204,15 @@ def add_answer_by_message_id(chat_id, message_id, option_id):
 
 def _get_answer(chat_id, poll_id, answer_index):
     answer = _db.session.query(PollAnswer).filter_by(user_id=chat_id, poll_id=poll_id,
-                                                      answer_index=answer_index).first()
+                                                     answer_index=answer_index).first()
     if not answer:
         raise AnswerNotFound
     return answer
 
 
 def _add_only_poll(question, allows_multiple_answers, close_date, created_by):
-    new_poll = Poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date, created_by=created_by)
+    new_poll = Poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+                    created_by=created_by)
     try:
         _db.session.add(new_poll)
         _db.session.commit()
@@ -203,7 +240,8 @@ def _add_option(option_id, poll_id, content):
 
 
 def add_poll(question, options, created_by, allows_multiple_answers=False, close_date=None):
-    poll_id = _add_only_poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date, created_by=created_by)
+    poll_id = _add_only_poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+                             created_by=created_by)
     for option_index, option in enumerate(options):
         _add_option(option_index, poll_id, option)
     return poll_id
@@ -213,7 +251,7 @@ def add_poll_receiver(chat_id, poll_id, sent_by, message_id, telegram_poll_id):
     _get_user(chat_id)
     get_poll(poll_id)
     new_poll_receiver = PollReceiver(user_id=chat_id, poll_id=poll_id, message_id=message_id,
-                                      telegram_poll_id=telegram_poll_id, sent_by=sent_by)
+                                     telegram_poll_id=telegram_poll_id, sent_by=sent_by)
     try:
         _db.session.add(new_poll_receiver)
         _db.session.commit()
