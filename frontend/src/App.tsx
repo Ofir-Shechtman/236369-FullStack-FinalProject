@@ -6,7 +6,7 @@ import {Header} from "./components/Header/Header";
 import {PageLayout} from "./components/Pages/PageLayout";
 
 function App() {
-  const [page, setPage] = React.useState<number>(0);
+  const [page, setPage] = React.useState<number>(2);
   const changePage = (newPage: number) => {
     setPage(newPage);
     // Think about validations...

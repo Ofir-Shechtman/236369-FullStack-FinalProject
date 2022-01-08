@@ -1,4 +1,5 @@
 import React from "react";
+// @ts-ignore
 import {
   ProSidebar,
   Menu,
@@ -6,7 +7,7 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter
-} from "react-pro-sidebar";
+} from 'react-pro-sidebar';
 import { FaPollH, FaList, FaSignOutAlt, FaInfo, FaPlusCircle, FaPoll } from "react-icons/fa";
 export interface HeaderProps {
     changePage(newPage: number): void;
