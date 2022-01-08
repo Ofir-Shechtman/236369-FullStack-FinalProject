@@ -2,7 +2,7 @@ import React from 'react';
 import '../../App.css';
 import { About } from './About/About';
 import { AddNewAdmin } from './AddNewAdmin/AddNewAdmin';
-import { AddNewPoll } from './AddNewPoll/AddNewPoll';
+import AddNewPoll from "./AddNewPoll/AddNewPoll"
 import { MyPolls } from './MyPolls/MyPolls';
 import { PollView } from './PollView/PollView';
 
