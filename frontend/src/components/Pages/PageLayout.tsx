@@ -16,15 +16,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 
     switch(page) {
         case 0:
-            return <About/>
+            return <div className="PageLayout" ><About/></div>
         case 1:
-            return <AddNewAdmin/>
+            return <div className="PageLayout" ><AddNewAdmin/></div>
         case 2:
-            return <AddNewPoll/>
+            return <div className="PageLayout" ><AddNewPoll/></div>
         case 3:
-            return <MyPolls/>
+            return <div className="PageLayout" ><MyPolls/></div>
         case 4:
-            return <PollView/>
+            return <div className="PageLayout" ><PollView/></div>
         default:
             return null;
 
