@@ -1,7 +1,8 @@
 import os
 
-from flask import Flask, render_template, request, send_from_directory, Response
-from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN
+from flask import Flask, render_template, request, send_from_directory, Response, redirect, sec
+from flask_login import LoginManager, login_required, login_user, logout_user
+from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
 from urllib.parse import urlparse
 import database as db
 import requests
@@ -13,7 +14,20 @@ from statuses import Status
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-super_admin_id = db.init(app, SUPER_ADMIN)
+app.secret_key = SECRET_KEY
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'login'
+login_manager.login_message = u"Bonvolu ensaluti por uzi tiun paĝon."
+login_manager.init_app(app)
+super_admin = db.init(app, SUPER_ADMIN)
+super_admin_id = super_admin.id
+
+
+@login_manager.user_loader
+def user_loader(admin_id):
+    return db.load_admin(admin_id)
+
 
 @app.before_request
 def oauth_verify(*args, **kwargs):
@@ -32,7 +46,23 @@ def button():
         print(request.get_json().get('title'))
         return Response("OK")
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    user = db.get_admin(username="admin")
+    if user and user.verify_password("236369"):
+        login_user(user)
+        return redirect('/')
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+
+
 @app.route("/", methods=['GET', 'POST'])
+@login_required
 def index():
     if request.method == 'POST':
         if request.form.get('message'):

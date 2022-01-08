@@ -11,9 +11,10 @@ def init(app, super_admin):
     username, password = super_admin
     with app.app_context():
         try:
-            return _get_admin(username)
+            return get_admin(username)
         except AdminNotFound:
-            return add_admin(username, password, None)
+            admin = add_admin(username, password, None)
+            return admin
 
 
 class UserNotFound(BaseException):
@@ -76,8 +77,8 @@ class UnknownError(BaseException):
     pass
 
 
-def add_admin(username: str, password: str, admin_id: str) -> Admin:
-    admin = Admin(username=username, password=password, admin_id=admin_id)
+def add_admin(username: str, password: str, admin_id: int) -> Admin:
+    admin = Admin(username=username, password=password, id=admin_id)
     try:
         _db.session.add(admin)
         _db.session.commit()
@@ -159,11 +160,15 @@ def _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id):
     return poll_receiver
 
 
-def _get_admin(username):
+def get_admin(username: str) -> Admin:
     admin = _db.session.query(Admin).filter_by(username=username).first()
     if not admin:
         raise AdminNotFound
-    return admin.admin_id
+    return admin
+
+
+def load_admin(admin_id):
+    return Admin.query.get(int(admin_id))
 
 
 def _get_poll_receiver_by_message_id(chat_id, message_id):

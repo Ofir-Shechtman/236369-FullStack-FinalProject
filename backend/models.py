@@ -1,20 +1,31 @@
 # coding: utf-8
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 
-class Admin(db.Model):
+class Admin(UserMixin, db.Model):
     __tablename__ = 'admins'
-
-    admin_id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
     username = db.Column(db.String(30), nullable=False)
-    password = db.Column(db.String(30), nullable=False)
-    created_by = db.Column(db.ForeignKey('admins.admin_id'))
+    password_hash = db.Column(db.String(30), nullable=False)
+    created_by = db.Column(db.ForeignKey('admins.id'))
     time_created = db.Column(db.DateTime(True), server_default=db.FetchedValue())
 
-    parent = db.relationship('Admin', remote_side=[admin_id], primaryjoin='Admin.created_by == Admin.admin_id',
+    parent = db.relationship('Admin', remote_side=[id], primaryjoin='Admin.created_by == Admin.id',
                              backref='admins')
+
+    @property
+    def password(self):
+        raise AttributeError('password is not readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class PollAnswer(db.Model):
@@ -51,10 +62,10 @@ class PollReceiver(db.Model):
     message_id = db.Column(db.Integer, nullable=False)
     telegram_poll_id = db.Column(db.Text)
     time_sent = db.Column(db.DateTime(True), server_default=db.FetchedValue())
-    sent_by = db.Column(db.ForeignKey('admins.admin_id'), nullable=False)
+    sent_by = db.Column(db.ForeignKey('admins.id'), nullable=False)
 
     poll = db.relationship('Poll', primaryjoin='PollReceiver.poll_id == Poll.poll_id', backref='poll_receivers')
-    admin = db.relationship('Admin', primaryjoin='PollReceiver.sent_by == Admin.admin_id', backref='poll_receivers')
+    admin = db.relationship('Admin', primaryjoin='PollReceiver.sent_by == Admin.id', backref='poll_receivers')
     user = db.relationship('User', primaryjoin='PollReceiver.user_id == User.user_id', backref='poll_receivers')
 
 
@@ -65,9 +76,9 @@ class Poll(db.Model):
     question = db.Column(db.String(300), nullable=False)
     allows_multiple_answers = db.Column(db.Boolean, nullable=False)
     close_date = db.Column(db.DateTime(True))
-    created_by = db.Column(db.ForeignKey('admins.admin_id'), nullable=False)
+    created_by = db.Column(db.ForeignKey('admins.id'), nullable=False)
 
-    admin = db.relationship('Admin', primaryjoin='Poll.created_by == Admin.admin_id', backref='polls')
+    admin = db.relationship('Admin', primaryjoin='Poll.created_by == Admin.id', backref='polls')
 
 
 class User(db.Model):

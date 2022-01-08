@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS admins(
-    admin_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(30) NOT NULL,
+    password_hash TEXT NOT NULL,
     created_by INTEGER,
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(admin_id)
+    CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(id)
 );
 
 
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS polls(
     allows_multiple_answers BOOLEAN NOT NULL,
     close_date TIMESTAMP WITH TIME ZONE,
     created_by INTEGER NOT NULL,
-    CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(admin_id)
+    CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(id)
 
 
 );
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS poll_receivers(
     UNIQUE (user_id, message_id),
     CONSTRAINT fk_user_pr FOREIGN KEY(user_id) REFERENCES users(user_id),
     CONSTRAINT fk_poll_pr FOREIGN KEY(poll_id) REFERENCES polls(poll_id),
-    CONSTRAINT fk_sent_by FOREIGN KEY(sent_by) REFERENCES admins(admin_id)
+    CONSTRAINT fk_sent_by FOREIGN KEY(sent_by) REFERENCES admins(id)
 );
 
 CREATE TABLE IF NOT EXISTS poll_options(
