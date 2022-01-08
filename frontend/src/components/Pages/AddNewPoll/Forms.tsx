@@ -52,11 +52,11 @@ export const PollTypeForm: React.FC<ControlledProps> = ({
                                                       }) => {
 
     return (
-        <section>
+        <section style={{minWidth: 220}}>
         <label>{name}</label>
         <Controller
           render={({ field }) => (
-            <Select {...field} onChange= {onChangeType} value={type_value}>
+            <Select {...field} onChange= {onChangeType} value={type_value} autoWidth={true}>
               <MenuItem value="1">Telegram Poll</MenuItem>
               <MenuItem value="2">Telegram Inline Keyboard</MenuItem>
             </Select>

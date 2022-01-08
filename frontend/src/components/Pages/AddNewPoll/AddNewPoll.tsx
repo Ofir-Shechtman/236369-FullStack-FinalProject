@@ -26,10 +26,10 @@ export default function AddNewPoll() {
       <h1>React Hook Form - Resolver</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
 
-        {/*<TextFieldForm name={"Poll Name"} value={"PollName"} register={register} error={errors.PollName?.message}/>*/}
-        {/*<TextFieldForm name={"Poll Question"} value={"PollQuestion"} register={register} error={errors.PollQuestion?.message}/>*/}
-        <MUITextField name={"Poll Name"} value={"PollName"} control={control} error={errors.PollName?.message}/>
-        <MUITextField name={"Poll Question"} value={"PollQuestion"} control={control} error={errors.PollQuestion?.message}/>
+        <TextFieldForm name={"Poll Name"} value={"PollName"} register={register} error={errors.PollName?.message}/>
+        <TextFieldForm name={"Poll Question"} value={"PollQuestion"} register={register} error={errors.PollQuestion?.message}/>
+        {/*<MUITextField name={"Poll Name"} value={"PollName"} control={control} error={errors.PollName?.message}/>*/}
+        {/*<MUITextField name={"Poll Question"} value={"PollQuestion"} control={control} error={errors.PollQuestion?.message}/>*/}
         <PollTypeForm name={"Poll Type"} value={"PollType"} control={control} onChangeType={divOnChange} type_value={is_poll_type}/>
         <SwitchForm name={"Allow Multiple Answers"} value={"MultipleAnswers"} control={control} multiple_enable={multiple_enable}/>
         <input type="submit" />
