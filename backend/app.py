@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, send_from_directory, Response, redirect, sec
+from flask import Flask, render_template, request, send_from_directory, Response, redirect
 from flask_login import LoginManager, login_required, login_user, logout_user
 from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
 from urllib.parse import urlparse
