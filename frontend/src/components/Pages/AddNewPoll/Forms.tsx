@@ -3,8 +3,13 @@ import {PageLayoutProps} from "../PageLayout";
 import {FormValues} from "./FormValues";
 import {Controller, FieldPath} from 'react-hook-form';
 import {Switch} from "@material-ui/core";
-import {TextField, Select, MenuItem} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import {TextField} from '@material-ui/core';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import {FormControlLabel} from "@mui/material";
 
 export interface TextFieldProps {
     name: string;
@@ -52,11 +57,12 @@ export const PollTypeForm: React.FC<ControlledProps> = ({
                                                       }) => {
 
     return (
-        <section style={{minWidth: 220}}>
-        <label>{name}</label>
+        <Box sx={{ minWidth: 220 }}>
+        <FormControl fullWidth>
+        <InputLabel>{value}</InputLabel>
         <Controller
           render={({ field }) => (
-            <Select {...field} onChange= {onChangeType} value={type_value} autoWidth={true}>
+            <Select {...field} onChange= {onChangeType} value={type_value} label={name}>
               <MenuItem value="1">Telegram Poll</MenuItem>
               <MenuItem value="2">Telegram Inline Keyboard</MenuItem>
             </Select>
@@ -64,7 +70,8 @@ export const PollTypeForm: React.FC<ControlledProps> = ({
           name={value}
           control={control}
         />
-      </section>
+      </FormControl>
+    </Box>
     )
 }
 
@@ -77,20 +84,22 @@ export const SwitchForm: React.FC<ControlledProps> = ({
                                                       }) => {
     return (
         <section>
-        <label>{name}</label>
-        <Controller
-          name={value}
-          control={control}
-          render={({ field }) => (
-            <Switch
-              onChange={(e) => field.onChange(e.target.checked)}
-              checked={!!field.value}
-              defaultChecked={false}
-              disabled={!multiple_enable}
-            />
-          )}
+        <FormControlLabel control={
+            <Controller
+                name={value}
+                control={control}
+                render={({field}) => (
+                    <Switch
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        checked={!!field.value}
+                        defaultChecked={false}
+                        disabled={!multiple_enable}
+                    />
+                )}
+            />}
+                          label={name}
         />
-      </section>
+    </section>
     )
 }
 
@@ -102,7 +111,6 @@ export const MUITextField: React.FC<ControlledProps> = ({
                                                       }) => {
     return (
         <section>
-        <label>{name}</label>
         <Controller
           render={({ field }) => <TextField {...field} placeholder="Poll Name"/>}
           name={value}
