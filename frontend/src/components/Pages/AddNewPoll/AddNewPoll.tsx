@@ -1,8 +1,13 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {Switch} from "@material-ui/core";
-import {TextField, Select, MenuItem} from '@material-ui/core';
+import {TextField} from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 import '../../../App.css';
 import './AddnewPoll.css'
@@ -23,7 +28,6 @@ export default function AddNewPoll() {
     };
   return (
     <div className="App">
-      <h1>React Hook Form - Resolver</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
 
         {/*<TextFieldForm name={"Poll Name"} value={"PollName"} register={register} error={errors.PollName?.message}/>*/}
@@ -37,4 +41,7 @@ export default function AddNewPoll() {
     </div>
   );
 }
+
+
+
 
