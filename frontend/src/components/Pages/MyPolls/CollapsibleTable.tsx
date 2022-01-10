@@ -234,6 +234,7 @@ export class CollapsibleTable extends React.Component {
 
   render() {
     const classes = useStyles();
+    const { data, loading, error } = this.state;
     return (
         <div>
           {loading && <div>Loading...</div>}
@@ -250,7 +251,7 @@ export class CollapsibleTable extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.state.data.map((row: PollProps) => (
+                  {data.map((row: PollProps) => (
                       <Row key={row.poll_id}
                            row={row}/>
                   ))}
