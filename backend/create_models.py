@@ -8,7 +8,7 @@ import os
 SCHEMA = 'schema.sql'
 COMMAND = 'flask-sqlacodegen --flask {database_url} --tables {tables} > {output_filename}'
 TABLES = ['poll_answers', 'poll_options', 'poll_receivers', 'polls', 'users', 'admins']
-FILENAME = 'models.py'
+FILENAME = 'models_new.py'
 
 
 def create_tables(conn, schema):

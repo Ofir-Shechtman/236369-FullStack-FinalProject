@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from models import Admin, User, Poll, PollOption, PollAnswer, PollReceiver
 import datetime
+from flask import jsonify
 
 _db = SQLAlchemy()
 
@@ -215,18 +216,17 @@ def _get_answer(chat_id, poll_id, answer_index):
     return answer
 
 
-def _add_only_poll(question, allows_multiple_answers, close_date, created_by):
-    new_poll = Poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+def _add_only_poll(poll_name, question, poll_type, allows_multiple_answers, close_date, created_by):
+    new_poll = Poll(poll_name=poll_name, question=question, poll_type=poll_type, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                     created_by=created_by)
-    try:
-        _db.session.add(new_poll)
-        _db.session.commit()
-    except IntegrityError:
-        _db.session.rollback()
-        raise PollExists
-    except BaseException:
-        _db.session.rollback()
-        raise UnknownError
+    _db.session.add(new_poll)
+    _db.session.commit()
+    # except IntegrityError:
+    #     _db.session.rollback()
+    #     raise PollExists
+    # except BaseException:
+    #     _db.session.rollback()
+    #     raise UnknownError
     return new_poll.poll_id
 
 
@@ -244,8 +244,8 @@ def _add_option(option_id, poll_id, content):
         raise UnknownError
 
 
-def add_poll(question, options, created_by, allows_multiple_answers=False, close_date=None):
-    poll_id = _add_only_poll(question=question, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+def add_poll(poll_name, question, options, poll_type, created_by, allows_multiple_answers=False, close_date=None):
+    poll_id = _add_only_poll(poll_name=poll_name, question=question, poll_type=poll_type, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                              created_by=created_by)
     for option_index, option in enumerate(options):
         _add_option(option_index, poll_id, option)
@@ -270,3 +270,8 @@ def add_poll_receiver(chat_id, poll_id, sent_by, message_id, telegram_poll_id):
 
 def stop_poll(poll: Poll):
     poll.close_date = datetime.datetime.now()
+
+
+def get_polls_data(admin_id):
+    admin = get_admin(admin_id)
+    return jsonify([poll.serialize() for poll in admin.polls])

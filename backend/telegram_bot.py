@@ -7,7 +7,7 @@ from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHand
     CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from statuses import Method, Status, ReturnMessage
-
+import json
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ def start(update: Update, context: CallbackContext) -> None:
 def post(function):
     def handler(update: Update, context: CallbackContext):
         parsed_request = parse_request(update, function.__name__)
-        result = requests.post(f'{URL}{BOT_TOKEN}', parsed_request)
+        result = requests.post(f'{URL}{BOT_TOKEN}', json=json.dumps(parsed_request))
         function(update, context, result)
 
     return handler
