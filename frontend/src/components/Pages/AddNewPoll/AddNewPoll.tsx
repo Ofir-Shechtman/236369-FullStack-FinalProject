@@ -30,7 +30,7 @@ export default function AddNewPoll() {
       alert(JSON.stringify(data))
     }
     return (
-    <div className="App">
+    <div className="PageLayout">
       <form onSubmit={handleSubmit(onSubmit)}>
 <Stack spacing={3}>
         <MUITextField name={"Poll Name"} value={"PollName"} control={control}/>
