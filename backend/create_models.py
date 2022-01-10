@@ -18,7 +18,7 @@ def create_tables(conn, schema):
 
 
 def drop_database(conn, tables):
-    command = '\n'.join([f'DROP TABLE IF EXISTS {table};' for table in tables])
+    command = '\n'.join([f'DROP TABLE IF EXISTS {table};' for table in tables] + ['DROP TYPE POLL_TYPE;'])
     with conn.cursor() as cursor:
         cursor.execute(command)
 
@@ -59,5 +59,5 @@ if __name__ == '__main__':
     print('reset_database...')
     reset_database()
     print('create_models...')
-    # create_models(False)
+    create_models(False)
     print('DONE')

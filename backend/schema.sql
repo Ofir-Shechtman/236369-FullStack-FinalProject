@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS polls(
     close_date TIMESTAMP WITH TIME ZONE,
     created_by INTEGER NOT NULL,
     UNIQUE (poll_name, created_by),
-    CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(id)
+    CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(id) ON DELETE CASCADE
 
 
 );
@@ -42,9 +42,9 @@ CREATE TABLE IF NOT EXISTS poll_receivers(
     sent_by INTEGER NOT NULL,
     PRIMARY KEY(user_id, poll_id),
     UNIQUE (user_id, message_id),
-    CONSTRAINT fk_user_pr FOREIGN KEY(user_id) REFERENCES users(user_id),
-    CONSTRAINT fk_poll_pr FOREIGN KEY(poll_id) REFERENCES polls(poll_id),
-    CONSTRAINT fk_sent_by FOREIGN KEY(sent_by) REFERENCES admins(id)
+    CONSTRAINT fk_user_pr FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_poll_pr FOREIGN KEY(poll_id) REFERENCES polls(poll_id) ON DELETE CASCADE,
+    CONSTRAINT fk_sent_by FOREIGN KEY(sent_by) REFERENCES admins(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS poll_options(
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS poll_options(
     poll_id INTEGER NOT NULL,
     content VARCHAR(300) NOT NULL, -- Limit from Telegram API,
     PRIMARY KEY(option_id, poll_id),
-    CONSTRAINT fk_poll_po FOREIGN KEY(poll_id) REFERENCES polls(poll_id)
+    CONSTRAINT fk_poll_po FOREIGN KEY(poll_id) REFERENCES polls(poll_id) ON DELETE CASCADE
  );
 
 CREATE TABLE IF NOT EXISTS poll_answers(
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS poll_answers(
     option_id INTEGER NOT NULL,
     time_answered TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(user_id, poll_id, option_id),
-    CONSTRAINT fk_poll_receiver_pa FOREIGN KEY(user_id, poll_id) REFERENCES poll_receivers(user_id, poll_id),
-    CONSTRAINT fk_option_pa FOREIGN KEY(option_id, poll_id) REFERENCES poll_options(option_id, poll_id)
+    CONSTRAINT fk_poll_receiver_pa FOREIGN KEY(user_id, poll_id) REFERENCES poll_receivers(user_id, poll_id) ON DELETE CASCADE,
+    CONSTRAINT fk_option_pa FOREIGN KEY(option_id, poll_id) REFERENCES poll_options(option_id, poll_id) ON DELETE CASCADE
  );
 
 

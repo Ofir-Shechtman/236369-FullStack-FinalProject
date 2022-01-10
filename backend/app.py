@@ -94,7 +94,8 @@ def add_poll():
 @app.route('/api/delete_poll', methods=['POST'])
 def delete_poll():
     data = json.loads(request.get_json())
-    print(data)
+    db.delete_poll(data.get('poll_id'))
+    print(data.get('poll_id'))
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def respond() -> Status:

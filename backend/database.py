@@ -275,3 +275,9 @@ def stop_poll(poll: Poll):
 def get_polls_data(admin_id):
     admin = get_admin(admin_id)
     return jsonify([poll.serialize() for poll in admin.polls])
+
+
+def delete_poll(poll_id):
+    poll = get_poll(poll_id)
+    _db.session.delete(poll)
+    _db.session.commit()
