@@ -8,7 +8,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
 import {TableColumns} from '../../../AppConstants'
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-
+import {BarChart} from './BarChart'
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root:{
     color: '#2c9b9f',
@@ -20,8 +20,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }))
 
 function createData(poll_id: number, poll_name: string, poll_type:string, created_date:string, close_date: string,
-                    allow_multiple_answers: boolean, question: string, votes: Array<string>, answer_history: any,
-                    answers_count: number, receivers: number) {
+                    allow_multiple_answers: boolean, question: string, votes: Array<string>, answers: Array<number>,
+                    answer_history: any, answers_count: number, receivers: number) {
   return {
     poll_id,
     poll_name,
@@ -32,6 +32,7 @@ function createData(poll_id: number, poll_name: string, poll_type:string, create
     question,
     votes,
     answer_history,
+    answers,
     answers_count,
     receivers
   };
@@ -40,7 +41,9 @@ function createData(poll_id: number, poll_name: string, poll_type:string, create
 function Row(props: any) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
-
+  const deletePoll = (poll_id: number) => {
+      alert(poll_id);
+    }
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -63,7 +66,7 @@ function Row(props: any) {
         <TableCell align="center">{row.receivers}</TableCell>
         <TableCell align="center">
           <IconButton>
-            <DeleteIcon />
+            <DeleteIcon onClick={() => deletePoll(row.poll_id)}/>
           </IconButton>
         </TableCell>
       </TableRow>
@@ -77,15 +80,11 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>{row.question}</TableCell>
+                    <TableCell>Chart</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.votes.map((vote: string) => (
-                    <TableRow key={vote}>
-                      <TableCell component="th" scope="row">{vote}</TableCell>
-                    </TableRow>
-                  ))}
+                  <TableCell><BarChart categories={row.votes} data={row.answers}/></TableCell>
                 </TableBody>
               </Table>
             </Box>
@@ -102,8 +101,8 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Answer</TableCell>
+                    <TableCell>Username</TableCell>
+                    <TableCell>Answers</TableCell>
                     <TableCell>Date</TableCell>
                   </TableRow>
                 </TableHead>
@@ -135,6 +134,7 @@ Row.propTypes = {
     allow_multiple_answers: PropTypes.bool.isRequired,
     question: PropTypes.string.isRequired,
     votes: PropTypes.arrayOf(PropTypes.string.isRequired),
+    answers: PropTypes.arrayOf(PropTypes.number.isRequired),
     answer_history: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -148,13 +148,12 @@ Row.propTypes = {
 
 const rows = [
   createData(1, "Age Check","Telegram Poll", "01-01-2022 15:32", "10-01-2022 15:32",
-      true, "How old are you?", ["0-25", "25-50", "50+"],
+      true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
       [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
       30, 50),
   createData(2, "Mood Check","Inline Keyboard", "02-01-2022 10:55", "08-01-2022 03:00",
-      true, "How are you?", ["Great", "Good", "Bad"],
-      [{name:"ben",answer:["Good","Bad"],date: "05-01-2022 10:15"},
-                  {name:"falful",answer:["Bad"],date: "06-01-2022 09:01"}],
+      true, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8],
+      [{name:"ben",answer:["Good","Bad"],date: "05-01-2022 10:15"}, {name:"falful",answer:["Bad"],date: "06-01-2022 09:01"}],
       20, 40)
 ]
 
