@@ -16,11 +16,11 @@ export const TableColumns = [
         width: '100px'
     },
     {
-        title: 'Delete Poll',
-        width: '100px'
-    },
-    {
         title: 'Close Date',
         width: '150px'
+    },
+    {
+        title: 'Delete Poll',
+        width: '100px'
     }
 ];

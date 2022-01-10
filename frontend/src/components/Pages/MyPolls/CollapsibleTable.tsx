@@ -1,22 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Box, Collapse, IconButton, Table, TablePagination,
-  TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Typography, Paper, TableFooter, Grid
+  Box, Collapse, IconButton, Table, TablePagination, TableBody, TableCell, TableContainer, TableHead,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button,
+  TableRow, Typography, Paper, TableFooter, Grid, CircularProgress
 } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
 import {TableColumns} from '../../../AppConstants'
 import { grey } from '@mui/material/colors';
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { Theme, createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
 import {BarChart} from './BarChart'
 import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = (theme: Theme) => createStyles({
   tableContainer:{
     borderRadius: 15,
   },
@@ -29,33 +30,27 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     fontWeight: 'bold',
     backgroundColor: grey[500],
     color: theme.palette.getContrastText(grey[500])
+  },
+  refresh_icon:{
+    color: 'white'
   }
-}))
-
-// function createData(poll_id: number, poll_name: string, poll_type:string, close_date: string,
-//                     allow_multiple_answers: boolean, question: string, votes: Array<string>, answers: Array<number>,
-//                     answer_history: any, answers_count: number, receivers: number) {
-//   return {
-//     poll_id,
-//     poll_name,
-//     poll_type,
-//     close_date,
-//     allow_multiple_answers,
-//     question,
-//     votes,
-//     answer_history,
-//     answers,
-//     answers_count,
-//     receivers
-//   };
-// }
+})
 
 function Row(props: any) {
   const { row } = props;
-  const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpenAlert(true);
+  };
+
+  const handleClose = () => {
+    setOpenAlert(false);
+  };
+
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
   };
@@ -64,7 +59,8 @@ function Row(props: any) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  const deletePoll = (poll_id: number) => {
+  const handleDeletePoll = (poll_id: number) => {
+      handleClose()
       alert(poll_id);
     }
   return (
@@ -88,7 +84,7 @@ function Row(props: any) {
         <TableCell align="center">{row.close_date}</TableCell>
         <TableCell align="center">
           <IconButton>
-            <DeleteIcon onClick={() => deletePoll(row.poll_id)}/>
+            <DeleteIcon onClick={handleClickOpen}/>
           </IconButton>
         </TableCell>
       </TableRow>
@@ -102,7 +98,7 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell className = {classes.tableSecondaryHeader}>Charts</TableCell>
+                    <TableCell>Charts</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -128,9 +124,9 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell className = {classes.tableSecondaryHeader}>Username</TableCell>
-                    <TableCell className = {classes.tableSecondaryHeader}>Answers</TableCell>
-                    <TableCell className = {classes.tableSecondaryHeader}>Date</TableCell>
+                    <TableCell>Username</TableCell>
+                    <TableCell>Answers</TableCell>
+                    <TableCell>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -158,6 +154,25 @@ function Row(props: any) {
           </Collapse>
         </TableCell>
       </TableRow>
+    <Dialog
+        open={openAlert}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Delete Poll?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this poll?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>No</Button>
+          <Button onClick={() => handleDeletePoll(row.poll_id)} autoFocus>Yes</Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }
@@ -183,19 +198,6 @@ Row.propTypes = {
   }).isRequired,
 };
 
-// const history = []
-// let i:number = 0
-// for(i = 0; i < 100; i++) {
-//    history.push({name:"ben"+i.toString(),answer:["Good","Bad"],date: "05-01-2022 10:15"});
-// }
-// const rows = [
-//   createData(1, "Age Check","Telegram Poll", "10-01-2022 15:32",
-//       true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
-//       [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
-//       30, 50),
-//   createData(2, "Mood Check","Inline Keyboard", "08-01-2022 03:00",
-//       false, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
-// ]
 
 interface PollProps {
   poll_id: number,
@@ -211,16 +213,31 @@ interface PollProps {
   receivers: number
 }
 
-export class CollapsibleTable extends React.Component {
+interface CollapsibleTableState {
+  data: Array<any>,
+  loading: boolean,
+  error: boolean
+}
+
+interface Props extends WithStyles<typeof useStyles> {}
+
+class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
   state = {
       data: [],
       loading: true,
       error: false
     }
 
-
+  refreshPage = () => {
+    this.setState({loading: true})
+    this.componentDidMount()
+  }
+  sleep = (milliseconds: number) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
   componentDidMount() {
-    fetch('api/polls')
+    this.sleep(200)
+        .then(r=> fetch('api/polls'))
         .then(resp => resp.json())
         .then(resp => this.setState({
           data: resp,
@@ -233,21 +250,30 @@ export class CollapsibleTable extends React.Component {
   }
 
   render() {
-    const classes = useStyles();
     const { data, loading, error } = this.state;
+    const { classes } = this.props;
     return (
         <div>
-          {loading && <div>Loading...</div>}
+          {loading &&
+              <Box m={50} pt={5} sx={{ display: 'flex' }}>
+                <CircularProgress />
+              </Box>
+          }
           {!loading && !error &&
             <TableContainer component={Paper} className={classes.tableContainer}>
               <Table aria-label="collapsible table">
                 <TableHead>
                   <TableRow>
-                    <TableCell className={classes.tableHeader}/>
+                    <TableCell className={classes.tableHeader} />
                     {TableColumns.map((column: { width: string, title: string }) => (
                         <TableCell align="center" className={classes.tableHeader}
                                    style={{width: column.width}}>{column.title}</TableCell>
                     ))}
+                    <TableCell className={classes.tableHeader} onClick={this.refreshPage}>
+                      <IconButton>
+                        <RefreshRoundedIcon className={classes.refresh_icon}/>
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -265,15 +291,4 @@ export class CollapsibleTable extends React.Component {
   }
 }
 
-// // export default function CollapsibleTable() {
-//   const [rows, setRows] = React.useState<Array<PollProps>>([]);
-//   useEffect(() => {
-//     fetch('api/polls').then(res => res.json()).then(data => {
-//       {
-//         setRows(data)
-//       }
-//     });
-//   })
-//   // axios.get('http://localhost:5000/api/polls').then(response => {alert(response.data);setRows(response.data)});
-//
-//
+export default withStyles(useStyles)(CollapsibleTable)
