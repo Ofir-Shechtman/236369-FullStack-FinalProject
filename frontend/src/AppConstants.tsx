@@ -12,10 +12,6 @@ export const TableColumns = [
         width: '150px'
     },
     {
-        title: 'Created Date',
-        width: '150px'
-    },
-    {
         title: 'Close Date',
         width: '150px'
     },

@@ -32,14 +32,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }))
 
-function createData(poll_id: number, poll_name: string, poll_type:string, created_date:string, close_date: string,
+function createData(poll_id: number, poll_name: string, poll_type:string, close_date: string,
                     allow_multiple_answers: boolean, question: string, votes: Array<string>, answers: Array<number>,
                     answer_history: any, answers_count: number, receivers: number) {
   return {
     poll_id,
     poll_name,
     poll_type,
-    created_date,
     close_date,
     allow_multiple_answers,
     question,
@@ -83,7 +82,6 @@ function Row(props: any) {
         <TableCell component="th" scope="row">{row.poll_id}</TableCell>
         <TableCell align="center">{row.poll_name}</TableCell>
         <TableCell align="center">{row.poll_type}</TableCell>
-        <TableCell align="center">{row.created_date}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
         <TableCell align="center">
           {row.allow_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
@@ -171,7 +169,6 @@ Row.propTypes = {
     poll_id: PropTypes.number.isRequired,
     poll_name: PropTypes.string.isRequired,
     poll_type: PropTypes.string.isRequired,
-    created_date: PropTypes.string.isRequired,
     close_date: PropTypes.string.isRequired,
     allow_multiple_answers: PropTypes.bool.isRequired,
     question: PropTypes.string.isRequired,
@@ -187,17 +184,18 @@ Row.propTypes = {
     receivers: PropTypes.number.isRequired
   }).isRequired,
 };
+
 const history = []
 let i:number = 0
 for(i = 0; i < 100; i++) {
    history.push({name:"ben"+i.toString(),answer:["Good","Bad"],date: "05-01-2022 10:15"});
 }
 const rows = [
-  createData(1, "Age Check","Telegram Poll", "01-01-2022 15:32", "10-01-2022 15:32",
+  createData(1, "Age Check","Telegram Poll", "10-01-2022 15:32",
       true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
       [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
       30, 50),
-  createData(2, "Mood Check","Inline Keyboard", "02-01-2022 10:55", "08-01-2022 03:00",
+  createData(2, "Mood Check","Inline Keyboard", "08-01-2022 03:00",
       false, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
 ]
 
