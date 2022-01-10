@@ -75,8 +75,8 @@ export const PollTypeForm: React.FC<ControlledProps> = ({
           defaultValue = {type_value}
           render={({ field }) => (
             <Select {...field} onChange= {onChange} value={type_value} label={name}>
-              <MenuItem value="1">Telegram Poll</MenuItem>
-              <MenuItem value="2">Telegram Inline Keyboard</MenuItem>
+              <MenuItem value="Telegram_poll">Telegram Poll</MenuItem>
+              <MenuItem value="Telegram_inline_keyboard">Telegram Inline Keyboard</MenuItem>
             </Select>
           )}
         />
@@ -209,10 +209,21 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
     )
 }
 
+export interface CloseTimeProps {
+    name_switch: string;
+    name_slider: string;
+    value_switch: FieldPath<FormValues>;
+    value_slider: FieldPath<FormValues>;
+    control: any;
+    multiple_enable: Boolean;
+}
 
-export const CloseTimePicker: React.FC<ControlledProps> = ({
-                                                          name,
-                                                          value,
+
+export const CloseTimePicker: React.FC<CloseTimeProps> = ({
+                                                          name_switch,
+                                                          name_slider,
+                                                          value_switch,
+                                                          value_slider,
                                                           control,
                                                           multiple_enable
                                                       }) => {
@@ -221,34 +232,42 @@ export const CloseTimePicker: React.FC<ControlledProps> = ({
         SetSwitch(!auto_close_switch);
     }
     return (
-          <Controller
-                name={value}
-                control={control}
-                render={({field}) => (
+
                     <Grid container spacing={4}>
                         <Grid item xs={5}>
-                    <InputLabel>{"Auto Closing"}</InputLabel>
-                    <Switch
+                    <InputLabel>{name_switch}</InputLabel>
+                            <Controller
+                name = {value_switch}
+                control={control}
+                defaultValue = {!auto_close_switch}
+                render={({field}) => (
+                    <Switch {...field}
                     disabled={!multiple_enable}
                     checked={!auto_close_switch}
                     onChange={ToggleSwitch}
+                    /> )}
                     />
                   </Grid>
                   <Grid item xs={7}>
-                    <InputLabel>{"Minutes to close"}</InputLabel>
-                    <Slider
-                    aria-label="Minutes to close"
-                    defaultValue={5}
-                    valueLabelDisplay="auto"
-                    step={1}
-                    marks
-                    min={1}
-                    max={10}
-                    disabled={!!auto_close_switch || !multiple_enable}
-                    />
+                    <InputLabel>{name_slider}</InputLabel>
+                      <Controller
+    name = {value_slider}
+    control={control}
+    defaultValue = {undefined}
+    render={({field}) => (
+        <Slider {...field}
+                aria-label={name_slider}
+                defaultValue={5}
+                valueLabelDisplay="auto"
+                step={1}
+                marks
+                min={1}
+                max={10}
+                disabled={!!auto_close_switch || !multiple_enable}
+        />)}
+    />
                   </Grid>
                     </Grid>
-                )}
-                    />
+
   );
 }

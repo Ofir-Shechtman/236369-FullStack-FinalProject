@@ -4,6 +4,7 @@ export type FormValues = {
   PollQuestion: string;
   PollType: string;
   MultipleAnswers: string;
+  AutoClosingSwitch: string;
   AutoCloseTime: string;
   MultipleOptions: string;
 };
