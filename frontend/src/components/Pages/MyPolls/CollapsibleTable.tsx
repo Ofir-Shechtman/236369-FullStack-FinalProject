@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Box, Collapse, IconButton, Table, TablePagination,
   TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Typography, Paper, TableFooter
+  TableRow, Typography, Paper, TableFooter, Grid
 } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -12,6 +12,7 @@ import {TableColumns} from '../../../AppConstants'
 import { grey } from '@mui/material/colors';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import {BarChart} from './BarChart'
+import {PieChart} from './PieChart'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   tableContainer:{
@@ -101,11 +102,16 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell className = {classes.tableSecondaryHeader}>Chart</TableCell>
+                    <TableCell className = {classes.tableSecondaryHeader}>Charts</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableCell><BarChart categories={row.votes} data={row.answers}/></TableCell>
+                  <TableCell>
+                    <Grid container>
+                      <Grid item><BarChart categories={row.votes} data={row.answers}/></Grid>
+                      <Grid item><PieChart categories={row.votes} data={row.answers}/></Grid>
+                    </Grid>
+                  </TableCell>
                 </TableBody>
               </Table>
             </Box>
