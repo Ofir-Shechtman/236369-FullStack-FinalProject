@@ -82,11 +82,11 @@ function Row(props: any) {
         </TableCell>
         <TableCell align="center">{row.poll_name}</TableCell>
         <TableCell align="center">{row.poll_type}</TableCell>
-        <TableCell align="center">{row.close_date}</TableCell>
         <TableCell align="center">
           {row.allow_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
         </TableCell>
         <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
+        <TableCell align="center">{row.close_date}</TableCell>
         <TableCell align="center">
           <IconButton>
             <DeleteIcon onClick={() => deletePoll(row.poll_id)}/>

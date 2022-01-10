@@ -8,10 +8,6 @@ export const TableColumns = [
         width: '150px'
     },
     {
-        title: 'Close Date',
-        width: '150px'
-    },
-    {
         title: 'Allow Multiple',
         width: '150px'
     },
@@ -22,5 +18,9 @@ export const TableColumns = [
     {
         title: 'Delete Poll',
         width: '100px'
+    },
+    {
+        title: 'Close Date',
+        width: '150px'
     }
 ];
