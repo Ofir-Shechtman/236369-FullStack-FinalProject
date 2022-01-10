@@ -1,9 +1,5 @@
 export const TableColumns = [
     {
-        title: 'Poll ID',
-        width: '50px'
-    },
-    {
         title: 'Poll Title',
         width: '150px'
     },
@@ -20,12 +16,8 @@ export const TableColumns = [
         width: '150px'
     },
     {
-        title: 'Answers',
-        width: '50px'
-    },
-    {
-        title: 'Receivers',
-        width: '50px'
+        title: 'Answers/Received',
+        width: '100px'
     },
     {
         title: 'Delete Poll',

@@ -33,23 +33,23 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }))
 
-function createData(poll_id: number, poll_name: string, poll_type:string, close_date: string,
-                    allow_multiple_answers: boolean, question: string, votes: Array<string>, answers: Array<number>,
-                    answer_history: any, answers_count: number, receivers: number) {
-  return {
-    poll_id,
-    poll_name,
-    poll_type,
-    close_date,
-    allow_multiple_answers,
-    question,
-    votes,
-    answer_history,
-    answers,
-    answers_count,
-    receivers
-  };
-}
+// function createData(poll_id: number, poll_name: string, poll_type:string, close_date: string,
+//                     allow_multiple_answers: boolean, question: string, votes: Array<string>, answers: Array<number>,
+//                     answer_history: any, answers_count: number, receivers: number) {
+//   return {
+//     poll_id,
+//     poll_name,
+//     poll_type,
+//     close_date,
+//     allow_multiple_answers,
+//     question,
+//     votes,
+//     answer_history,
+//     answers,
+//     answers_count,
+//     receivers
+//   };
+// }
 
 function Row(props: any) {
   const { row } = props;
@@ -80,15 +80,13 @@ function Row(props: any) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">{row.poll_id}</TableCell>
         <TableCell align="center">{row.poll_name}</TableCell>
         <TableCell align="center">{row.poll_type}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
         <TableCell align="center">
           {row.allow_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
         </TableCell>
-        <TableCell align="center">{row.answers_count}</TableCell>
-        <TableCell align="center">{row.receivers}</TableCell>
+        <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
         <TableCell align="center">
           <IconButton>
             <DeleteIcon onClick={() => deletePoll(row.poll_id)}/>
@@ -186,11 +184,11 @@ Row.propTypes = {
   }).isRequired,
 };
 
-const history = []
-let i:number = 0
-for(i = 0; i < 100; i++) {
-   history.push({name:"ben"+i.toString(),answer:["Good","Bad"],date: "05-01-2022 10:15"});
-}
+// const history = []
+// let i:number = 0
+// for(i = 0; i < 100; i++) {
+//    history.push({name:"ben"+i.toString(),answer:["Good","Bad"],date: "05-01-2022 10:15"});
+// }
 // const rows = [
 //   createData(1, "Age Check","Telegram Poll", "10-01-2022 15:32",
 //       true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
