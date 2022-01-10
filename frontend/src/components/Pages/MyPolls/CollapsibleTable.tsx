@@ -1,21 +1,31 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import {Box, Collapse, IconButton, Table,
+import {
+  Box, Collapse, IconButton, Table, TablePagination,
   TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Typography, Paper} from '@mui/material'
+  TableRow, Typography, Paper, TableFooter
+} from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
 import {TableColumns} from '../../../AppConstants'
+import { grey } from '@mui/material/colors';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import {BarChart} from './BarChart'
+
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  root:{
-    color: '#2c9b9f',
-    backgroundColor : '#20626e',
-    fontFamily: 'Raleway, Arial',
-    fontSize: 50,
-    fontWeight: 300
+  tableContainer:{
+    borderRadius: 15,
+  },
+  tableHeader:{
+    fontWeight: 'bold',
+    backgroundColor: grey[800],
+    color: theme.palette.getContrastText(grey[900])
+  },
+  tableSecondaryHeader:{
+    fontWeight: 'bold',
+    backgroundColor: grey[500],
+    color: theme.palette.getContrastText(grey[500])
   }
 }))
 
@@ -40,7 +50,18 @@ function createData(poll_id: number, poll_name: string, poll_type:string, create
 
 function Row(props: any) {
   const { row } = props;
+  const classes = useStyles();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
+  const handleChangePage = (event: any, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
   const deletePoll = (poll_id: number) => {
       alert(poll_id);
     }
@@ -80,7 +101,7 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Chart</TableCell>
+                    <TableCell className = {classes.tableSecondaryHeader}>Chart</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -101,13 +122,13 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Username</TableCell>
-                    <TableCell>Answers</TableCell>
-                    <TableCell>Date</TableCell>
+                    <TableCell className = {classes.tableSecondaryHeader}>Username</TableCell>
+                    <TableCell className = {classes.tableSecondaryHeader}>Answers</TableCell>
+                    <TableCell className = {classes.tableSecondaryHeader}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.answer_history.map((history_record: any) => (
+                  {row.answer_history.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((history_record: any) => (
                     <TableRow key={history_record.name}>
                       <TableCell component="th" scope="row">{history_record.name}</TableCell>
                       <TableCell>{history_record.answer.join(', ')}</TableCell>
@@ -115,6 +136,17 @@ function Row(props: any) {
                     </TableRow>
                   ))}
                 </TableBody>
+                <TableFooter>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 15, 20]}
+                    component="div"
+                    count={row.answer_history.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </TableFooter>
               </Table>
             </Box>
           </Collapse>
@@ -145,28 +177,30 @@ Row.propTypes = {
     receivers: PropTypes.number.isRequired
   }).isRequired,
 };
-
+const history = []
+let i:number = 0
+for(i = 0; i < 100; i++) {
+   history.push({name:"ben"+i.toString(),answer:["Good","Bad"],date: "05-01-2022 10:15"});
+}
 const rows = [
   createData(1, "Age Check","Telegram Poll", "01-01-2022 15:32", "10-01-2022 15:32",
       true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
       [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
       30, 50),
   createData(2, "Mood Check","Inline Keyboard", "02-01-2022 10:55", "08-01-2022 03:00",
-      true, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8],
-      [{name:"ben",answer:["Good","Bad"],date: "05-01-2022 10:15"}, {name:"falful",answer:["Bad"],date: "06-01-2022 09:01"}],
-      20, 40)
+      true, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
 ]
 
 export default function CollapsibleTable() {
   const classes = useStyles();
   return (
-    <TableContainer component={Paper} className={classes.root}>
+    <TableContainer component={Paper} className={classes.tableContainer}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
-            <TableCell className={classes.root}/>
+            <TableCell className={classes.tableHeader}/>
             {TableColumns.map((column: {width: string, title: string}) =>(
-                <TableCell align="center" className={classes.root}
+                <TableCell align="center" className={classes.tableHeader}
                            style={{ width: column.width }}>{column.title}</TableCell>
             ))}
           </TableRow>
