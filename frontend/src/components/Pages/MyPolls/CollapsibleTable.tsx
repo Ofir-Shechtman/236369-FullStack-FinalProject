@@ -15,6 +15,7 @@ import {BarChart} from './BarChart'
 import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import axios, {AxiosResponse} from 'axios'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   tableContainer:{
@@ -190,16 +191,33 @@ let i:number = 0
 for(i = 0; i < 100; i++) {
    history.push({name:"ben"+i.toString(),answer:["Good","Bad"],date: "05-01-2022 10:15"});
 }
-const rows = [
-  createData(1, "Age Check","Telegram Poll", "10-01-2022 15:32",
-      true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
-      [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
-      30, 50),
-  createData(2, "Mood Check","Inline Keyboard", "08-01-2022 03:00",
-      false, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
-]
+// const rows = [
+//   createData(1, "Age Check","Telegram Poll", "10-01-2022 15:32",
+//       true, "How old are you?", ["0-25", "25-50", "50+"], [10, 10, 10],
+//       [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
+//       30, 50),
+//   createData(2, "Mood Check","Inline Keyboard", "08-01-2022 03:00",
+//       false, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
+// ]
+
+interface PollProps {
+  poll_id: number,
+  poll_name: string,
+  poll_type:string,
+  close_date: string,
+  allow_multiple_answers: boolean,
+  question: string,
+  votes: Array<string>,
+  answers: Array<number>,
+  answer_history: any,
+  answers_count: number,
+  receivers: number
+}
+
 
 export default function CollapsibleTable() {
+  const [rows, setRows] = React.useState<Array<PollProps>>([]);
+  axios.get<PollProps[]>('http://localhost:5000/api/polls').then(response => {setRows(response.data)});
   const classes = useStyles();
   return (
     <TableContainer component={Paper} className={classes.tableContainer}>
@@ -214,7 +232,7 @@ export default function CollapsibleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {rows.map((row: PollProps) => (
             <Row key={row.poll_id} row={row} />
           ))}
         </TableBody>
