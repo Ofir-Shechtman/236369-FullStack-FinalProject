@@ -16,6 +16,7 @@ import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import ReportIcon from '@mui/icons-material/Report';
 import axios from "axios";
 
 const useStyles = (theme: Theme) => createStyles({
@@ -231,7 +232,7 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
     }
 
   refreshPage = () => {
-    this.setState({loading: true})
+    this.setState({loading: true, error: false})
     this.componentDidMount()
   }
   sleep = (milliseconds: number) => {
@@ -256,12 +257,6 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
     const { classes } = this.props;
     return (
         <div>
-          {loading &&
-              <Box m={50} pt={5} sx={{ display: 'flex' }}>
-                <CircularProgress />
-              </Box>
-          }
-          {!loading && !error &&
             <TableContainer component={Paper} className={classes.tableContainer}>
               <Table aria-label="collapsible table">
                 <TableHead>
@@ -279,15 +274,25 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((row: PollProps) => (
-                      <Row key={row.poll_id}
-                           row={row}/>
-                  ))}
+                  {loading &&
+                      <TableCell sx={{ display: 'flex' }}>
+                        <CircularProgress />
+                      </TableCell>
+                  }
+                  {!loading && !error &&
+                        data.map((row: PollProps) => (
+                            <Row key={row.poll_id}
+                                 row={row}/>
+                        ))
+                  }
+                  {error &&
+                      <TableCell sx={{display: 'flex'}}>
+                        <ReportIcon fontSize="large" color = "error" />
+                      </TableCell>
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
-          }
-          {error && <div>Error message</div>}
         </div>
     );
   }

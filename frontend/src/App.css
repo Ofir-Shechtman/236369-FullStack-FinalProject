@@ -9,6 +9,7 @@ body {
   height: 100%;
   display: flex;
   position: relative;
+  background: #adadad;
 }
 
 .App .main {
@@ -46,12 +47,18 @@ body {
 
 .App .PageLayout {
   margin-left: 10px;
-  padding-left: 250px;
-  background: rgba(14, 16, 28, 0.21);
+  padding-left: 262px;
+  width: 100%;
+  display: flex;
 }
 
 .App .Header {
   position: fixed;
   top: 0;
   height: 100%;
+}
+
+.App .PageLayout .Page {
+  padding-top: 10px;
+  padding-left: 50px;
 }

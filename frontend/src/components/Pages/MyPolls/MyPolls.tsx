@@ -4,6 +4,8 @@ import CollapsibleTable from './CollapsibleTable'
 
 export const MyPolls = () => {
     return (
-        <CollapsibleTable/>
+        <div className="MyPolls">
+            <CollapsibleTable/>
+        </div>
     )
 }

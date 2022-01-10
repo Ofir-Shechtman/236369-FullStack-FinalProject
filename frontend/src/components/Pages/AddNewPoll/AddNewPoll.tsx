@@ -32,7 +32,7 @@ export default function AddNewPoll() {
       axios.post('api/add_poll', data)
     }
     return (
-    <div className="PageLayout">
+    <div className="Page">
       <form onSubmit={handleSubmit(onSubmit)}>
 <Stack spacing={3}>
         <MUITextField name={"Poll Name"} value={"PollName"} control={control}/>
