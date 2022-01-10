@@ -16,12 +16,18 @@ CREATE TABLE IF NOT EXISTS users(
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TYPE POLL_TYPE AS ENUM ('Telegram_poll', 'Telegram_inline_keyboard');
+
+
 CREATE TABLE IF NOT EXISTS polls(
     poll_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    poll_name VARCHAR(300) NOT NULL,
     question VARCHAR(300) NOT NULL, -- Limit from Telegram API
+    poll_type POLL_TYPE NOT NULL,
     allows_multiple_answers BOOLEAN NOT NULL,
     close_date TIMESTAMP WITH TIME ZONE,
     created_by INTEGER NOT NULL,
+    UNIQUE (poll_name, created_by),
     CONSTRAINT fk_created_by FOREIGN KEY(created_by) REFERENCES admins(id)
 
 

@@ -68,11 +68,11 @@ def index():
         if request.form.get('message'):
             _send_message(chat_id=569667677, text="Hello World!")
         elif request.form.get('poll'):
-            poll_id = send_poll(receivers=[569667677], question="How are you today?",
+            poll_id = send_poll(poll_name='poll1', receivers=[569667677, 2123387537], question="How are you today?",
                                 options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=super_admin_id)
             # stop_poll(poll_id)
         elif request.form.get('inline'):
-            send_poll(receivers=[569667677], question="How are you today?", options=["Good!", "Great!", "Fantastic!"],
+            send_poll(poll_name='poll2', receivers=[569667677, 2123387537], question="What is the time now?", options=["2pm Israel", "7pm Thailand"],
                        inline=True, admin_id=super_admin_id)
 
     elif request.method == 'GET':
@@ -80,35 +80,35 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/api/time')
+@app.route('/api/polls', methods=['GET'])
 def get_current_time():
-    return {'time': 9}
-
+    return db.get_polls_data('admin')
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def respond() -> Status:
-    method = request.values['method']
+    data = json.loads(request.get_json())
+    method = data['method']
     if method == 'register':
         try:
-            db.add_user(chat_id=int(request.values.get('chat_id')),
-                        first_name=request.values.get('first_name'),
-                        last_name=request.values.get('last_name'))
+            db.add_user(chat_id=int(data.get('chat_id')),
+                        first_name=data.get('first_name'),
+                        last_name=data.get('last_name'))
         except (db.UserExists, db.UserAlreadyActive) as e:
             return Status('DBUserExists')
     elif method == 'remove':
         try:
-            db.remove_user(chat_id=int(request.values['chat_id']))
+            db.remove_user(chat_id=int(data['chat_id']))
         except (db.UserNotFound, db.UserNotActive) as e:
             return Status('DBUserNotFound')
     elif method == 'receive_poll_answer':
-        for answer in request.values['answers']:
-            db.add_answer_by_poll_id(chat_id=int(request.values.get('chat_id')),
-                                     telegram_poll_id=request.values.get('poll_id'),
+        for answer in data['answers']:
+            db.add_answer_by_poll_id(chat_id=int(data.get('chat_id')),
+                                     telegram_poll_id=data.get('poll_id'),
                                      option_id=int(answer))
     elif method == 'button':
-        db.add_answer_by_message_id(chat_id=int(request.values.get('chat_id')),
-                                    message_id=int(request.values.get('message_id')),
-                                    option_id=int(request.values['answers']))
+        db.add_answer_by_message_id(chat_id=int(data.get('chat_id')),
+                                    message_id=int(data.get('message_id')),
+                                    option_id=int(data['answers']))
     else:
         raise Exception
     return Status('SUCCESS')
@@ -141,9 +141,10 @@ def _send_message(chat_id: int, text: str, reply_markup=None):
     return _send_bot_post("sendMessage", locals())
 
 
-def send_poll(receivers, question: str, options: List[str], admin_id, close_date: int = None,
+def send_poll(poll_name, receivers, question: str, options: List[str], admin_id, close_date: int = None,
               allows_multiple_answers: bool = False, inline: bool = False):
-    poll_id = db.add_poll(question=question, options=options, created_by=admin_id, close_date=close_date if not inline else None,
+    poll_type= "Telegram_inline_keyboard" if inline else "Telegram_poll"
+    poll_id = db.add_poll(poll_name=poll_name, poll_type=poll_type, question=question, options=options, created_by=admin_id, close_date=close_date if not inline else None,
                           allows_multiple_answers=allows_multiple_answers and not inline)
     for chat_id in receivers:
         if inline:
