@@ -9,6 +9,7 @@ import '../../../App.css';
 import {FormValues} from "./FormValues";
 import {TextFieldForm, PollTypeForm, SwitchForm, MUITextField, MultipleOptions, CloseTimePicker} from './Forms'
 import {v4 as uuidv4} from "uuid";
+import axios from "axios";
 
 
 
@@ -28,6 +29,7 @@ export default function AddNewPoll() {
     const onSubmit = (data: any) => {
       data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; }) => (inputField.Option))
       alert(JSON.stringify(data))
+      axios.post('http://127.0.0.1:5000/api/add_poll', data)
     }
     return (
     <div className="PageLayout">
