@@ -27,30 +27,32 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <ProSidebar>
-      <SidebarHeader style={headerStyle}>My Vote</SidebarHeader>
-      <SidebarContent>
-        <Menu iconShape="circle">
-          <MenuItem icon={<FaInfo />} onClick={() => changePage(0)}>About</MenuItem>
-          <MenuItem icon={<FaPlusCircle />} onClick={() => changePage(1)}>Add New Admin</MenuItem>
-          <MenuItem icon={<FaPoll />} onClick={() => changePage(2)}>Add New Poll</MenuItem>
-          <MenuItem icon={<FaList />} onClick={() => changePage(3)}>My Polls</MenuItem>
-          <MenuItem icon={<FaPollH />} onClick={() => changePage(4)}>Poll View</MenuItem>
-        </Menu>
-      </SidebarContent>
-      <SidebarFooter style={{ textAlign: "center" }}>
-        <div className="sidebar-btn-wrapper">
-          <a
-            href="https://www.github.com"
-            target="_blank"
-            className="sidebar-btn"
-            rel="noopener noreferrer"
-          >
-            <FaSignOutAlt />
-            <span>Logout</span>
-          </a>
-        </div>
-      </SidebarFooter>
-    </ProSidebar>
+    <div className={"Header"}>
+      <ProSidebar>
+        <SidebarHeader style={headerStyle}>My Vote</SidebarHeader>
+        <SidebarContent>
+          <Menu iconShape="circle">
+            <MenuItem icon={<FaInfo />} onClick={() => changePage(0)}>About</MenuItem>
+            <MenuItem icon={<FaPlusCircle />} onClick={() => changePage(1)}>Add New Admin</MenuItem>
+            <MenuItem icon={<FaPoll />} onClick={() => changePage(2)}>Add New Poll</MenuItem>
+            <MenuItem icon={<FaList />} onClick={() => changePage(3)}>My Polls</MenuItem>
+            <MenuItem icon={<FaPollH />} onClick={() => changePage(4)}>Poll View</MenuItem>
+          </Menu>
+        </SidebarContent>
+        <SidebarFooter style={{ textAlign: "center" }}>
+          <div className="sidebar-btn-wrapper">
+            <a
+              href="https://www.github.com"
+              target="_blank"
+              className="sidebar-btn"
+              rel="noopener noreferrer"
+            >
+              <FaSignOutAlt />
+              <span>Logout</span>
+            </a>
+          </div>
+        </SidebarFooter>
+      </ProSidebar>
+    </div>
   );
 }

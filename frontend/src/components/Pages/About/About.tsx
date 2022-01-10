@@ -10,7 +10,7 @@ const postPoll = () => {
 
 export const About = () => {
     return (
-        <div className='about-page-container'>
+        <div>
         <h2> Hi, this is the about page! </h2>
         <h4> 0 </h4>
         <button className='add-button' onClick={postPoll}> MyButton </button>
