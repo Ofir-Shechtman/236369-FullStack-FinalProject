@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component} from 'react';
 import PropTypes from 'prop-types';
 import {
   Box, Collapse, IconButton, Table, TablePagination,
@@ -212,37 +212,59 @@ interface PollProps {
   receivers: number
 }
 
+export class CollapsibleTable extends Component<any, any> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      data: []
+    }
+  }
 
-export default function CollapsibleTable() {
-  const [rows, setRows] = React.useState<Array<PollProps>>([]);
-  useEffect(() => {
-    fetch('api/polls').then(res => res.json()).then(data => {
-      {
-        setRows(data)
-      }
-    });
-  })
-  // axios.get('http://localhost:5000/api/polls').then(response => {alert(response.data);setRows(response.data)});
-  const classes = useStyles();
-  return (
-    <TableContainer component={Paper} className={classes.tableContainer}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell className={classes.tableHeader}/>
-            {TableColumns.map((column: {width: string, title: string}) =>(
-                <TableCell align="center" className={classes.tableHeader}
-                           style={{ width: column.width }}>{column.title}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row: PollProps) => (
-              <Row key={row.poll_id}
-                   row={row}/>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  componentDidMount() {
+    fetch('api/polls')
+        .then(resp => resp.json())
+        .then((data) => {
+          this.setState({
+            data: data
+          })
+        })
+  }
+
+  render() {
+    const classes = useStyles();
+    return (
+        <TableContainer component={Paper} className={classes.tableContainer}>
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.tableHeader}/>
+                {TableColumns.map((column: { width: string, title: string }) => (
+                    <TableCell align="center" className={classes.tableHeader}
+                               style={{width: column.width}}>{column.title}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.data.map((row: PollProps) => (
+                  <Row key={row.poll_id}
+                       row={row}/>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+    );
+  }
 }
+
+// // export default function CollapsibleTable() {
+//   const [rows, setRows] = React.useState<Array<PollProps>>([]);
+//   useEffect(() => {
+//     fetch('api/polls').then(res => res.json()).then(data => {
+//       {
+//         setRows(data)
+//       }
+//     });
+//   })
+//   // axios.get('http://localhost:5000/api/polls').then(response => {alert(response.data);setRows(response.data)});
+//
+//
