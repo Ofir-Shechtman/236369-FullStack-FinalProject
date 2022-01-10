@@ -111,8 +111,8 @@ function Row(props: any) {
                 <TableBody>
                   <TableCell>
                     <Grid container>
-                      <Grid item><BarChart categories={row.votes} data={row.answers}/></Grid>
-                      <Grid item><PieChart categories={row.votes} data={row.answers}/></Grid>
+                      <Grid item><BarChart categories={row.poll_options} data={row.answers}/></Grid>
+                      <Grid item><PieChart categories={row.poll_options} data={row.answers}/></Grid>
                     </Grid>
                   </TableCell>
                 </TableBody>
@@ -137,11 +137,11 @@ function Row(props: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.answer_history.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((history_record: any) => (
-                    <TableRow key={history_record.name}>
-                      <TableCell component="th" scope="row">{history_record.name}</TableCell>
-                      <TableCell>{history_record.answer.join(', ')}</TableCell>
-                      <TableCell>{history_record.date}</TableCell>
+                  {row.poll_answers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((answer: any) => (
+                    <TableRow key={answer.user}>
+                      <TableCell component="th" scope="row">{answer.user}</TableCell>
+                      <TableCell>{answer.answers.join(', ')}</TableCell>
+                      <TableCell>{answer.time_answered}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -149,7 +149,7 @@ function Row(props: any) {
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 15, 20]}
                     component="div"
-                    count={row.answer_history.length}
+                    count={row.poll_answers.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -173,13 +173,13 @@ Row.propTypes = {
     close_date: PropTypes.string.isRequired,
     allow_multiple_answers: PropTypes.bool.isRequired,
     question: PropTypes.string.isRequired,
-    votes: PropTypes.arrayOf(PropTypes.string.isRequired),
+    poll_options: PropTypes.arrayOf(PropTypes.string.isRequired),
     answers: PropTypes.arrayOf(PropTypes.number.isRequired),
-    answer_history: PropTypes.arrayOf(
+    poll_answers: PropTypes.arrayOf(
       PropTypes.shape({
-        user: PropTypes.string.isRequired,//TODO: changed
-        answers: PropTypes.arrayOf(PropTypes.string.isRequired), //TODO: changed
-        time_answered: PropTypes.string.isRequired,//TODO: changed
+        user: PropTypes.string.isRequired,
+        answers: PropTypes.arrayOf(PropTypes.string.isRequired),
+        time_answered: PropTypes.string.isRequired,
       }),).isRequired,
     answers_count: PropTypes.number.isRequired,
     receivers: PropTypes.number.isRequired
@@ -207,9 +207,9 @@ interface PollProps {
   close_date: string,
   allow_multiple_answers: boolean,
   question: string,
-  poll_options: Array<string>, //TODO: changed
+  poll_options: Array<string>,
   answers: Array<number>,
-  poll_answers: any, //TODO: changed from history
+  poll_answers: any,
   answers_count: number,
   receivers: number
 }
@@ -233,7 +233,8 @@ export default function CollapsibleTable() {
         </TableHead>
         <TableBody>
           {rows.map((row: PollProps) => (
-            <Row key={row.poll_id} row={row} />
+              <Row key={row.poll_id}
+                   row={row}/>
           ))}
         </TableBody>
       </Table>
