@@ -9,10 +9,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
 import {TableColumns} from '../../../AppConstants'
-import { grey } from '@mui/material/colors';
+import { grey, red, green } from '@mui/material/colors';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import {BarChart} from './BarChart'
 import {PieChart} from './PieChart'
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   tableContainer:{
@@ -83,7 +85,9 @@ function Row(props: any) {
         <TableCell align="center">{row.poll_type}</TableCell>
         <TableCell align="center">{row.created_date}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
-        <TableCell align="center">{row.allow_multiple_answers.toString()}</TableCell>
+        <TableCell align="center">
+          {row.allow_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
+        </TableCell>
         <TableCell align="center">{row.answers_count}</TableCell>
         <TableCell align="center">{row.receivers}</TableCell>
         <TableCell align="center">
@@ -194,7 +198,7 @@ const rows = [
       [{name:"ben",answer:["25-50"],date: "05-01-2022 10:14"}, {name:"falful",answer:["50+"],date: "06-01-2022 09:00"}],
       30, 50),
   createData(2, "Mood Check","Inline Keyboard", "02-01-2022 10:55", "08-01-2022 03:00",
-      true, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
+      false, "How are you?", ["Great", "Good", "Bad"], [5, 7, 8], history, 20, 40)
 ]
 
 export default function CollapsibleTable() {
