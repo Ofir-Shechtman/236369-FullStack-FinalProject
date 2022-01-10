@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from flask import Flask, render_template, request, send_from_directory, Response, redirect
@@ -87,8 +88,25 @@ def get_posts():
 
 @app.route('/api/add_poll', methods=['POST'])
 def add_poll():
-    data = json.loads(request.get_json())
-    print(data)
+    try:
+        data = request.get_json()
+        close_data = None
+        poll_type = data.get('PollType')
+        auto_close_time = data.get('AutoCloseTime')
+        if data.get('AutoClosingSwitch') and auto_close_time and poll_type=="Telegram_poll":
+            close_data = datetime.datetime.now()+ datetime.timedelta(minutes=auto_close_time)
+        allows_multiple_answers = poll_type=="Telegram_poll" and data.get('MultipleAnswers')
+        db.add_poll(poll_name=data.get('PollName'),
+                    options=data.get('MultipleOptions'),
+                    question=data.get('PollQuestion'),
+                    poll_type=poll_type,
+                    allows_multiple_answers=allows_multiple_answers,
+                    close_date=close_data,
+                    created_by=super_admin_id)
+    except BaseException:
+        return Response('Error', 500)
+    return Response()
+
 
 
 @app.route('/api/delete_poll', methods=['POST'])
