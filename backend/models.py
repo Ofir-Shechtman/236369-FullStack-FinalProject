@@ -101,10 +101,10 @@ class Poll(db.Model):
             'close_date': self.close_date,
             'created_by': self.created_by,
             'poll_options': [option.content for option in self.poll_options],
-            'poll_answers': [{'user': receiver.user.first_name, 'answers': [answer.option.content for answer in receiver.poll_answers], 'time_answered':min([answer.time_answered for answer in receiver.poll_answers], default=None)} for receiver in self.poll_receivers]
+            'poll_answers': [{'user': receiver.user.first_name, 'answers': [answer.option.content for answer in receiver.poll_answers], 'time_answered':min([answer.time_answered for answer in receiver.poll_answers], default=None)} for receiver in self.poll_receivers],
             'receivers': len(self.poll_receivers),
-            'answers_count': len([receiver for receiver in self.poll_receivers if receiver.answer])
-            'answers': [option.content for option in self.poll_options]
+            'answers_count': len([receiver for receiver in self.poll_receivers if receiver.poll_answers]),
+            'answers': [len(option.poll_answers) for option in self.poll_options]
         }
 
 @dataclass
