@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Box, Collapse, IconButton, Table, TablePagination,
@@ -215,7 +215,14 @@ interface PollProps {
 
 export default function CollapsibleTable() {
   const [rows, setRows] = React.useState<Array<PollProps>>([]);
-  axios.get<PollProps[]>('http://localhost:5000/api/polls').then(response => {setRows(response.data)});
+  useEffect(() => {
+    fetch('api/polls').then(res => res.json()).then(data => {
+      {
+        setRows(data)
+      }
+    });
+  })
+  // axios.get('http://localhost:5000/api/polls').then(response => {alert(response.data);setRows(response.data)});
   const classes = useStyles();
   return (
     <TableContainer component={Paper} className={classes.tableContainer}>
