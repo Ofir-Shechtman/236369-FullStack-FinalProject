@@ -42,8 +42,8 @@ class PollAnswer(db.Model):
     option_id = db.Column(db.Integer, primary_key=True, nullable=False)
     time_answered = db.Column(db.DateTime(True), server_default=db.FetchedValue())
 
-    option = db.relationship('PollOption', primaryjoin='and_(PollAnswer.option_id == PollOption.option_id, PollAnswer.poll_id == PollOption.poll_id)', backref='poll_answers')
-    user = db.relationship('PollReceiver', primaryjoin='and_(PollAnswer.user_id == PollReceiver.user_id, PollAnswer.poll_id == PollReceiver.poll_id)', backref='poll_answers')
+    option = db.relationship('PollOption', primaryjoin='and_(PollAnswer.option_id == PollOption.option_id, PollAnswer.poll_id == PollOption.poll_id)', backref='poll_answers', viewonly=True)
+    user = db.relationship('PollReceiver', primaryjoin='and_(PollAnswer.user_id == PollReceiver.user_id, PollAnswer.poll_id == PollReceiver.poll_id)', backref='poll_answers', viewonly=True)
 
 @dataclass
 class PollOption(db.Model):
