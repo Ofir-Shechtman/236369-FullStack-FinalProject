@@ -110,7 +110,7 @@ def add_poll():
 
 @app.route('/api/delete_poll', methods=['POST'])
 def delete_poll():
-    data = json.loads(request.get_json())
+    data = request.get_json()
     db.delete_poll(data.get('poll_id'))
     print(data.get('poll_id'))
 

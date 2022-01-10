@@ -16,6 +16,7 @@ import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import axios from "axios";
 
 const useStyles = (theme: Theme) => createStyles({
   tableContainer:{
@@ -61,7 +62,8 @@ function Row(props: any) {
   };
   const handleDeletePoll = (poll_id: number) => {
       handleClose()
-      alert(poll_id);
+      const delete_msg = { poll_id: poll_id };
+      axios.post('api/delete_poll', delete_msg).then(response => alert(response))
     }
   return (
     <React.Fragment>
