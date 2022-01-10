@@ -177,9 +177,9 @@ Row.propTypes = {
     answers: PropTypes.arrayOf(PropTypes.number.isRequired),
     answer_history: PropTypes.arrayOf(
       PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        answer: PropTypes.arrayOf(PropTypes.string.isRequired),
-        date: PropTypes.string.isRequired,
+        user: PropTypes.string.isRequired,//TODO: changed
+        answers: PropTypes.arrayOf(PropTypes.string.isRequired), //TODO: changed
+        time_answered: PropTypes.string.isRequired,//TODO: changed
       }),).isRequired,
     answers_count: PropTypes.number.isRequired,
     receivers: PropTypes.number.isRequired
@@ -207,9 +207,9 @@ interface PollProps {
   close_date: string,
   allow_multiple_answers: boolean,
   question: string,
-  votes: Array<string>,
+  poll_options: Array<string>, //TODO: changed
   answers: Array<number>,
-  answer_history: any,
+  poll_answers: any, //TODO: changed from history
   answers_count: number,
   receivers: number
 }
