@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Box, Collapse, IconButton, Table, TablePagination,
@@ -9,13 +9,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
 import {TableColumns} from '../../../AppConstants'
-import { grey, red, green } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import {BarChart} from './BarChart'
 import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import axios, {AxiosResponse} from 'axios'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   tableContainer:{
@@ -212,46 +211,55 @@ interface PollProps {
   receivers: number
 }
 
-export class CollapsibleTable extends Component<any, any> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      data: []
+export class CollapsibleTable extends React.Component {
+  state = {
+      data: [],
+      loading: true,
+      error: false
     }
-  }
+
 
   componentDidMount() {
     fetch('api/polls')
         .then(resp => resp.json())
-        .then((data) => {
-          this.setState({
-            data: data
-          })
-        })
+        .then(resp => this.setState({
+          data: resp,
+          loading: false
+        }))
+        .catch(error => this.setState({
+          loading: false,
+          error: true
+        }));
   }
 
   render() {
     const classes = useStyles();
     return (
-        <TableContainer component={Paper} className={classes.tableContainer}>
-          <Table aria-label="collapsible table">
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.tableHeader}/>
-                {TableColumns.map((column: { width: string, title: string }) => (
-                    <TableCell align="center" className={classes.tableHeader}
-                               style={{width: column.width}}>{column.title}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {this.state.data.map((row: PollProps) => (
-                  <Row key={row.poll_id}
-                       row={row}/>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div>
+          {loading && <div>Loading...</div>}
+          {!loading && !error &&
+            <TableContainer component={Paper} className={classes.tableContainer}>
+              <Table aria-label="collapsible table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.tableHeader}/>
+                    {TableColumns.map((column: { width: string, title: string }) => (
+                        <TableCell align="center" className={classes.tableHeader}
+                                   style={{width: column.width}}>{column.title}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.data.map((row: PollProps) => (
+                      <Row key={row.poll_id}
+                           row={row}/>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          }
+          {error && <div>Error message</div>}
+        </div>
     );
   }
 }
