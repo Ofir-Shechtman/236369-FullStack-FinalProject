@@ -81,8 +81,15 @@ def index():
 
 
 @app.route('/api/polls', methods=['GET'])
-def get_current_time():
+def get_posts():
     return db.get_polls_data('admin')
+
+
+@app.route('/api/add_poll', methods=['POST'])
+def add_poll():
+    data = json.loads(request.get_json())
+    print(data)
+
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def respond() -> Status:
