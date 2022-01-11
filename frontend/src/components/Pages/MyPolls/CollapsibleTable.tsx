@@ -39,7 +39,7 @@ const useStyles = (theme: Theme) => createStyles({
 })
 
 function Row(props: any) {
-  const { row } = props;
+  const { row, refreshPage } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
@@ -65,6 +65,7 @@ function Row(props: any) {
       handleClose()
       const delete_msg = { poll_id: poll_id };
       axios.post('api/delete_poll', delete_msg).then(response => alert(response))
+      refreshPage()
     }
   return (
     <React.Fragment>
@@ -199,6 +200,7 @@ Row.propTypes = {
     answers_count: PropTypes.number.isRequired,
     receivers: PropTypes.number.isRequired
   }).isRequired,
+  refreshPage: PropTypes.func.isRequired
 };
 
 
@@ -282,7 +284,9 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
                   {!loading && !error &&
                         data.map((row: PollProps) => (
                             <Row key={row.poll_id}
-                                 row={row}/>
+                                 row={row}
+                                 refreshPage={this.refreshPage}
+                            />
                         ))
                   }
                   {error &&
