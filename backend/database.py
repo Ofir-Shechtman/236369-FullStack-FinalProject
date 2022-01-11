@@ -78,8 +78,8 @@ class UnknownError(BaseException):
     pass
 
 
-def add_admin(username: str, password: str, admin_id: int) -> Admin:
-    admin = Admin(username=username, password=password, id=admin_id)
+def add_admin(username: str, password: str, created_by: int) -> Admin:
+    admin = Admin(username=username, password=password, created_by=created_by)
     try:
         _db.session.add(admin)
         _db.session.commit()
@@ -87,9 +87,9 @@ def add_admin(username: str, password: str, admin_id: int) -> Admin:
     except IntegrityError:
         _db.session.rollback()
         raise UserExists
-    except BaseException:
-        _db.session.rollback()
-        raise UnknownError
+    # except BaseException:
+    #     _db.session.rollback()
+    #     raise UnknownError
 
 
 def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:

@@ -199,7 +199,7 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
               <RemoveIcon />
             </IconButton>
             <IconButton
-              onClick={handleAddFields}
+              disabled={inputFields.length === 10} onClick={handleAddFields}
             >
               <AddIcon />
             </IconButton>
