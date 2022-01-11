@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import '../../../App.css';
 
 import {FormValues} from "./FormValues";
-import {TextFieldForm, PollTypeForm, SwitchForm, MUITextField, MultipleOptions, CloseTimePicker} from './Forms'
+import {PollTypeForm, SwitchForm, MUITextField, MultipleOptions, CloseTimePicker} from './Forms'
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 

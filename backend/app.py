@@ -110,9 +110,12 @@ def add_poll():
 
 @app.route('/api/delete_poll', methods=['POST'])
 def delete_poll():
-    data = request.get_json()
-    db.delete_poll(data.get('poll_id'))
-    print(data.get('poll_id'))
+    try:
+        data = request.get_json()
+        db.delete_poll(data.get('poll_id'))
+    except BaseException:
+        return Response('Error', 500)
+    return Response()
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def respond() -> Status:

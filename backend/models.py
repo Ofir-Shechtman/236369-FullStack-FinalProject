@@ -57,7 +57,7 @@ class PollOption(db.Model):
     poll_id = db.Column(db.ForeignKey('polls.poll_id', ondelete='CASCADE'), primary_key=True, nullable=False)
     content = db.Column(db.String(300), nullable=False)
 
-    poll = db.relationship('Poll', primaryjoin='PollOption.poll_id == Poll.poll_id', backref='poll_options')
+    poll = db.relationship('Poll', primaryjoin='PollOption.poll_id == Poll.poll_id', backref=db.backref("poll_options", cascade="all", passive_deletes=True))
 
 
 class PollReceiver(db.Model):
@@ -73,7 +73,7 @@ class PollReceiver(db.Model):
     time_sent = db.Column(db.DateTime(True), server_default=db.FetchedValue())
     sent_by = db.Column(db.ForeignKey('admins.id', ondelete='CASCADE'), nullable=False)
 
-    poll = db.relationship('Poll', primaryjoin='PollReceiver.poll_id == Poll.poll_id', backref='poll_receivers')
+    poll = db.relationship('Poll', primaryjoin='PollReceiver.poll_id == Poll.poll_id', backref=db.backref("poll_receivers", cascade="all", passive_deletes=True))
     admin = db.relationship('Admin', primaryjoin='PollReceiver.sent_by == Admin.id', backref='poll_receivers')
     user = db.relationship('User', primaryjoin='PollReceiver.user_id == User.user_id', backref='poll_receivers')
 
