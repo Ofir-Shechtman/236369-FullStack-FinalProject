@@ -1,10 +1,10 @@
 import React from 'react';
 import '../../App.css';
 import { About } from './About/About';
-import { AddNewAdmin } from './AddNewAdmin/AddNewAdmin';
+import AddNewAdmin from './AddNewAdmin/AddNewAdmin';
 import AddNewPoll from "./AddNewPoll/AddNewPoll"
 import { MyPolls } from './MyPolls/MyPolls';
-// import SignInPage from '../LogInPage/LogInPage'
+import SignInPage from '../LogInPage/LogInPage'
 
 export interface PageLayoutProps {
     page: number;
