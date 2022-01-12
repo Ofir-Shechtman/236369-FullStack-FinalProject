@@ -80,13 +80,13 @@ def index():
 @app.route('/api/polls', methods=['GET'])
 @jwt_required()
 def get_posts():
-    return db.get_polls_data('admin')
+    return db.get_polls_data(get_admin().username)
 
 
 @app.route('/api/polls_to_send', methods=['GET'])
 @jwt_required()
 def get_polls_to_send():
-    return db.get_poll_to_send('admin')
+    return db.get_poll_to_send(get_admin().username)
 
 
 @app.route('/api/add_poll', methods=['POST'])

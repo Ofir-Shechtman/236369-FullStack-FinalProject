@@ -18,6 +18,7 @@ import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import ReportIcon from '@mui/icons-material/Report';
 import axios from "axios";
+import {FaClock} from "react-icons/fa";
 
 const useStyles = (theme: Theme) => createStyles({
   tableContainer:{
@@ -130,22 +131,24 @@ function Row(props: any) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Answers Received
+                Receivers
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
                     <TableCell>Username</TableCell>
-                    <TableCell>Answers</TableCell>
-                    <TableCell>Date</TableCell>
+                    <TableCell align="center">Answers</TableCell>
+                    <TableCell align="center">Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {row.poll_answers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((answer: any) => (
                     <TableRow key={answer.user}>
                       <TableCell component="th" scope="row">{answer.user}</TableCell>
-                      <TableCell>{answer.answers.join(', ')}</TableCell>
-                      <TableCell>{answer.time_answered}</TableCell>
+                      <TableCell align="center">
+                        {(answer.answers.length == 0)? answer.answers.join(', '): <FaClock/>}
+                      </TableCell>
+                      <TableCell align="center">{answer.time_answered}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
