@@ -5,19 +5,20 @@ import AddNewAdmin from './AddNewAdmin/AddNewAdmin';
 import AddNewPoll from "./AddNewPoll/AddNewPoll"
 import { MyPolls } from './MyPolls/MyPolls';
 import SendPoll from './SendPoll/SendPoll';
-import {LogIn} from '../LogInPage/LogInPage'
 
 export interface PageLayoutProps {
     page: number;
+    username: string;
 }
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
                                                           page,
+                                                          username
                                                       }) => {
 
     switch(page) {
         case 0:
-            return <div className="PageLayout" ><About/></div>
+            return <div className="PageLayout" ><h1>Hello {username}</h1><About/></div>
         case 1:
             return <div className="PageLayout" ><AddNewAdmin/></div>
         case 2:

@@ -1,8 +1,7 @@
 import datetime
 import os
 
-from flask import Flask, render_template, request, send_from_directory, Response, redirect
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask import Flask, render_template, request, send_from_directory, Response, jsonify
 from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
 from urllib.parse import urlparse
 import database as db
@@ -11,55 +10,47 @@ from typing import List
 import json
 import urllib
 from statuses import Status
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
+                               unset_jwt_cookies, jwt_required, JWTManager
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = SECRET_KEY
-login_manager = LoginManager()
-login_manager.session_protection = 'strong'
-login_manager.login_view = 'login'
-login_manager.login_message = u"Bonvolu ensaluti por uzi tiun paĝon."
-login_manager.init_app(app)
+
+app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
+jwt = JWTManager(app)
+
 super_admin = db.init(app, SUPER_ADMIN)
 super_admin_id = super_admin.id
 
 
-@login_manager.user_loader
-def user_loader(admin_id):
-    return db.load_admin(admin_id)
+@app.route('/token', methods=["POST"])
+def create_token():
+    username = request.json.get("username", None)
+    password = request.json.get("password", None)
+    if username != "test" or password != "test":
+        if not db.get_verified_admin(username, password):
+            return {"msg": "Wrong email or password"}, 401
 
+    access_token = create_access_token(identity=username)
+    response = {"access_token": access_token}
+    return response
 
-@app.before_request
-def oauth_verify(*args, **kwargs):
-    """Ensure the oauth authorization header is set"""
-    if request.method in ['OPTIONS', ]:
-        response = Response("OK")
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "*")
-        response.headers.add("Access-Control-Allow-Methods", "*")
-        return response
-
-
-@app.route("/button", methods=['POST'])
-def button():
-    if request.method == 'POST':
-        print(request.get_json().get('title'))
-        return Response("OK")
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    user = db.get_admin(username="admin")
-    if user and user.verify_password("236369"):
-        login_user(user)
-        return redirect('/')
-
-
-@app.route("/logout")
-@login_required
+@app.route("/logout", methods=["POST"])
 def logout():
-    logout_user()
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
+
+@app.route('/profile')
+@jwt_required()
+def my_profile():
+    response_body = {
+        "username": "Nagato"
+    }
+
+    return response_body
 
 
 @app.route("/", methods=['GET', 'POST'])

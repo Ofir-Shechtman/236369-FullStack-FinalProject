@@ -1,22 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import "react-pro-sidebar/dist/css/styles.css";
-import './App.css';
-import {Header} from "./components/Header/Header";
-import {PageLayout} from "./components/Pages/PageLayout";
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import {Login} from './components/Login'
+import Profile from './components/Profile'
+import {Header} from './components/Header/Header'
+import useToken from './components/useToken'
+import './App.css'
 
 function App() {
-  const [page, setPage] = React.useState<number>(2);
-  const changePage = (newPage: number) => {
-    setPage(newPage);
-    // Think about validations...
-  }
+  const { token, removeToken, setToken } = useToken();
 
-  return (
-    <div className="App">
-      <Header changePage={changePage}/>
-      <PageLayout page={page}/>
-    </div>
+    return (
+    <BrowserRouter>
+      <div className="App">
+        {!token && token!=="" &&token!== undefined?
+        <Login setToken={setToken} />
+        :(
+          <>
+            <Routes>
+              <Route index element={<Profile removeToken={removeToken} token={token}/>}/>
+            </Routes>
+          </>
+        )}
+      </div>
+    </BrowserRouter>
   );
 }
 

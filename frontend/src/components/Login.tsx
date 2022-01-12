@@ -8,21 +8,42 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import './LogInPage.css'
+import axios from "axios";
 
 
 
 const theme = createTheme();
 
-export function LogIn() {
+
+export interface LoginProps {
+    setToken(token: string): void;
+
+}
+
+export const Login: React.FC<LoginProps> = ({setToken}) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
+    axios({
+        method: "POST",
+        url:"/token",
+        data:{
       username: data.get('username'),
       password: data.get('password'),
-    });
+    }
+      })
+      .then((response) => {
+        setToken(response.data.access_token)
+      }).catch((error) => {
+        if (error.response) {
+          console.log(error.response)
+          console.log(error.response.status)
+          console.log(error.response.headers)
+          }
+      })
+
+
+      event.preventDefault()
   };
 
   return (

@@ -318,3 +318,11 @@ def delete_poll(poll_id):
     poll = get_poll(poll_id)
     _db.session.delete(poll)
     _db.session.commit()
+
+
+def get_verified_admin(username, password):
+    try:
+        admin = get_admin(username=username)
+        return admin.verify_password(password)
+    except BaseException:
+        return False

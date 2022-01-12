@@ -8,12 +8,15 @@ import {
   SidebarFooter
 } from 'react-pro-sidebar';
 import {FaShare, FaRegPaperPlane, FaTelegramPlane, FaList, FaSignOutAlt, FaInfo, FaPlusCircle, FaPoll } from "react-icons/fa";
-export interface HeaderProps {
+import axios from "axios";
+interface HeaderProps {
     changePage(newPage: number): void;
+    removeToken:any;
+
 }
 
 export const Header: React.FC<HeaderProps> = ({
-    changePage,
+    changePage,removeToken
 }) => {
   const headerStyle: { [id: string] : string; } = {
     padding: "24px",
@@ -24,6 +27,21 @@ export const Header: React.FC<HeaderProps> = ({
     textOverflow: "ellipsis",
     whiteSpace: "noWrap"
   };
+
+  function logMeOut() {
+    axios({
+      method: "POST",
+      url:"/logout",
+    })
+    .then((response) => {
+       removeToken()
+    }).catch((error) => {
+      if (error.response) {
+        console.log(error.response)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+        }
+    })}
 
   return (
     <div className={"Header"}>
@@ -39,17 +57,9 @@ export const Header: React.FC<HeaderProps> = ({
           </Menu>
         </SidebarContent>
         <SidebarFooter style={{ textAlign: "center" }}>
-          <div className="sidebar-btn-wrapper">
-            <a
-              href="https://www.github.com"
-              target="_blank"
-              className="sidebar-btn"
-              rel="noopener noreferrer"
-            >
+             <button name='sidebar-btn-wrapper' onClick={logMeOut}>
               <FaSignOutAlt />
-              <span>Logout</span>
-            </a>
-          </div>
+               </button>
         </SidebarFooter>
       </ProSidebar>
     </div>
