@@ -337,3 +337,11 @@ def get_verified_admin(username, password):
         return admin.verify_password(password)
     except BaseException:
         return False
+
+
+def get_admins():
+    def serialize(admin):
+        return {
+            'admin': admin.username}
+
+    return jsonify([serialize(admin) for admin in _db.session.query(Admin)])

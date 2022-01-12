@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 from flask import Flask, render_template, request, send_from_directory, Response, jsonify
 from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
@@ -83,6 +84,11 @@ def get_posts():
     return db.get_polls_data('admin')
 
 
+@app.route('/api/admins', methods=['GET'])
+def get_admins():
+    return db.get_admins()
+
+
 @app.route('/api/polls_to_send', methods=['GET'])
 @jwt_required()
 def get_polls_to_send():
@@ -98,8 +104,8 @@ def add_poll():
         poll_type = data.get('PollType')
         auto_close_time = data.get('AutoCloseTime')
         if data.get('AutoClosingSwitch') and auto_close_time and poll_type=="Telegram_poll":
-            close_data = datetime.datetime.now()+ datetime.timedelta(minutes=auto_close_time)
-        allows_multiple_answers = poll_type=="Telegram_poll" and data.get('MultipleAnswers')
+            close_data = datetime.datetime.now() + datetime.timedelta(minutes=auto_close_time)
+        allows_multiple_answers = poll_type == "Telegram_poll" and data.get('MultipleAnswers')
         db.add_poll(poll_name=data.get('PollName'),
                     options=data.get('MultipleOptions'),
                     question=data.get('PollQuestion'),
@@ -133,10 +139,11 @@ def send_poll():
         regular_poll = poll.poll_type == "Telegram_poll"
         poll_options = [option.content for option in poll.poll_options]
         users = data['users']
+        unix_time = int(time.mktime(poll.close_date.timetuple())) if poll.close_date else None
         for name in users:
             chat_id = db.get_user_by_name(name).user_id
             if regular_poll:
-                result = _bot_send_poll(chat_id, poll.question, poll_options, poll.close_date,
+                result = _bot_send_poll(chat_id, poll.question, poll_options, unix_time,
                                         poll.allows_multiple_answers)
             else:
                 reply_markup = {
