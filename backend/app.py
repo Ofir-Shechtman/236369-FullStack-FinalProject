@@ -37,11 +37,13 @@ def create_token():
     response = {"access_token": access_token}
     return response
 
+
 @app.route("/logout", methods=["POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
+
 
 def get_admin():
     return db.get_admin(get_jwt()['sub'])
@@ -162,6 +164,7 @@ def delete_poll():
     except BaseException:
         return Response('Error', 500)
     return Response()
+
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def respond() -> Status:
