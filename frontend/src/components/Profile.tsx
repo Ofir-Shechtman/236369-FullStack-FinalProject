@@ -4,7 +4,6 @@ import "react-pro-sidebar/dist/css/styles.css";
 import '../App.css';
 import {Header} from "./Header/Header";
 import {PageLayout} from "./Pages/PageLayout";
-import axios from "axios";
 interface ProfileProps {
     removeToken:any;
     token:string;
@@ -23,7 +22,7 @@ const Profile: React.FC<ProfileProps> = ({
   return (
     <div className="App">
       <Header changePage={changePage} removeToken={removeToken}/>
-      <PageLayout page={page} token={token}/>
+      <PageLayout changePage={changePage} page={page} token={token}/>
     </div>
   );
 }

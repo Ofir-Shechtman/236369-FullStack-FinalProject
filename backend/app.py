@@ -131,6 +131,7 @@ def add_admin():
         return Response('Error', 500)
     return Response()
 
+
 @app.route('/api/send_poll', methods=['POST'])
 @jwt_required()
 def send_poll():

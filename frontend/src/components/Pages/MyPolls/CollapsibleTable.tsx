@@ -40,7 +40,7 @@ const useStyles = (theme: Theme) => createStyles({
 })
 
 function Row(props: any) {
-  const { row, refreshPage, token} = props;
+  const { row, refreshPage} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
@@ -211,8 +211,6 @@ Row.propTypes = {
     receivers: PropTypes.number.isRequired,
   }).isRequired,
   refreshPage: PropTypes.func.isRequired,
-  token:PropTypes.string.isRequired
-
 };
 
 
@@ -255,7 +253,7 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
     }
   componentDidMount() {
     this.sleep(200)
-        .then(r=>axios({
+        .then(() => axios({
       method: "GET",
       url:"/api/polls",
       headers: {
@@ -267,7 +265,7 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
           data: resp,
           loading: false
         }))
-        .catch(error => this.setState({
+        .catch(() => this.setState({
           loading: false,
           error: true
         }));
@@ -305,7 +303,6 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
                             <Row key={row.poll_id}
                                  row={row}
                                  refreshPage={this.refreshPage}
-                                 token={this.props.token}
                             />
                         ))
                   }

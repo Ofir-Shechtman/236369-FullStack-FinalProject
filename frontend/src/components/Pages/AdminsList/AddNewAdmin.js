@@ -16,6 +16,7 @@ import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
 import axios from "axios";
 
+
 async function validate(refs, form) {
   for (const [attribute, ref] of Object.entries(refs.current)) {
     var errors;
@@ -30,20 +31,15 @@ async function validate(refs, form) {
   return true;
 }
 
+
 export default function AddNewAdmin(props) {
-  const { setAuthType, token } = props;
+  const token = props.token;
+  const open = props.open;
+  const handleClose = props.handleClose;
+  const refreshPage = props.refreshPage;
   const [form, setForm] = useState({});
   const [showPassword, setShowPassword] = useState();
-  const [openAlert, setOpenAlert] = React.useState(false);
 
-  const handleClickOpen = (event) => {
-    event.preventDefault();
-    setOpenAlert(true);
-  };
-
-  const handleClose = () => {
-    setOpenAlert(false);
-  };
   const refs = useRef({});
 
   const updateForm = (updates) => {
@@ -66,8 +62,7 @@ export default function AddNewAdmin(props) {
         Authorization: 'Bearer ' + token
       },
       data:form
-    })
-    handleClose();
+    }).then(() => handleClose()).then(() => refreshPage()) //TODO: Catch exceptions
   };
 
   const fields = [
@@ -83,7 +78,7 @@ export default function AddNewAdmin(props) {
     },
     {
       component: "display-text",
-      title: "Sign up",
+      title: "Add New Admin",
       titleProps: {
         style: {
           fontSize: "20px",
@@ -147,40 +142,25 @@ export default function AddNewAdmin(props) {
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <div style={{ width: "60%" }}>
-        <form onSubmit={handleClickOpen}>
-          <FormBuilder
-            fields={fields}
-            form={form}
-            updateForm={updateForm}
-            refs={refs}
-          />
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            color="primary"
-            style={{ marginTop: "8px" }}
-          >
-            Sign Up
-          </Button>
-        </form>
         <Dialog
-        open={openAlert}
+        open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Add new admin?"}
-        </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to create new admin?
-          </DialogContentText>
+          <form>
+            <FormBuilder
+              fields={fields}
+              form={form}
+              updateForm={updateForm}
+              refs={refs}
+            />
+          </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>No</Button>
-          <Button onClick={() => handleSubmit()} autoFocus>Yes</Button>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={() => handleSubmit()} autoFocus>Submit</Button>
         </DialogActions>
       </Dialog>
       </div>
