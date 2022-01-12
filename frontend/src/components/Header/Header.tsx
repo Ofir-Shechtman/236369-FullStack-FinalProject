@@ -7,7 +7,7 @@ import {
   SidebarContent,
   SidebarFooter
 } from 'react-pro-sidebar';
-import {FaShare, FaRegPaperPlane, FaTelegramPlane, FaList, FaSignOutAlt, FaInfo, FaPlusCircle, FaPoll } from "react-icons/fa";
+import { FaTelegramPlane, FaList, FaSignOutAlt, FaInfo, FaPlusCircle, FaPoll } from "react-icons/fa";
 import axios from "axios";
 interface HeaderProps {
     changePage(newPage: number): void;
