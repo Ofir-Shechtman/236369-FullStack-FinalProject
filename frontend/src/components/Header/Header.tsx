@@ -57,9 +57,12 @@ export const Header: React.FC<HeaderProps> = ({
           </Menu>
         </SidebarContent>
         <SidebarFooter style={{ textAlign: "center" }}>
-             <button name='sidebar-btn-wrapper' onClick={logMeOut}>
-              <FaSignOutAlt />
-               </button>
+          <div className="sidebar-btn-wrapper">
+            <a onClick={logMeOut} className="sidebar-btn" href="#">
+                <FaSignOutAlt />
+                <span>Logout</span>
+            </a>
+          </div>
         </SidebarFooter>
       </ProSidebar>
     </div>
