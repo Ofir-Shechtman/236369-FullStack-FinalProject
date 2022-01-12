@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from models import Admin, User, Poll, PollOption, PollAnswer, PollReceiver
 import datetime
 from flask import jsonify
+from sqlalchemy import func
 
 _db = SQLAlchemy()
 
@@ -299,6 +300,15 @@ def get_polls_data(admin_id):
     return jsonify([serialize_poll(poll) for poll in admin.polls])
 
 
+def get_name(user: User):
+    return user.first_name + (' ' + user.last_name if user.last_name else '')
+
+
+def get_user_by_name(name: str):
+    return _db.session.query(User).filter(
+        func.trim(func.concat(User.first_name, ' ', User.last_name)) == name).first()
+
+
 def get_poll_to_send(admin_id):
     all_users = _db.session.query(User).filter_by(is_active=True)
 
@@ -306,10 +316,11 @@ def get_poll_to_send(admin_id):
         return {
             'poll_id': poll.poll_id,
             'poll_name': poll.poll_name,
-            'unsent_users': [{'user': user.first_name + (' ' + user.last_name if user.last_name else ''),
+            'unsent_users': [{'user': get_name(user),
                               'chat_id': user.user_id}
                              for user in all_users if user not in [receiver.user for receiver in poll.poll_receivers]],
         }
+
     admin = get_admin(admin_id)
     return jsonify([serialize_poll(poll) for poll in admin.polls])
 

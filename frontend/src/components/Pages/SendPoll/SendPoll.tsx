@@ -4,8 +4,9 @@ import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core/sty
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
-import {Checkbox, ListItemText, OutlinedInput} from "@mui/material";
+import {Checkbox, FormControl, ListItemText, OutlinedInput} from "@mui/material";
 import axios from "axios";
+import InputLabel from "@mui/material/InputLabel";
 
 interface SendPollState {
   data: Array<any>,
@@ -19,7 +20,7 @@ interface UserProps {
   chat_id: string
 }
 interface PollProps {
-  poll_id: number,
+  poll_id: string,
   poll_name: string,
   unsent_users:UserProps[]
 }
@@ -30,21 +31,51 @@ interface SelectPollProps {
     data: PollProps[];
 }
 
+const get_poll_name=function(poll_id:string, data:PollProps[]){
+    data.forEach((poll: PollProps) => {
+        if(poll.poll_id == poll_id){
+            return poll.poll_name
+        }
+    })
+}
+
+const get_user_name=function(selected:string[], data:PollProps[], selected_poll_id:string){
+    let names:string[] = []
+    data.forEach((poll: PollProps) => {
+        if(String(poll.poll_id) == selected_poll_id){
+            selected.forEach((chat_id: string) => {
+                poll.unsent_users.forEach((user:UserProps) =>{
+                    if (user.chat_id==chat_id){
+                        names.push(user.user);
+                    }
+                })
+            })
+            return names.join(',');
+        }
+    })
+}
 
 const SelectPoll: React.FC<SelectPollProps> = ({
-                              selected_poll_id,
-                              setSelectPoll,
-                              data
-                          }) => {
-    const onPollChange = (e: { target: { value: any; }; }) => {
-        setSelectPoll({selected_poll_id: e.target.value})
+                                                   selected_poll_id,
+                                                   setSelectPoll,
+                                                   data
+                                               }) => {
+    // @ts-ignore
+    const onPollChange = (event) => {
+        setSelectPoll(event.target.value)
     };
+
     return (
-        <Select onChange={onPollChange} value={selected_poll_id} label="Poll">
-                    {data.map((poll: PollProps) => (
-                        <MenuItem value={poll.poll_id}>{poll.poll_name}</MenuItem>
-                    ))}
-                </Select>)
+        <FormControl sx={{ m: 1, width: 300 }}>
+            <InputLabel>Poll</InputLabel>
+            <Select onChange={onPollChange}
+                    value={selected_poll_id}
+                    label="Poll"
+            >
+                {data.map((poll: PollProps) => (
+                    <MenuItem key={poll.poll_id} value={poll.poll_id}>{poll.poll_name}</MenuItem>
+                ))}
+            </Select></FormControl>)
 }
 
 interface SelectUsersProps {
@@ -60,14 +91,15 @@ const SelectUsers: React.FC<SelectUsersProps> = ({
                               setUsers,
                               data
                           }) => {
-    const get_users = (poll: PollProps, state:any) => {
-    if(poll.poll_id == state.selected_poll_id){
-    return (poll.unsent_users.map((user: UserProps) => (
-        <MenuItem key={user.chat_id} value={user.chat_id}>
-              <Checkbox checked={users.indexOf(user.chat_id) > -1} />
-              <ListItemText primary={user.user} />
-            </MenuItem>
-                )))}
+    const get_users = (poll: PollProps, selected_poll_id:string) => {
+    if(poll.poll_id == selected_poll_id){
+        return (poll.unsent_users.map((user: UserProps) => (
+            <MenuItem key={user.chat_id} value={user.user}>
+                  <Checkbox checked={users.indexOf(user.user) > -1} />
+                  <ListItemText primary={user.user} />
+                </MenuItem>
+                    )))
+    }
     }
     const handleChange = (event: { target: { value: any; }; }) => {
         const {
@@ -87,18 +119,26 @@ const SelectUsers: React.FC<SelectUsersProps> = ({
       },
     };
     return (
-        <Select label="Poll"
-                        multiple
-                        value={users}
-                        onChange={handleChange}
-                        input={<OutlinedInput label="Tag" />}
-                        renderValue={(selected) => selected.join(', ')}
-                        MenuProps={MenuProps}
-                >
-                    {data.map((poll: PollProps) => (
-                        get_users(poll, selected_poll_id)))
-                    }
-                </Select>
+        <FormControl sx={{ m: 1, width: 300 }}>
+            <InputLabel >Receivers</InputLabel>
+            <Select label="Receivers"
+                    multiple
+                    value={users}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Receivers" />}
+                    renderValue={(selected) => selected.join(', ')}
+                    // @ts-ignore
+                    // renderValue={(selected) => {
+                    //     return get_user_name(selected, data, selected_poll_id);
+                    // }}
+                    MenuProps={MenuProps}
+            >
+                {data.map((poll: PollProps) => (
+                    get_users(poll, selected_poll_id)))
+                }
+            </Select>
+        </FormControl>
+
     )
 }
 
@@ -150,9 +190,9 @@ render() {
         return (
             <div className="SendPoll">
                 <SelectPoll selected_poll_id={this.state.selected_poll_id} setSelectPoll={(selected_poll_id:string)=>{this.setState({
-          selected_poll_id: selected_poll_id})}} data={data}/>
+                    selected_poll_id: selected_poll_id})}} data={data}/>
                 <SelectUsers selected_poll_id={this.state.selected_poll_id} setUsers={(newvalue:any[])=>{this.setState({
-                             users: newvalue})}} users={this.state.users} data={data}/>
+                    users: newvalue})}} users={this.state.users} data={data}/>
                 <Button variant="contained"
                         component="label"
                         onClick={() => {

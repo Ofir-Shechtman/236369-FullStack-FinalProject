@@ -9,8 +9,9 @@ import requests
 from typing import List
 import json
 import urllib
+from datetime import timedelta
 from statuses import Status
-from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
+from flask_jwt_extended import create_access_token,get_jwt, \
                                unset_jwt_cookies, jwt_required, JWTManager
 
 app = Flask(__name__)
@@ -18,7 +19,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = SECRET_KEY
 
-app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
+app.config["JWT_SECRET_KEY"] = SECRET_KEY
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=4)
 jwt = JWTManager(app)
 
 super_admin = db.init(app, SUPER_ADMIN)
@@ -125,11 +127,12 @@ def add_admin():
 def send_poll():
     try:
         data = request.get_json()
-        poll = db.get_poll(data['poll']['selected_poll_id'])
+        poll = db.get_poll(data['poll'])
         regular_poll = poll.poll_type == "Telegram_poll"
         poll_options = [option.content for option in poll.poll_options]
         users = data['users']
-        for chat_id in users:
+        for name in users:
+            chat_id = db.get_user_by_name(name).user_id
             if regular_poll:
                 result = _bot_send_poll(chat_id, poll.question, poll_options, poll.close_date,
                                         poll.allows_multiple_answers)
@@ -161,7 +164,6 @@ def delete_poll():
     return Response()
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
-@jwt_required()
 def respond() -> Status:
     data = json.loads(request.get_json())
     method = data['method']

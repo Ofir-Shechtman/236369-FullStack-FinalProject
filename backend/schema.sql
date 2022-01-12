@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS users(
     first_name TEXT NOT NULL,
     last_name TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (first_name, last_name)
+
 );
 
 CREATE TYPE POLL_TYPE AS ENUM ('Telegram_poll', 'Telegram_inline_keyboard');

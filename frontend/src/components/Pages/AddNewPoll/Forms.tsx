@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Slider from '@mui/material/Slider';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import {FormControlLabel} from "@mui/material";
+import {ToggleButtonGroup, ToggleButton, FormControlLabel, FormLabel} from "@mui/material";
 import IconButton from "@material-ui/core/IconButton";
 import RemoveIcon from "@material-ui/icons/Remove";
 import AddIcon from "@material-ui/icons/Add";
@@ -68,16 +68,22 @@ export const PollTypeForm: React.FC<ControlledProps> = ({
     return (
         <Box sx={{ minWidth: 220 }}>
         <FormControl fullWidth>
-        <InputLabel>{value}</InputLabel>
-        <Controller
+        <FormLabel>{name}</FormLabel>
+            <Controller
           name={value}
           control={control}
-          defaultValue = {type_value}
           render={({ field }) => (
-            <Select {...field} onChange= {onChange} value={type_value} label={name}>
-              <MenuItem value="Telegram_poll">Telegram Poll</MenuItem>
-              <MenuItem value="Telegram_inline_keyboard">Telegram Inline Keyboard</MenuItem>
-            </Select>
+            <ToggleButtonGroup
+                {...field}
+                value={type_value}
+                exclusive
+                onChange={onChange}
+                >
+            <ToggleButton value={"Telegram_poll"} >Telegram poll
+      </ToggleButton>
+      <ToggleButton value={"Telegram_inline_keyboard"}>Telegram inline keyboard
+      </ToggleButton>
+      </ToggleButtonGroup>
           )}
         />
       </FormControl>

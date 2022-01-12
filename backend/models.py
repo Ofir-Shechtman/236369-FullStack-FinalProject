@@ -98,7 +98,9 @@ class Poll(db.Model):
 
 class User(db.Model):
     __tablename__ = 'users'
-
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'last_name'),
+    )
     user_id = db.Column(db.Numeric, primary_key=True)
     first_name = db.Column(db.Text, nullable=False)
     last_name = db.Column(db.Text)
