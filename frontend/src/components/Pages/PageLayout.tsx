@@ -8,17 +8,17 @@ import SendPoll from './SendPoll/SendPoll';
 
 export interface PageLayoutProps {
     page: number;
-    username: string;
+    token: string;
 }
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
                                                           page,
-                                                          username
+                                                          token
                                                       }) => {
 
     switch(page) {
         case 0:
-            return <div className="PageLayout" ><h1>Hello {username}</h1><About/></div>
+            return <div className="PageLayout" ><About token={token}/></div>
         case 1:
             return <div className="PageLayout" ><AddNewAdmin/></div>
         case 2:

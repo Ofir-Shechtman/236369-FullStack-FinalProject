@@ -47,7 +47,7 @@ def logout():
 @jwt_required()
 def my_profile():
     response_body = {
-        "username": "Nagato"
+        "username": get_jwt()['sub']
     }
 
     return response_body

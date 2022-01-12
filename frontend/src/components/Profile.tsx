@@ -14,35 +14,16 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({
     removeToken,token
 }) => {
-  const [page, setPage] = React.useState<number>(2);
+  const [page, setPage] = React.useState<number>(0);
   const changePage = (newPage: number) => {
     setPage(newPage);
     // Think about validations...
   }
-  const [profileData, setProfileData] = useState<string>("AA")
-  function getData() {
-    axios({
-      method: "GET",
-      url:"/profile",
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
-    })
-    .then((response) => {
-      const res =response.data
-      setProfileData(res.username)
-    }).catch((error) => {
-      if (error.response) {
-        console.log(error.response)
-        console.log(error.response.status)
-        console.log(error.response.headers)
-        }
-    })}
-  getData()
+
   return (
     <div className="App">
       <Header changePage={changePage} removeToken={removeToken}/>
-      <PageLayout page={page} username={profileData}/>
+      <PageLayout page={page} token={token}/>
     </div>
   );
 }

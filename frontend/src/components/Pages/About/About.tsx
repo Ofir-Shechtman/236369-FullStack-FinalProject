@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import '../../../App.css';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { FaGithub } from "react-icons/fa";
 import { Button } from "@mui/material"
+import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
     body: {
@@ -30,11 +31,37 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     }
 }))
 
+export interface AboutProps {
+    token: string;
+}
 
-export const About = () => {
+export const About: React.FC<AboutProps> = ({
+                                                          token
+                                                      }) => {
     const classes = useStyles();
+    const [username, setProfileData] = useState<string>("Username")
+    function getData() {
+    axios({
+      method: "GET",
+      url:"/profile",
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    .then((response) => {
+      const res =response.data
+      setProfileData(res.username)
+    }).catch((error) => {
+      if (error.response) {
+        console.log(error.response)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+        }
+    })}
+    getData()
     return (
         <div className="Page" >
+            <h1> Hello {username} welcome!</h1>
             <h1> Polling System </h1>
             <h2> 236369 Managing Data on The World-Wide Web Final Project </h2>
             <h3> Submitters: Ofir Shechtman & Ben Lugasi </h3>
