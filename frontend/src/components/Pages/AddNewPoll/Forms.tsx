@@ -258,7 +258,6 @@ export const CloseTimePicker: React.FC<CloseTimeProps> = ({
                       <Controller
     name = {value_slider}
     control={control}
-    defaultValue = {undefined}
     render={({field}) => (
         <Slider {...field}
                 aria-label={name_slider}

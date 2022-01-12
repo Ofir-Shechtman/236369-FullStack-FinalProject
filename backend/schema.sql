@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS poll_options(
     poll_id INTEGER NOT NULL,
     content VARCHAR(300) NOT NULL, -- Limit from Telegram API,
     PRIMARY KEY(option_id, poll_id),
+    UNIQUE (poll_id, content),
     CONSTRAINT fk_poll_po FOREIGN KEY(poll_id) REFERENCES polls(poll_id) ON DELETE CASCADE
  );
 

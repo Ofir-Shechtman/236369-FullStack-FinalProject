@@ -212,6 +212,7 @@ def favicon():
 
 def _send_bot_post(method: str, query: dict):
     to_post = f'https://api.telegram.org/bot{BOT_TOKEN}/{method}?{urllib.parse.urlencode(query)}'
+    print(to_post)
     return requests.post(to_post)
 
 

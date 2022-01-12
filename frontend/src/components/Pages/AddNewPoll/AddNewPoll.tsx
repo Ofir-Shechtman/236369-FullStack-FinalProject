@@ -36,6 +36,9 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     const onSubmit = (data: any) => {
       data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; }) => (inputField.Option))
       data['PollType'] = is_poll_type
+      if(!data.AutoCloseTime){
+          data['AutoCloseTime']=5;
+      }
         alert(JSON.stringify(data))
       axios({
       method: "POST",
