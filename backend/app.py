@@ -22,16 +22,14 @@ app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
 jwt = JWTManager(app)
 
 super_admin = db.init(app, SUPER_ADMIN)
-super_admin_id = super_admin.id
 
 
 @app.route('/token', methods=["POST"])
 def create_token():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
-    if username != "test" or password != "test":
-        if not db.get_verified_admin(username, password):
-            return {"msg": "Wrong email or password"}, 401
+    if not db.get_verified_admin(username, password):
+        return {"msg": "Wrong email or password"}, 401
 
     access_token = create_access_token(identity=username)
     response = {"access_token": access_token}
@@ -43,11 +41,15 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
+def get_admin():
+    return db.get_admin(get_jwt()['sub'])
+
+
 @app.route('/profile')
 @jwt_required()
 def my_profile():
     response_body = {
-        "username": get_jwt()['sub']
+        "username": get_admin().username
     }
 
     return response_body
@@ -60,11 +62,11 @@ def index():
             _send_message(chat_id=569667677, text="Hello World!")
         elif request.form.get('poll'):
             poll_id = send_poll(poll_name='poll1', receivers=[569667677, 2123387537], question="How are you today?",
-                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=super_admin_id)
+                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=get_admin().id)
             # stop_poll(poll_id)
         elif request.form.get('inline'):
             send_poll(poll_name='poll2', receivers=[569667677, 2123387537], question="What is the time now?", options=["2pm Israel", "7pm Thailand"],
-                       inline=True, admin_id=super_admin_id)
+                       inline=True, admin_id=get_admin().id)
 
     elif request.method == 'GET':
         return render_template('index.html')
@@ -72,16 +74,19 @@ def index():
 
 
 @app.route('/api/polls', methods=['GET'])
+@jwt_required()
 def get_posts():
     return db.get_polls_data('admin')
 
 
 @app.route('/api/polls_to_send', methods=['GET'])
+@jwt_required()
 def get_polls_to_send():
     return db.get_poll_to_send('admin')
 
 
 @app.route('/api/add_poll', methods=['POST'])
+@jwt_required()
 def add_poll():
     try:
         data = request.get_json()
@@ -97,24 +102,26 @@ def add_poll():
                     poll_type=poll_type,
                     allows_multiple_answers=allows_multiple_answers,
                     close_date=close_data,
-                    created_by=super_admin_id)
+                    created_by=get_admin().id)
     except BaseException:
         return Response('Error', 500)
     return Response()
 
 
 @app.route('/api/add_admin', methods=['POST'])
+@jwt_required()
 def add_admin():
     try:
         data = request.get_json()
         db.add_admin(username=data.get('username'),
                     password=data.get('password'),
-                    created_by=super_admin_id)
+                    created_by=get_admin().id)
     except BaseException:
         return Response('Error', 500)
     return Response()
 
 @app.route('/api/send_poll', methods=['POST'])
+@jwt_required()
 def send_poll():
     try:
         data = request.get_json()
@@ -144,6 +151,7 @@ def send_poll():
 
 
 @app.route('/api/delete_poll', methods=['POST'])
+@jwt_required()
 def delete_poll():
     try:
         data = request.get_json()
@@ -153,6 +161,7 @@ def delete_poll():
     return Response()
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
+@jwt_required()
 def respond() -> Status:
     data = json.loads(request.get_json())
     method = data['method']

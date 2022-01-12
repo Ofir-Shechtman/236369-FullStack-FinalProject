@@ -2,7 +2,7 @@ import React from 'react';
 import '../../App.css';
 import { About } from './About/About';
 import AddNewAdmin from './AddNewAdmin/AddNewAdmin';
-import AddNewPoll from "./AddNewPoll/AddNewPoll"
+import {AddNewPoll} from "./AddNewPoll/AddNewPoll"
 import { MyPolls } from './MyPolls/MyPolls';
 import SendPoll from './SendPoll/SendPoll';
 
@@ -20,13 +20,13 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         case 0:
             return <div className="PageLayout" ><About token={token}/></div>
         case 1:
-            return <div className="PageLayout" ><AddNewAdmin/></div>
+            return <div className="PageLayout" ><AddNewAdmin token={token}/></div>
         case 2:
-            return <div className="PageLayout" ><AddNewPoll/></div>
+            return <div className="PageLayout" ><AddNewPoll token={token}/></div>
         case 3:
-            return <div className="PageLayout" ><MyPolls/></div>
+            return <div className="PageLayout" ><MyPolls token={token}/></div>
         case 4:
-            return <div className="PageLayout" ><SendPoll/></div>
+            return <div className="PageLayout" ><SendPoll  token={token}/></div>
 
         default:
             return null;

@@ -31,7 +31,7 @@ async function validate(refs, form) {
 }
 
 export default function AddNewAdmin(props) {
-  const { setAuthType } = props;
+  const { setAuthType, token } = props;
   const [form, setForm] = useState({});
   const [showPassword, setShowPassword] = useState();
   const [openAlert, setOpenAlert] = React.useState(false);
@@ -59,7 +59,14 @@ export default function AddNewAdmin(props) {
     if (!ok) {
       return;
     }
-    axios.post('api/add_admin', form);
+    axios({
+      method: "POST",
+      url:"/api/add_admin",
+      headers: {
+        Authorization: 'Bearer ' + token
+      },
+      data:form
+    })
     handleClose();
   };
 
@@ -164,7 +171,7 @@ export default function AddNewAdmin(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Delete Poll?"}
+          {"Add new admin?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">

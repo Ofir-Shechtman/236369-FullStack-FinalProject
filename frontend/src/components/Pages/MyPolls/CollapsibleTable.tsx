@@ -39,7 +39,7 @@ const useStyles = (theme: Theme) => createStyles({
 })
 
 function Row(props: any) {
-  const { row, refreshPage } = props;
+  const { row, refreshPage, token} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
@@ -61,10 +61,17 @@ function Row(props: any) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  const handleDeletePoll = (poll_id: number) => {
+  const handleDeletePoll = (poll_id: number, token:string) => {
       handleClose()
       const delete_msg = { poll_id: poll_id };
-      axios.post('api/delete_poll', delete_msg).then(response => alert(response))
+      axios({
+      method: "POST",
+      url:"/api/delete_poll",
+      headers: {
+        Authorization: 'Bearer ' + token
+      },
+      data:delete_msg
+    })
       refreshPage()
     }
   return (
@@ -174,7 +181,7 @@ function Row(props: any) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>No</Button>
-          <Button onClick={() => handleDeletePoll(row.poll_id)} autoFocus>Yes</Button>
+          <Button onClick={() => handleDeletePoll(row.poll_id, props.token)} autoFocus>Yes</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
@@ -198,9 +205,11 @@ Row.propTypes = {
         time_answered: PropTypes.string.isRequired,
       }),).isRequired,
     answers_count: PropTypes.number.isRequired,
-    receivers: PropTypes.number.isRequired
+    receivers: PropTypes.number.isRequired,
   }).isRequired,
-  refreshPage: PropTypes.func.isRequired
+  refreshPage: PropTypes.func.isRequired,
+  token:PropTypes.string.isRequired
+
 };
 
 
@@ -215,7 +224,7 @@ interface PollProps {
   answers: Array<number>,
   poll_answers: any,
   answers_count: number,
-  receivers: number
+  receivers: number,
 }
 
 interface CollapsibleTableState {
@@ -224,7 +233,7 @@ interface CollapsibleTableState {
   error: boolean
 }
 
-interface Props extends WithStyles<typeof useStyles> {}
+interface Props extends WithStyles<typeof useStyles> {token:string}
 
 class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
   state = {
@@ -232,6 +241,7 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
       loading: true,
       error: false
     }
+
 
   refreshPage = () => {
     this.setState({loading: true, error: false})
@@ -242,8 +252,14 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
     }
   componentDidMount() {
     this.sleep(200)
-        .then(r=> fetch('api/polls'))
-        .then(resp => resp.json())
+        .then(r=>axios({
+      method: "GET",
+      url:"/api/polls",
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+      })  )
+        .then(resp => resp.data)
         .then(resp => this.setState({
           data: resp,
           loading: false
@@ -286,6 +302,7 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
                             <Row key={row.poll_id}
                                  row={row}
                                  refreshPage={this.refreshPage}
+                                 token={this.props.token}
                             />
                         ))
                   }

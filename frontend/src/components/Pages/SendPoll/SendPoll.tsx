@@ -5,9 +5,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import {Checkbox, ListItemText, OutlinedInput} from "@mui/material";
-import {FieldPath, useForm} from "react-hook-form";
-import {FormValues} from "../AddNewPoll/FormValues";
-import {ControlledProps} from "../AddNewPoll/Forms";
 import axios from "axios";
 
 interface SendPollState {
@@ -108,9 +105,11 @@ const SelectUsers: React.FC<SelectUsersProps> = ({
 
 
 const useStyles = (theme: Theme) => createStyles({})
-interface Props extends WithStyles<typeof useStyles> {}
+interface Props extends WithStyles<typeof useStyles> {token:string}
 
-
+export interface MyPollsProps {
+    token: string;
+}
 
 
 class SendPoll extends React.Component<Props,SendPollState> {
@@ -129,8 +128,14 @@ class SendPoll extends React.Component<Props,SendPollState> {
 
 componentDidMount() {
     this.sleep(200)
-        .then(r=> fetch('api/polls_to_send'))
-        .then(resp => resp.json())
+      .then(r=>axios({
+      method: "GET",
+      url:"/api/polls_to_send",
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })  )
+        .then(resp => resp.data)
         .then(resp => this.setState({
           data: resp,
           loading: false
@@ -151,9 +156,15 @@ render() {
                 <Button variant="contained"
                         component="label"
                         onClick={() => {
-                            console.log({'poll':this.state.selected_poll_id, 'users':this.state.users});
-                            axios.post('api/send_poll', {'poll':this.state.selected_poll_id, 'users':this.state.users});
-                        }}
+                        axios({
+                          method: "POST",
+                          url:"/api/send_poll",
+                          headers: {
+                            Authorization: 'Bearer ' + this.props.token
+                          },
+                              data:{'poll':this.state.selected_poll_id, 'users':this.state.users}
+                        })
+                                            }}
                         disabled={this.state.users.length===0}>
                     Submit
                 </Button>
@@ -164,3 +175,4 @@ render() {
 
 
 export default withStyles(useStyles)(SendPoll)
+

@@ -12,8 +12,13 @@ import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 
 
+export interface AddNewPollProps {
+    token: string;
+}
 
-export default function AddNewPoll() {
+export const AddNewPoll: React.FC<AddNewPollProps> = ({
+                                                          token
+                                                      }) => {
   const {handleSubmit, control} = useForm<FormValues>();
   const [multiple_enable, multiple_switch] = React.useState<Boolean>(true);
   const [is_poll_type, poll_type_switch] = React.useState<string>("Telegram_poll");
@@ -28,8 +33,14 @@ export default function AddNewPoll() {
   ]);
     const onSubmit = (data: any) => {
       data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; }) => (inputField.Option))
-      alert(JSON.stringify(data))
-      axios.post('api/add_poll', data)
+      axios({
+      method: "POST",
+      url:"/api/add_poll",
+      headers: {
+        Authorization: 'Bearer ' + token
+      },
+          data:data
+    })
     }
     return (
     <div className="Page">
