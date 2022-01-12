@@ -7,7 +7,7 @@ import {
   SidebarContent,
   SidebarFooter
 } from 'react-pro-sidebar';
-import {FaList, FaSignOutAlt, FaInfo, FaPlusCircle, FaPoll } from "react-icons/fa";
+import {FaShare, FaRegPaperPlane, FaTelegramPlane, FaList, FaSignOutAlt, FaInfo, FaPlusCircle, FaPoll } from "react-icons/fa";
 export interface HeaderProps {
     changePage(newPage: number): void;
 }
@@ -35,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
             <MenuItem icon={<FaPlusCircle />} onClick={() => changePage(1)}>Add New Admin</MenuItem>
             <MenuItem icon={<FaPoll />} onClick={() => changePage(2)}>Add New Poll</MenuItem>
             <MenuItem icon={<FaList />} onClick={() => changePage(3)}>My Polls</MenuItem>
+            <MenuItem icon={<FaTelegramPlane />} onClick={() => changePage(4)}>Send Poll</MenuItem>
           </Menu>
         </SidebarContent>
         <SidebarFooter style={{ textAlign: "center" }}>

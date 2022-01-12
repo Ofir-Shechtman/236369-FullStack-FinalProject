@@ -4,7 +4,8 @@ import { About } from './About/About';
 import AddNewAdmin from './AddNewAdmin/AddNewAdmin';
 import AddNewPoll from "./AddNewPoll/AddNewPoll"
 import { MyPolls } from './MyPolls/MyPolls';
-import SignInPage from '../LogInPage/LogInPage'
+import SendPoll from './SendPoll/SendPoll';
+import {LogIn} from '../LogInPage/LogInPage'
 
 export interface PageLayoutProps {
     page: number;
@@ -23,6 +24,9 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
             return <div className="PageLayout" ><AddNewPoll/></div>
         case 3:
             return <div className="PageLayout" ><MyPolls/></div>
+        case 4:
+            return <div className="PageLayout" ><SendPoll/></div>
+
         default:
             return null;
 

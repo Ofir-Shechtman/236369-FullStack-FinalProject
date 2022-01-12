@@ -217,7 +217,8 @@ def _get_answer(chat_id, poll_id, answer_index):
 
 
 def _add_only_poll(poll_name, question, poll_type, allows_multiple_answers, close_date, created_by):
-    new_poll = Poll(poll_name=poll_name, question=question, poll_type=poll_type, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+    new_poll = Poll(poll_name=poll_name, question=question, poll_type=poll_type,
+                    allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                     created_by=created_by)
     _db.session.add(new_poll)
     _db.session.commit()
@@ -245,7 +246,8 @@ def _add_option(option_id, poll_id, content):
 
 
 def add_poll(poll_name, question, options, poll_type, created_by, allows_multiple_answers=False, close_date=None):
-    poll_id = _add_only_poll(poll_name=poll_name, question=question, poll_type=poll_type, allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+    poll_id = _add_only_poll(poll_name=poll_name, question=question, poll_type=poll_type,
+                             allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                              created_by=created_by)
     for option_index, option in enumerate(options):
         _add_option(option_index, poll_id, option)
@@ -273,8 +275,43 @@ def stop_poll(poll: Poll):
 
 
 def get_polls_data(admin_id):
+    def serialize_poll(poll):
+        return {
+            'poll_id': poll.poll_id,
+            'poll_name': poll.poll_name,
+            'question': poll.question,
+            'poll_type': poll.poll_type,
+            'allows_multiple_answers': poll.allows_multiple_answers,
+            'close_date': poll.close_date,
+            'created_by': poll.created_by,
+            'poll_options': [option.content for option in poll.poll_options],
+            'poll_answers': [
+                {'user': receiver.user.first_name + (' ' + receiver.user.last_name if receiver.user.last_name else ''),
+                 'answers': [answer.option.content for answer in receiver.poll_answers],
+                 'time_answered': min([answer.time_answered for answer in receiver.poll_answers],
+                                      default=None)} for receiver in poll.poll_receivers],
+            'receivers': len(poll.poll_receivers),
+            'answers_count': len([receiver for receiver in poll.poll_receivers if receiver.poll_answers]),
+            'answers': [len(option.poll_answers) for option in poll.poll_options]
+        }
+
     admin = get_admin(admin_id)
-    return jsonify([poll.serialize() for poll in admin.polls])
+    return jsonify([serialize_poll(poll) for poll in admin.polls])
+
+
+def get_poll_to_send(admin_id):
+    all_users = _db.session.query(User).filter_by(is_active=True)
+
+    def serialize_poll(poll):
+        return {
+            'poll_id': poll.poll_id,
+            'poll_name': poll.poll_name,
+            'unsent_users': [{'user': user.first_name + (' ' + user.last_name if user.last_name else ''),
+                              'chat_id': user.user_id}
+                             for user in all_users if user not in [receiver.user for receiver in poll.poll_receivers]],
+        }
+    admin = get_admin(admin_id)
+    return jsonify([serialize_poll(poll) for poll in admin.polls])
 
 
 def delete_poll(poll_id):

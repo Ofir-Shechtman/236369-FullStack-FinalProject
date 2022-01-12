@@ -85,6 +85,11 @@ def get_posts():
     return db.get_polls_data('admin')
 
 
+@app.route('/api/polls_to_send', methods=['GET'])
+def get_polls_to_send():
+    return db.get_poll_to_send('admin')
+
+
 @app.route('/api/add_poll', methods=['POST'])
 def add_poll():
     try:
@@ -118,6 +123,33 @@ def add_admin():
         return Response('Error', 500)
     return Response()
 
+@app.route('/api/send_poll', methods=['POST'])
+def send_poll():
+    try:
+        data = request.get_json()
+        poll = db.get_poll(data['poll']['selected_poll_id'])
+        regular_poll = poll.poll_type == "Telegram_poll"
+        poll_options = [option.content for option in poll.poll_options]
+        users = data['users']
+        for chat_id in users:
+            if regular_poll:
+                result = _bot_send_poll(chat_id, poll.question, poll_options, poll.close_date,
+                                        poll.allows_multiple_answers)
+            else:
+                reply_markup = {
+                    "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(poll_options)]
+                }
+                result = _send_message(chat_id, poll.question, reply_markup=json.dumps(reply_markup))
+
+
+            data = result.json().get('result')
+            db.add_poll_receiver(chat_id=chat_id, poll_id=poll.poll_id, sent_by=poll.admin.id,
+                                 telegram_poll_id=data['poll']['id'] if regular_poll else None,
+                                 message_id=data['message_id'])
+
+    except BaseException:
+        return Response('Error', 500)
+    return Response()
 
 
 @app.route('/api/delete_poll', methods=['POST'])

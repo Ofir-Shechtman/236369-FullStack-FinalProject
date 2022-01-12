@@ -103,7 +103,6 @@ export const SwitchForm: React.FC<ControlledProps> = ({
                     <Switch
                         onChange={(e) => field.onChange(e.target.checked)}
                         checked={!!field.value && !!multiple_enable}
-                        defaultChecked={false}
                         disabled={!multiple_enable}
                     />
                 )}

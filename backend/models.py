@@ -94,24 +94,6 @@ class Poll(db.Model):
 
     admin = db.relationship('Admin', primaryjoin='Poll.created_by == Admin.id', backref='polls')
 
-    def serialize(self):
-        return {
-            'poll_id': self.poll_id,
-            'poll_name': self.poll_name,
-            'question': self.question,
-            'poll_type': self.poll_type,
-            'allows_multiple_answers': self.allows_multiple_answers,
-            'close_date': self.close_date,
-            'created_by': self.created_by,
-            'poll_options': [option.content for option in self.poll_options],
-            'poll_answers': [{'user': receiver.user.first_name,
-                              'answers': [answer.option.content for answer in receiver.poll_answers],
-                              'time_answered': min([answer.time_answered for answer in receiver.poll_answers],
-                                                   default=None)} for receiver in self.poll_receivers],
-            'receivers': len(self.poll_receivers),
-            'answers_count': len([receiver for receiver in self.poll_receivers if receiver.poll_answers]),
-            'answers': [len(option.poll_answers) for option in self.poll_options]
-        }
 
 
 class User(db.Model):
