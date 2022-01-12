@@ -52,7 +52,9 @@ class PollAnswer(db.Model):
 
 class PollOption(db.Model):
     __tablename__ = 'poll_options'
-
+    __table_args__ = (
+        db.UniqueConstraint('poll_id', 'content'),
+    )
     option_id = db.Column(db.Integer, primary_key=True, nullable=False)
     poll_id = db.Column(db.ForeignKey('polls.poll_id', ondelete='CASCADE'), primary_key=True, nullable=False)
     content = db.Column(db.String(300), nullable=False)
