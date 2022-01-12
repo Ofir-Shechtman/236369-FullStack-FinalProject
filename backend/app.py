@@ -85,6 +85,7 @@ def get_posts():
 
 
 @app.route('/api/admins', methods=['GET'])
+@jwt_required()
 def get_admins():
     return db.get_admins()
 
