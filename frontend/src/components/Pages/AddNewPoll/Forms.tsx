@@ -9,7 +9,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Slider from '@mui/material/Slider';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {ToggleButtonGroup, ToggleButton, FormControlLabel, FormLabel} from "@mui/material";
 import IconButton from "@material-ui/core/IconButton";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -18,6 +18,10 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 
 import { v4 as uuidv4 } from 'uuid';
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import axios from "axios";
 
 
 export interface TextFieldProps {
@@ -158,15 +162,10 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
                                                       }) => {
 
 
-  const handleSubmit = (e:any) => {
-    e.preventDefault();
-    console.log("InputFields", inputFields);
-  };
-
-  const handleChangeInput = (id: any, event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const handleChangeInput = (id: any, event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | SelectChangeEvent<string>>) => {
     const newInputFields = inputFields.map((i: { [x: string]: string; id: any; }) => {
       if(id === i.id) {
-        // @ts-ignore
+          // @ts-ignore
           i[event.target.name] = event.target.value
       }
       return i;
@@ -177,7 +176,7 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
 
 
   const handleAddFields = () => {
-    setInputFields([...inputFields, { id: uuidv4(),  Option:''}])
+    setInputFields([...inputFields, { id: uuidv4(),  Option:'', FollowupPoll:'None'}])
   }
 
   const handleRemoveFields = (id:any) => {
@@ -186,10 +185,48 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
     setInputFields(values);
   }
 
+  const [data, setData] = React.useState<Poll[]>([]);
+
+  interface Poll {
+  poll_id: string,
+  poll_name: string
+}
+
+  React.useEffect(() => {
+    axios({
+      method: "GET",
+      url:"/api/polls_to_send",
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    }).then((response) => {
+      setData(response.data);
+    });
+  }, []);
+
+  if (!data) return null;
+
+
+
+
+  // const onPollChange = (event: { target: { value: any; }; }) => {
+  //       setSelectPoll(event.target.value)
+  //   };
+
+    function onPollChange(id: React.Key | null | undefined, event:any) {
+        const newInputFields = inputFields.map((i: { [x: string]: string; id: any; }) => {
+      if(id === i.id) {
+          i["FollowupPoll"] = event.target.value
+      }
+      return i;
+    })
+        setInputFields(newInputFields);
+    }
+
     return (
         <Container>
         <InputLabel>{name}</InputLabel>
-        {inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; }) => (
+        {inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll:string }) => (
           <div key={inputField.id}>
               <TextField
               name="Option"
@@ -208,6 +245,17 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
             >
               <AddIcon />
             </IconButton>
+                    <FormControl sx={{ m: 1, width: 300 }}>
+            <InputLabel>Follow-up Poll</InputLabel>
+            <Select onChange={event => {onPollChange(inputField.id, event)}}
+                    value={inputField.FollowupPoll}
+                    label="Follow-up Poll"
+            >
+                <MenuItem key={-1} value={"None"}>None</MenuItem>
+                {data.map((poll: Poll) => (
+                    <MenuItem key={poll.poll_id} value={poll.poll_id}>{poll.poll_name}</MenuItem>
+                ))}
+            </Select></FormControl>
           </div>
         )) }
     </Container>

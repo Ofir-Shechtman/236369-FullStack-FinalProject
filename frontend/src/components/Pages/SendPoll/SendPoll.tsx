@@ -39,21 +39,6 @@ const get_poll_name=function(poll_id:string, data:PollProps[]){
     })
 }
 
-const get_user_name=function(selected:string[], data:PollProps[], selected_poll_id:string){
-    let names:string[] = []
-    data.forEach((poll: PollProps) => {
-        if(String(poll.poll_id) == selected_poll_id){
-            selected.forEach((chat_id: string) => {
-                poll.unsent_users.forEach((user:UserProps) =>{
-                    if (user.chat_id==chat_id){
-                        names.push(user.user);
-                    }
-                })
-            })
-            return names.join(',');
-        }
-    })
-}
 
 const SelectPoll: React.FC<SelectPollProps> = ({
                                                    selected_poll_id,

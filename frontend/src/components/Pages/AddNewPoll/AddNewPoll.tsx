@@ -31,10 +31,10 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     };
 
     const [inputFields, setInputFields] = useState([
-    { id: uuidv4(), Option: '' }, { id: uuidv4(), Option: '' }
+    { id: uuidv4(), Option: '', FollowupPoll:'None'}, { id: uuidv4(), Option: '', FollowupPoll:'None'}
   ]);
     const onSubmit = (data: any) => {
-      data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; }) => (inputField.Option))
+      data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll:unknown}) => ({"option":inputField.Option, "poll_id":inputField.FollowupPoll}))
       data['PollType'] = is_poll_type
       if(!data.AutoCloseTime){
           data['AutoCloseTime']=5;

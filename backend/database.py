@@ -196,17 +196,19 @@ def _add_answer(answer: PollAnswer):
 def add_answer_by_poll_id(chat_id, telegram_poll_id, option_id):
     _get_user(chat_id)
     poll_receiver = _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id)
-    _get_option(poll_receiver.poll_id, option_id)
+    option = _get_option(poll_receiver.poll_id, option_id)
     new_answer = PollAnswer(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     _add_answer(new_answer)
+    return option.followup_poll
 
 
 def add_answer_by_message_id(chat_id, message_id, option_id):
     _get_user(chat_id)
     poll_receiver = _get_poll_receiver_by_message_id(chat_id, message_id)
-    _get_option(poll_receiver.poll_id, option_id)
+    option = _get_option(poll_receiver.poll_id, option_id)
     new_answer = PollAnswer(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     _add_answer(new_answer)
+    return option.followup_poll
 
 
 def _get_answer(chat_id, poll_id, answer_index):
@@ -232,9 +234,9 @@ def _add_only_poll(poll_name, question, poll_type, allows_multiple_answers, clos
     return new_poll.poll_id
 
 
-def _add_option(option_id, poll_id, content):
+def _add_option(option_id, poll_id, content, followup_poll_id):
     get_poll(poll_id)
-    new_option = PollOption(option_id=option_id, poll_id=poll_id, content=content)
+    new_option = PollOption(option_id=option_id, poll_id=poll_id, content=content, followup_poll_id=followup_poll_id)
     try:
         _db.session.add(new_option)
         _db.session.commit()
@@ -251,7 +253,9 @@ def add_poll(poll_name, question, options, poll_type, created_by, allows_multipl
                              allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                              created_by=created_by)
     for option_index, option in enumerate(options):
-        _add_option(option_index, poll_id, option)
+        content, followup = option.get('option'), option.get('poll_id')
+        followup_poll_id = followup if followup != "None" else None
+        _add_option(option_index, poll_id, content, followup_poll_id)
     return poll_id
 
 

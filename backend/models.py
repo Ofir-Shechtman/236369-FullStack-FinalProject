@@ -58,8 +58,11 @@ class PollOption(db.Model):
     option_id = db.Column(db.Integer, primary_key=True, nullable=False)
     poll_id = db.Column(db.ForeignKey('polls.poll_id', ondelete='CASCADE'), primary_key=True, nullable=False)
     content = db.Column(db.String(300), nullable=False)
+    followup_poll_id = db.Column(db.ForeignKey('polls.poll_id', ondelete='SET NULL'), nullable=True)
 
     poll = db.relationship('Poll', primaryjoin='PollOption.poll_id == Poll.poll_id', backref=db.backref("poll_options", cascade="all", passive_deletes=True))
+    followup_poll = db.relationship('Poll', primaryjoin='PollOption.followup_poll_id == Poll.poll_id')
+
 
 
 class PollReceiver(db.Model):

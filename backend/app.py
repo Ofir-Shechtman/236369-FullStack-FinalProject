@@ -12,8 +12,8 @@ import json
 import urllib
 from datetime import timedelta
 from statuses import Status
-from flask_jwt_extended import create_access_token,get_jwt, \
-                               unset_jwt_cookies, jwt_required, JWTManager
+from flask_jwt_extended import create_access_token, get_jwt, \
+    unset_jwt_cookies, jwt_required, JWTManager
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
@@ -60,24 +60,6 @@ def my_profile():
     return response_body
 
 
-@app.route("/", methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        if request.form.get('message'):
-            _send_message(chat_id=569667677, text="Hello World!")
-        elif request.form.get('poll'):
-            poll_id = send_poll(poll_name='poll1', receivers=[569667677, 2123387537], question="How are you today?",
-                                options=["Good!", "Great!", "Fantastic!"], allows_multiple_answers=True, admin_id=get_admin().id)
-            # stop_poll(poll_id)
-        elif request.form.get('inline'):
-            send_poll(poll_name='poll2', receivers=[569667677, 2123387537], question="What is the time now?", options=["2pm Israel", "7pm Thailand"],
-                       inline=True, admin_id=get_admin().id)
-
-    elif request.method == 'GET':
-        return render_template('index.html')
-    return render_template('index.html')
-
-
 @app.route('/api/polls', methods=['GET'])
 @jwt_required()
 def get_posts():
@@ -104,7 +86,7 @@ def add_poll():
         close_data = None
         poll_type = data.get('PollType')
         auto_close_time = data.get('AutoCloseTime')
-        if data.get('AutoClosingSwitch') and auto_close_time and poll_type=="Telegram_poll":
+        if data.get('AutoClosingSwitch') and auto_close_time and poll_type == "Telegram_poll":
             close_data = datetime.datetime.now() + datetime.timedelta(minutes=auto_close_time)
         allows_multiple_answers = poll_type == "Telegram_poll" and data.get('MultipleAnswers')
         db.add_poll(poll_name=data.get('PollName'),
@@ -125,11 +107,12 @@ def add_admin():
     try:
         data = request.get_json()
         db.add_admin(username=data.get('username'),
-                    password=data.get('password'),
-                    created_by=get_admin().id)
+                     password=data.get('password'),
+                     created_by=get_admin().id)
     except BaseException:
         return Response('Error', 500)
     return Response()
+
 
 @app.route('/api/send_poll', methods=['POST'])
 @jwt_required()
@@ -137,26 +120,10 @@ def send_poll():
     try:
         data = request.get_json()
         poll = db.get_poll(data['poll'])
-        regular_poll = poll.poll_type == "Telegram_poll"
-        poll_options = [option.content for option in poll.poll_options]
         users = data['users']
-        unix_time = int(time.mktime(poll.close_date.timetuple())) if poll.close_date else None
         for name in users:
             chat_id = db.get_user_by_name(name).user_id
-            if regular_poll:
-                result = _bot_send_poll(chat_id, poll.question, poll_options, unix_time,
-                                        poll.allows_multiple_answers)
-            else:
-                reply_markup = {
-                    "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(poll_options)]
-                }
-                result = _send_message(chat_id, poll.question, reply_markup=json.dumps(reply_markup))
-
-
-            data = result.json().get('result')
-            db.add_poll_receiver(chat_id=chat_id, poll_id=poll.poll_id, sent_by=poll.admin.id,
-                                 telegram_poll_id=data['poll']['id'] if regular_poll else None,
-                                 message_id=data['message_id'])
+            _send_poll(poll, chat_id)
 
     except BaseException:
         return Response('Error', 500)
@@ -192,13 +159,20 @@ def respond() -> Status:
             return Status('DBUserNotFound')
     elif method == 'receive_poll_answer':
         for answer in data['answers']:
-            db.add_answer_by_poll_id(chat_id=int(data.get('chat_id')),
-                                     telegram_poll_id=data.get('poll_id'),
-                                     option_id=int(answer))
+            chat_id = int(data.get('chat_id'))
+            followup_poll = db.add_answer_by_poll_id(chat_id=chat_id,
+                                                     telegram_poll_id=data.get('poll_id'),
+                                                     option_id=int(answer))
+            if followup_poll:
+                _send_poll(followup_poll, chat_id)
+
     elif method == 'button':
-        db.add_answer_by_message_id(chat_id=int(data.get('chat_id')),
-                                    message_id=int(data.get('message_id')),
-                                    option_id=int(data['answers']))
+        chat_id = int(data.get('chat_id'))
+        followup_poll = db.add_answer_by_message_id(chat_id=chat_id,
+                                                    message_id=int(data.get('message_id')),
+                                                    option_id=int(data['answers']))
+        if followup_poll:
+            _send_poll(followup_poll, chat_id)
     else:
         raise Exception
     return Status('SUCCESS')
@@ -212,7 +186,6 @@ def favicon():
 
 def _send_bot_post(method: str, query: dict):
     to_post = f'https://api.telegram.org/bot{BOT_TOKEN}/{method}?{urllib.parse.urlencode(query)}'
-    print(to_post)
     return requests.post(to_post)
 
 
@@ -232,26 +205,23 @@ def _send_message(chat_id: int, text: str, reply_markup=None):
     return _send_bot_post("sendMessage", locals())
 
 
-def send_poll(poll_name, receivers, question: str, options: List[str], admin_id, close_date: int = None,
-              allows_multiple_answers: bool = False, inline: bool = False):
-    poll_type= "Telegram_inline_keyboard" if inline else "Telegram_poll"
-    poll_id = db.add_poll(poll_name=poll_name, poll_type=poll_type, question=question, options=options, created_by=admin_id, close_date=close_date if not inline else None,
-                          allows_multiple_answers=allows_multiple_answers and not inline)
-    for chat_id in receivers:
-        if inline:
-            reply_markup = {
-                "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(options)]
-            }
-            result = _send_message(chat_id, question, reply_markup=json.dumps(reply_markup))
-        else:
+def _send_poll(poll, chat_id):
+    regular_poll = poll.poll_type == "Telegram_poll"
+    poll_options = [option.content for option in poll.poll_options]
+    unix_time = int(time.mktime(poll.close_date.timetuple())) if poll.close_date else None
+    if regular_poll:
+        result = _bot_send_poll(chat_id, poll.question, poll_options, unix_time,
+                                poll.allows_multiple_answers)
+    else:
+        reply_markup = {
+            "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(poll_options)]
+        }
+        result = _send_message(chat_id, poll.question, reply_markup=json.dumps(reply_markup))
 
-            result = _bot_send_poll(chat_id, question, options, close_date,
-                                    allows_multiple_answers)
-        data = result.json().get('result')
-        db.add_poll_receiver(chat_id=chat_id, poll_id=poll_id, sent_by=admin_id,
-                             telegram_poll_id=data['poll']['id'] if not inline else None,
-                             message_id=data['message_id'])
-    return poll_id
+    data = result.json().get('result')
+    db.add_poll_receiver(chat_id=chat_id, poll_id=poll.poll_id, sent_by=poll.admin.id,
+                         telegram_poll_id=data['poll']['id'] if regular_poll else None,
+                         message_id=data['message_id'])
 
 
 def stop_poll(poll_id):
