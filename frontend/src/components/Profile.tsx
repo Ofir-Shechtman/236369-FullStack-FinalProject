@@ -13,6 +13,7 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({
     removeToken,token
 }) => {
+
   const [page, setPage] = React.useState<number>(0);
   const changePage = (newPage: number) => {
     setPage(newPage);

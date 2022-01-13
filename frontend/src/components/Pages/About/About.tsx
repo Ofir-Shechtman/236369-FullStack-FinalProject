@@ -44,7 +44,7 @@ export const About: React.FC<AboutProps> = ({
     function getData() {
     axios({
       method: "GET",
-      url:"/profile",
+      url:"/api/profile",
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -60,7 +60,10 @@ export const About: React.FC<AboutProps> = ({
         console.log(error.response.headers)
         }
     })}
-    getData()
+        React.useEffect(() => {
+    getData();
+  }, []);
+
     return (
         <div className="Page" >
             <h1> Hello {username} welcome!</h1>

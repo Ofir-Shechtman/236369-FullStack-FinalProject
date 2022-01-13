@@ -208,7 +208,7 @@ def add_answer_by_message_id(chat_id, message_id, option_id):
     option = _get_option(poll_receiver.poll_id, option_id)
     new_answer = PollAnswer(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     _add_answer(new_answer)
-    return option.followup_poll
+    return new_answer
 
 
 def _get_answer(chat_id, poll_id, answer_index):

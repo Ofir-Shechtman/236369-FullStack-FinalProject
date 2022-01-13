@@ -143,7 +143,7 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
         <CloseTimePicker name_switch={"Auto Closing"} name_slider={"Minutes to close"} value_switch={"AutoClosingSwitch"} value_slider={"AutoCloseTime"}  control={control} multiple_enable={multiple_enable}/>
         <MultipleOptions name={"Multiple Options"} inputFields={inputFields} setInputFields={setInputFields} data={data}/>
         <Button variant="contained" component="label">
-            Submit
+            Add Poll
               <input type="submit" hidden />
         </Button>
         <Popup open={popup_status} alert_header={alert_header} alert_body={alert_body}

@@ -50,7 +50,7 @@ def get_admin():
     return db.get_admin(get_jwt()['sub'])
 
 
-@app.route('/profile')
+@app.route('/api/profile')
 @jwt_required()
 def my_profile():
     response_body = {
@@ -136,6 +136,20 @@ def send_poll():
     return Response()
 
 
+@app.route('/api/stop_poll', methods=['POST'])
+@jwt_required()
+def stop_poll():
+    try:
+        data = request.get_json()
+        poll = db.get_poll(data['poll_id'])
+        db.stop_poll(poll)
+        for poll_receiver in poll.poll_receivers:
+            _bot_stop_poll(poll_receiver.user_id, poll_receiver.message_id)
+    except BaseException:
+        return Response('Error', 500)
+    return Response()
+
+
 @app.route('/api/delete_poll', methods=['POST'])
 @jwt_required()
 def delete_poll():
@@ -166,19 +180,19 @@ def respond() -> Status:
     elif method == 'receive_poll_answer':
         for answer in data['answers']:
             chat_id = int(data.get('chat_id'))
-            followup_poll = db.add_answer_by_poll_id(chat_id=chat_id,
+            answer = db.add_answer_by_poll_id(chat_id=chat_id,
                                                      telegram_poll_id=data.get('poll_id'),
                                                      option_id=int(answer))
-            if followup_poll:
-                _send_poll(followup_poll, chat_id)
+            if answer.option.followup_poll:
+                _send_poll(answer.option.followup_poll, chat_id)
 
     elif method == 'button':
         chat_id = int(data.get('chat_id'))
-        followup_poll = db.add_answer_by_message_id(chat_id=chat_id,
+        answer = db.add_answer_by_message_id(chat_id=chat_id,
                                                     message_id=int(data.get('message_id')),
                                                     option_id=int(data['answers']))
-        if followup_poll:
-            _send_poll(followup_poll, chat_id)
+        if answer.option.followup_poll:
+                _send_poll(answer.option.followup_poll, chat_id)
     else:
         raise Exception
     return Status('SUCCESS')
@@ -230,11 +244,6 @@ def _send_poll(poll, chat_id):
                          message_id=data['message_id'])
 
 
-def stop_poll(poll_id):
-    poll = db.get_poll(poll_id)
-    db.stop_poll(poll)
-    for poll_receiver in poll.poll_receivers:
-        _bot_stop_poll(poll_receiver.user_id, poll_receiver.message_id)
 
 
 def _send_inline_keyboard(receivers, question: str, options: List[str]):
