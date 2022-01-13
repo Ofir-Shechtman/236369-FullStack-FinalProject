@@ -11,7 +11,7 @@ from typing import List
 import json
 import urllib
 from datetime import timedelta
-from statuses import Status
+from statuses import Status, StatusInline
 from flask_jwt_extended import create_access_token, get_jwt, \
     unset_jwt_cookies, jwt_required, JWTManager
 
@@ -162,7 +162,7 @@ def delete_poll():
 
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
-def respond() -> Status:
+def respond() -> Response:
     data = json.loads(request.get_json())
     method = data['method']
     if method == 'register':
@@ -181,18 +181,19 @@ def respond() -> Status:
         for answer in data['answers']:
             chat_id = int(data.get('chat_id'))
             answer = db.add_answer_by_poll_id(chat_id=chat_id,
-                                                     telegram_poll_id=data.get('poll_id'),
-                                                     option_id=int(answer))
+                                              telegram_poll_id=data.get('poll_id'),
+                                              option_id=int(answer))
             if answer.option.followup_poll:
                 _send_poll(answer.option.followup_poll, chat_id)
 
     elif method == 'button':
         chat_id = int(data.get('chat_id'))
         answer = db.add_answer_by_message_id(chat_id=chat_id,
-                                                    message_id=int(data.get('message_id')),
-                                                    option_id=int(data['answers']))
+                                             message_id=int(data.get('message_id')),
+                                             option_id=int(data['answers']))
         if answer.option.followup_poll:
-                _send_poll(answer.option.followup_poll, chat_id)
+            _send_poll(answer.option.followup_poll, chat_id)
+        return {"question": answer.option.poll.question, 'option': answer.option.content}
     else:
         raise Exception
     return Status('SUCCESS')
