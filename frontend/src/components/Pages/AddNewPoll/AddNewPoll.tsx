@@ -86,29 +86,29 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     const [alert_body, setAlertBody] = React.useState<string>("Error");
 
     const updatePostReturn = (status: AxiosResponse<any, any>) => {
-    if(status.status===200){
-        setAlertHeader("success");
-        setAlertBody("Your poll successfully added!");
-    }
-    else{
-        setAlertHeader("error");
-        if(status.data == "PollExists"){
-            setAlertBody("Your poll name already in the system  — choose another name!");
-        }
-        else if(status.data == "OptionExists"){
-            setAlertBody("Your poll contain 2 identical options  — fix it!");
-        }
-        else if(status.data == "Database UnknownError"){
-            setAlertBody("Database UnknownError");
-        }
-        else if(status.data == "Server UnknownError"){
-            setAlertBody("Server UnknownError");
+        if(status.status===200){
+            setAlertHeader("success");
+            setAlertBody("Your poll successfully added!");
         }
         else{
-            setAlertBody("Connection UnknownError");
+            setAlertHeader("error");
+            if(status.data == "PollExists"){
+                setAlertBody("Your poll name already in the system  — choose another name!");
+            }
+            else if(status.data == "OptionExists"){
+                setAlertBody("Your poll contain 2 identical options  — fix it!");
+            }
+            else if(status.data == "Database UnknownError"){
+                setAlertBody("Database UnknownError");
+            }
+            else if(status.data == "Server UnknownError"){
+                setAlertBody("Server UnknownError");
+            }
+            else{
+                setAlertBody("Connection UnknownError");
+            }
         }
-    }
-  };
+    };
 
 
     const onSubmit = (data: any) => {
@@ -120,7 +120,6 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
       if(!data.AutoClosingSwitch){
           data['AutoClosingSwitch']=false;
       }
-        alert(JSON.stringify(data))
       axios({
       method: "POST",
       url:"/api/add_poll",

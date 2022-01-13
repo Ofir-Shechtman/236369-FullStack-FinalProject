@@ -16,12 +16,13 @@ import {
     Avatar,
     Grid,
     Typography,
-    Button
+    Button, Dialog, Alert, AlertTitle
 } from "@mui/material";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import ReportIcon from "@mui/icons-material/Report";
 import AddNewAdmin from './AddNewAdmin';
 import AddIcon from '@mui/icons-material/Add';
+import Stack from "@mui/material/Stack";
 
 
 const useStyles = (theme: Theme) => createStyles({
@@ -55,11 +56,39 @@ interface ListProps {
   admin: string
 }
 
+
+
+function Popup(props: { handleClose: () => void, open: boolean, alert_header: any, alert_body:string }) {
+    return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "60%" }}>
+        <Dialog
+        open={props.open}
+        onClose={props.handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+            <Alert severity={props.alert_header}>
+              <AlertTitle>{props.alert_header.charAt(0).toUpperCase() + props.alert_header.slice(1)}</AlertTitle>
+                <Stack><div>{props.alert_body}</div>
+                <Button onClick={props.handleClose}>Close</Button>
+                </Stack>
+
+            </Alert>
+      </Dialog>
+      </div>
+    </div>
+  );
+}
+
 interface AdminsListState {
   data: Array<any>,
   loading: boolean,
   error: boolean,
-  openDialog: boolean
+  openDialog: boolean,
+  popup_status: boolean,
+  alert_header: any,
+  alert_body: string
 }
 
 interface AdminsListProps extends WithStyles<typeof useStyles> {token:string, changePage(newPage: number): void}
@@ -69,7 +98,10 @@ class AdminsList extends React.Component<AdminsListProps, AdminsListState> {
       data: [],
       loading: true,
       error: false,
-      openDialog: false
+      openDialog: false,
+      popup_status: false,
+      alert_header: 'success',
+      alert_body: "Error"
     }
 
   refreshPage = () => {
@@ -108,9 +140,9 @@ class AdminsList extends React.Component<AdminsListProps, AdminsListState> {
     };
 
 
-    const handleClose = (e: any) => {
+    const handleClose = () => {
         this.setState({openDialog: false})
-    };
+    }
 
     return (
         <div>
@@ -160,7 +192,11 @@ class AdminsList extends React.Component<AdminsListProps, AdminsListState> {
                             <AddNewAdmin token={this.props.token}
                                          open={this.state.openDialog}
                                          handleClose={handleClose}
-                                         refreshPage={this.refreshPage}/>
+                                         refreshPage={this.refreshPage}
+                                         setAlertHeader={(header: any) => this.setState({alert_header: header})}
+                                         setAlertBody={(body: string) => this.setState({alert_body: body})}
+                                         setPopupStatus={(status: boolean) => this.setState({popup_status: status})}
+                            />
                         </TableCell>
                       </TableRow>
                   }
@@ -172,6 +208,9 @@ class AdminsList extends React.Component<AdminsListProps, AdminsListState> {
                 </TableBody>
               </Table>
             </TableContainer>
+            <Popup open={this.state.popup_status} alert_header={this.state.alert_header} alert_body={this.state.alert_body}
+               handleClose={()=>this.setState({popup_status: false})}
+        />
         </div>
     );
   }

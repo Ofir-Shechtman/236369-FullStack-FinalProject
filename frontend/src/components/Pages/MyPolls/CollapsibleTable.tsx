@@ -17,10 +17,11 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
-import CircleIcon from '@mui/icons-material/Circle';
+import CircleTwoToneIcon from '@mui/icons-material/CircleTwoTone';
 import ReportIcon from '@mui/icons-material/Report';
 import axios from "axios";
 import {FaClock} from "react-icons/fa";
+
 
 const useStyles = (theme: Theme) => createStyles({
   tableContainer:{
@@ -42,7 +43,7 @@ const useStyles = (theme: Theme) => createStyles({
 })
 
 function Row(props: any) {
-  const { row, refreshPage, token} = props;
+  const { row, refreshPage} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
@@ -101,15 +102,15 @@ function Row(props: any) {
           </IconButton>
         </TableCell>
         <TableCell align="center">{row.poll_name}</TableCell>
-        <TableCell align="center">{row.poll_type}</TableCell>
+        <TableCell align="center">{row.poll_type == "Telegram_poll"? "Telegram Poll": "Telegram Inline Keyboard"}</TableCell>
         <TableCell align="center">
           {row.allows_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
         </TableCell>
         <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
-        <TableCell align="center"><CircleIcon sx={{ color: row.open? "green" :"red"}}/></TableCell>
+        <TableCell align="center"><CircleTwoToneIcon sx={{ color: row.open? "green" :"red"}}/></TableCell>
         <TableCell align="center">
-          <IconButton disabled={!row.open}>
+          <IconButton disabled={row.poll_type != "Telegram_poll" || !row.open}>
             <StopCircleIcon onClick={() => handleStopPoll(row.poll_id, props.token)}/>
           </IconButton>
         </TableCell>
@@ -230,8 +231,7 @@ Row.propTypes = {
     receivers: PropTypes.number.isRequired,
     open: PropTypes.bool.isRequired
   }).isRequired,
-  refreshPage: PropTypes.func.isRequired,
-  token:PropTypes.string.isRequired
+  refreshPage: PropTypes.func.isRequired
 };
 
 
@@ -325,7 +325,6 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
                             <Row key={row.poll_id}
                                  row={row}
                                  refreshPage={this.refreshPage}
-                                 token={this.props.token}
                             />
                         ))
                   }

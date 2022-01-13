@@ -115,6 +115,8 @@ def add_admin():
         db.add_admin(username=data.get('username'),
                      password=data.get('password'),
                      created_by=get_admin().id)
+    except db.UserExists:
+        return Response('UserExists', 500)
     except BaseException:
         return Response('Error', 500)
     return Response()
