@@ -80,7 +80,7 @@ class AdminsList extends React.Component<AdminsListProps, AdminsListState> {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
   componentDidMount() {
-    this.sleep(200)
+    this.sleep(0)
         .then(() => axios({
       method: "GET",
       url:"/api/admins",
