@@ -137,7 +137,7 @@ def send_poll():
 
 
 @app.route('/api/stop_poll', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def stop_poll():
     try:
         data = request.get_json()
@@ -242,8 +242,6 @@ def _send_poll(poll, chat_id):
     db.add_poll_receiver(chat_id=chat_id, poll_id=poll.poll_id, sent_by=poll.admin.id,
                          telegram_poll_id=data['poll']['id'] if regular_poll else None,
                          message_id=data['message_id'])
-
-
 
 
 def _send_inline_keyboard(receivers, question: str, options: List[str]):

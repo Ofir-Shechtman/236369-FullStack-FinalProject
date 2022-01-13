@@ -260,6 +260,12 @@ def add_poll(poll_name, question, options, poll_type, created_by, allows_multipl
     return poll_id
 
 
+def is_poll_active(close_date):
+    if close_date:
+        return close_date.replace(tzinfo=None) > datetime.datetime.now().replace(tzinfo=None)
+    return True
+
+
 def add_poll_receiver(chat_id, poll_id, sent_by, message_id, telegram_poll_id):
     _get_user(chat_id)
     get_poll(poll_id)
@@ -278,6 +284,7 @@ def add_poll_receiver(chat_id, poll_id, sent_by, message_id, telegram_poll_id):
 
 def stop_poll(poll: Poll):
     poll.close_date = datetime.datetime.now()
+    _db.session.commit()
 
 
 def get_polls_data(admin_id):
@@ -298,7 +305,8 @@ def get_polls_data(admin_id):
                                       default=None)} for receiver in poll.poll_receivers],
             'receivers': len(poll.poll_receivers),
             'answers_count': len([receiver for receiver in poll.poll_receivers if receiver.poll_answers]),
-            'answers': [len(option.poll_answers) for option in poll.poll_options]
+            'answers': [len(option.poll_answers) for option in poll.poll_options],
+            'open': is_poll_active(poll.close_date)
         }
 
     admin = get_admin(admin_id)
@@ -327,7 +335,7 @@ def get_poll_to_send(admin_id):
         }
 
     admin = get_admin(admin_id)
-    return jsonify([serialize_poll(poll) for poll in admin.polls])
+    return jsonify([serialize_poll(poll) for poll in admin.polls if is_poll_active(poll.close_date)])
 
 
 def delete_poll(poll_id):
