@@ -33,13 +33,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 export interface AboutProps {
     token: string;
+    removeToken():void
 }
 
 export const About: React.FC<AboutProps> = ({
-                                                          token
+                                                          token,removeToken
                                                       }) => {
     const classes = useStyles();
-    const [username, setProfileData] = useState<string>("Username")
+    const [username, setProfileData] = useState<string>("")
     function getData() {
     axios({
       method: "GET",
@@ -53,6 +54,7 @@ export const About: React.FC<AboutProps> = ({
       setProfileData(res.username)
     }).catch((error) => {
       if (error.response) {
+          if(Math.floor(error.response.status/100)===4){removeToken()}
         console.log(error.response)
         console.log(error.response.status)
         console.log(error.response.headers)

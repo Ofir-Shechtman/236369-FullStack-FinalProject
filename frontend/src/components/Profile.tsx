@@ -22,7 +22,7 @@ const Profile: React.FC<ProfileProps> = ({
   return (
     <div className="App">
       <Header changePage={changePage} removeToken={removeToken}/>
-      <PageLayout changePage={changePage} page={page} token={token}/>
+      <PageLayout changePage={changePage} page={page} token={token} removeToken={removeToken}/>
     </div>
   );
 }
