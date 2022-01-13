@@ -20,6 +20,10 @@ export const TableColumns = [
         width: '150px'
     },
     {
+        title: 'Stop Poll',
+        width: '100px'
+    },
+    {
         title: 'Delete Poll',
         width: '100px'
     }

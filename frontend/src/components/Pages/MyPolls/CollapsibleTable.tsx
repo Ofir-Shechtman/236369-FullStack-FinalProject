@@ -16,6 +16,7 @@ import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
 import ReportIcon from '@mui/icons-material/Report';
 import axios from "axios";
 import {FaClock} from "react-icons/fa";
@@ -66,15 +67,27 @@ function Row(props: any) {
       handleClose()
       const delete_msg = { poll_id: poll_id };
       axios({
-      method: "POST",
-      url:"/api/delete_poll",
-      headers: {
-        Authorization: 'Bearer ' + token
-      },
-      data:delete_msg
-    })
-      refreshPage()
-    }
+        method: "POST",
+        url:"/api/delete_poll",
+        headers: {
+          Authorization: 'Bearer ' + token
+        },
+        data:delete_msg
+      }).then(() => refreshPage())
+  }
+
+  const handleStopPoll = (poll_id: number, token:string) => {
+      const stop_msg = { poll_id: poll_id };
+      axios({
+        method: "POST",
+        url:"/api/stop_poll",
+        headers: {
+          Authorization: 'Bearer ' + token
+        },
+        data:stop_msg
+      }).then(() => refreshPage())
+  }
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -90,10 +103,15 @@ function Row(props: any) {
         <TableCell align="center">{row.poll_name}</TableCell>
         <TableCell align="center">{row.poll_type}</TableCell>
         <TableCell align="center">
-          {row.allow_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
+          {row.allows_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
         </TableCell>
         <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
+                <TableCell align="center">
+          <IconButton disabled={row.close_date}>
+            <StopCircleIcon onClick={() => handleStopPoll(row.poll_id, props.token)}/>
+          </IconButton>
+        </TableCell>
         <TableCell align="center">
           <IconButton>
             <DeleteIcon onClick={handleClickOpen}/>
@@ -105,7 +123,7 @@ function Row(props: any) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Poll Question
+                {row.question}
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
@@ -146,7 +164,7 @@ function Row(props: any) {
                     <TableRow key={answer.user}>
                       <TableCell component="th" scope="row">{answer.user}</TableCell>
                       <TableCell align="center">
-                        {(answer.answers.length == 0)? answer.answers.join(', '): <FaClock/>}
+                        {(answer.answers.length != 0)? answer.answers.join(', '): <FaClock/>}
                       </TableCell>
                       <TableCell align="center">{answer.time_answered}</TableCell>
                     </TableRow>
@@ -197,7 +215,7 @@ Row.propTypes = {
     poll_name: PropTypes.string.isRequired,
     poll_type: PropTypes.string.isRequired,
     close_date: PropTypes.string.isRequired,
-    allow_multiple_answers: PropTypes.bool.isRequired,
+    allows_multiple_answers: PropTypes.bool.isRequired,
     question: PropTypes.string.isRequired,
     poll_options: PropTypes.arrayOf(PropTypes.string.isRequired),
     answers: PropTypes.arrayOf(PropTypes.number.isRequired),
@@ -219,7 +237,7 @@ interface PollProps {
   poll_name: string,
   poll_type:string,
   close_date: string,
-  allow_multiple_answers: boolean,
+  allows_multiple_answers: boolean,
   question: string,
   poll_options: Array<string>,
   answers: Array<number>,
