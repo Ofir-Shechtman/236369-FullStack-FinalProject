@@ -137,7 +137,7 @@ def send_poll():
 
 
 @app.route('/api/stop_poll', methods=['POST'])
-# @jwt_required()
+@jwt_required()
 def stop_poll():
     try:
         data = request.get_json()
