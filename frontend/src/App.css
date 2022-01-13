@@ -62,3 +62,32 @@ body {
   padding-top: 10px;
   padding-left: 50px;
 }
+
+.App .PageLayout .tableContainer {
+  border-radius: 15px;
+}
+
+.App .PageLayout .TableHeader {
+  font-weight: bold;
+  background: #383636;
+  color: white;
+}
+.App .PageLayout .tableSecondHeader {
+  font-weight: bold;
+  background: #b6b6b6;
+  color: black
+}
+
+.App .PageLayout .refresh_icon {
+    color: white;
+}
+
+.App .PageLayout .avatar {
+    background: #2c9b9f;
+    color: white;
+}
+
+.App .PageLayout .name {
+  font-weight: bold;
+  margin-top: 3px ;
+}

@@ -310,9 +310,9 @@ def get_polls_data(admin_id):
         }
 
     admin = get_admin(admin_id)
-    ret = [serialize_poll(poll) for poll in admin.polls]
-    ret.sort(key=lambda x: x.get('poll_name'))
-    return jsonify(ret)
+    polls = [serialize_poll(poll) for poll in admin.polls]
+    polls.sort(key=lambda x: x.get('poll_name'))
+    return jsonify(polls)
 
 
 def get_name(user: User):
@@ -357,6 +357,8 @@ def get_verified_admin(username, password):
 def get_admins():
     def serialize(admin):
         return {
-            'admin': admin.username}
-
-    return jsonify([serialize(admin) for admin in _db.session.query(Admin)])
+            'admin': admin.username
+        }
+    polls = [serialize(admin) for admin in _db.session.query(Admin)]
+    polls.sort(key=lambda x: x.get('admin'))
+    return jsonify(polls)
