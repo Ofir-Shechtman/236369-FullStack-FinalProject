@@ -17,6 +17,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
+import CircleIcon from '@mui/icons-material/Circle';
 import ReportIcon from '@mui/icons-material/Report';
 import axios from "axios";
 import {FaClock} from "react-icons/fa";
@@ -106,8 +107,9 @@ function Row(props: any) {
         </TableCell>
         <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
-                <TableCell align="center">
-          <IconButton disabled={row.close_date}>
+        <TableCell align="center"><CircleIcon sx={{ color: row.open? "green" :"red"}}/></TableCell>
+        <TableCell align="center">
+          <IconButton disabled={!row.open}>
             <StopCircleIcon onClick={() => handleStopPoll(row.poll_id, props.token)}/>
           </IconButton>
         </TableCell>
@@ -226,6 +228,7 @@ Row.propTypes = {
       }),).isRequired,
     answers_count: PropTypes.number.isRequired,
     receivers: PropTypes.number.isRequired,
+    open: PropTypes.bool.isRequired
   }).isRequired,
   refreshPage: PropTypes.func.isRequired,
   token:PropTypes.string.isRequired
@@ -244,6 +247,7 @@ interface PollProps {
   poll_answers: any,
   answers_count: number,
   receivers: number,
+  open: boolean
 }
 
 interface CollapsibleTableState {
@@ -270,7 +274,7 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
   componentDidMount() {
-    this.sleep(200)
+    this.sleep(0)
         .then(() => axios({
       method: "GET",
       url:"/api/polls",
