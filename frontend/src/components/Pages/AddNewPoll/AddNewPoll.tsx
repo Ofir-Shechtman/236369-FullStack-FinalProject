@@ -29,15 +29,13 @@ function Popup(props: { handleClose: () => void, open: boolean, alert_header: Al
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogContent>
             <Alert severity={props.alert_header}>
               <AlertTitle>{props.alert_header.charAt(0).toUpperCase() + props.alert_header.slice(1)}</AlertTitle>
-                {props.alert_body}
+                <Stack><div>{props.alert_body}</div>
+                <Button onClick={props.handleClose}>Close</Button>
+                </Stack>
+
             </Alert>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={props.handleClose}>Close</Button>
-        </DialogActions>
       </Dialog>
       </div>
     </div>

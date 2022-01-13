@@ -4,7 +4,16 @@ import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core/sty
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
-import {Checkbox, FormControl, ListItemText, OutlinedInput} from "@mui/material";
+import {
+    Alert,
+    AlertTitle,
+    Checkbox,
+    Dialog, DialogActions,
+    DialogContent,
+    FormControl,
+    ListItemText,
+    OutlinedInput
+} from "@mui/material";
 import axios from "axios";
 import InputLabel from "@mui/material/InputLabel";
 
@@ -13,7 +22,9 @@ interface SendPollState {
   loading: boolean,
   error: boolean,
   selected_poll_id:string,
-  users:string[]
+  users:string[],
+  popup_status:boolean
+
 }
 interface UserProps {
   user: string,
@@ -123,7 +134,6 @@ const SelectUsers: React.FC<SelectUsersProps> = ({
                 }
             </Select>
         </FormControl>
-
     )
 }
 
@@ -143,24 +153,22 @@ class SendPoll extends React.Component<Props,SendPollState> {
           loading: true,
           error: false,
           selected_poll_id:"",
-          users:[]
+          users:[],
+          popup_status:false
         };
 
     sleep = (milliseconds: number) => {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
 
-
-componentDidMount() {
-    this.sleep(200)
-      .then(r=>axios({
+    refresh = () =>{
+        axios({
       method: "GET",
       url:"/api/polls_to_send",
       headers: {
-        Authorization: 'Bearer ' + this.props.token
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       }
-    })  )
-        .then(resp => resp.data)
+    }).then(resp => resp.data)
         .then(resp => this.setState({
           data: resp,
           loading: false
@@ -169,6 +177,11 @@ componentDidMount() {
           loading: false,
           error: true
         }));
+    }
+
+
+componentDidMount() {
+    this.refresh()
   }
 render() {
     const {data} = this.state;
@@ -188,11 +201,29 @@ render() {
                             Authorization: 'Bearer ' + this.props.token
                           },
                               data:{'poll':this.state.selected_poll_id, 'users':this.state.users}
-                        })
+                        }).then(()=>this.refresh()).then(() => this.setState({
+                    popup_status: true, users:[]}))
                                             }}
                         disabled={this.state.users.length===0}>
                     Submit
                 </Button>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "60%" }}>
+        <Dialog
+        open={this.state.popup_status}
+        onClose={()=>{this.setState({
+                    popup_status: false})}}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+            <Alert severity={"success"}>
+              <AlertTitle>All polls sent</AlertTitle>
+                <Button onClick={()=>{this.setState({
+                    popup_status: false})}}>Close</Button>
+            </Alert>
+      </Dialog>
+      </div>
+    </div>
             </div>
         )
     }
