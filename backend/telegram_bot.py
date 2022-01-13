@@ -6,7 +6,7 @@ from config import BOT_TOKEN, URL
 from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext, \
     CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from statuses import Method, Status, ReturnMessage
+from statuses import Method, Status, ReturnMessage, StatusInline
 import json
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -153,8 +153,8 @@ def button(update: Update, context: CallbackContext, result) -> None:
     # CallbackQueries need to be answered, even if no notification to the user is needed
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
-
-    query.edit_message_text(text=f"Selected option: {query.data}")
+    data = result.json()
+    query.edit_message_text(text=f"<u>{data.get('question')}</u>\n<b>Your answer: </b><i>{data.get('option')}</i>", parse_mode="HTML")
 
 
 class TelegramBot(Updater):
