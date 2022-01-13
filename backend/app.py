@@ -96,8 +96,14 @@ def add_poll():
                     allows_multiple_answers=allows_multiple_answers,
                     close_date=close_data,
                     created_by=get_admin().id)
-    except BaseException:
-        return Response('Error', 500)
+    except db.PollExists:
+        return Response('PollExists', 500)
+    except db.OptionExists:
+        return Response('OptionExists', 500)
+    except db.UnknownError:
+        return Response('Database UnknownError', 500)
+    except Exception:
+        return Response('Server UnknownError', 500)
     return Response()
 
 

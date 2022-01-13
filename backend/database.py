@@ -220,17 +220,18 @@ def _get_answer(chat_id, poll_id, answer_index):
 
 
 def _add_only_poll(poll_name, question, poll_type, allows_multiple_answers, close_date, created_by):
-    new_poll = Poll(poll_name=poll_name, question=question, poll_type=poll_type,
-                    allows_multiple_answers=allows_multiple_answers, close_date=close_date,
-                    created_by=created_by)
-    _db.session.add(new_poll)
-    _db.session.commit()
-    # except IntegrityError:
-    #     _db.session.rollback()
-    #     raise PollExists
-    # except BaseException:
-    #     _db.session.rollback()
-    #     raise UnknownError
+    try:
+        new_poll = Poll(poll_name=poll_name, question=question, poll_type=poll_type,
+                        allows_multiple_answers=allows_multiple_answers, close_date=close_date,
+                        created_by=created_by)
+        _db.session.add(new_poll)
+        _db.session.commit()
+    except IntegrityError:
+        _db.session.rollback()
+        raise PollExists
+    except BaseException:
+        _db.session.rollback()
+        raise UnknownError
     return new_poll.poll_id
 
 

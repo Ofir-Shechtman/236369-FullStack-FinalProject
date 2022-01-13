@@ -147,11 +147,15 @@ export const MUITextField: React.FC<ControlledProps> = ({
     </Container>
     )
 }
-
+  interface Poll {
+  poll_id: string,
+  poll_name: string
+}
 export interface MultipleOptionsProps {
     name: string;
     inputFields: any,
-    setInputFields: any
+    setInputFields: any,
+    data:Poll[]
 
 }
 
@@ -159,6 +163,7 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
                                                           name,
                                                           inputFields,
                                                           setInputFields,
+                                                        data
                                                       }) => {
 
 
@@ -184,27 +189,6 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
     values.splice(values.findIndex(value => value.id === id), 1);
     setInputFields(values);
   }
-
-  const [data, setData] = React.useState<Poll[]>([]);
-
-  interface Poll {
-  poll_id: string,
-  poll_name: string
-}
-
-  React.useEffect(() => {
-    axios({
-      method: "GET",
-      url:"/api/polls_to_send",
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    }).then((response) => {
-      setData(response.data);
-    });
-  }, []);
-
-  if (!data) return null;
 
 
 
@@ -292,11 +276,10 @@ export const CloseTimePicker: React.FC<CloseTimeProps> = ({
                             <Controller
                 name = {value_switch}
                 control={control}
-                defaultValue = {!auto_close_switch}
                 render={({field}) => (
                     <Switch {...field}
                     disabled={!multiple_enable}
-                    checked={!auto_close_switch}
+                    checked={!!auto_close_switch}
                     onChange={ToggleSwitch}
                     /> )}
                     />
