@@ -5,11 +5,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import {
-    Alert,
+    Alert, AlertColor,
     AlertTitle,
     Checkbox,
     Dialog, DialogActions,
-    DialogContent,
+    DialogContent, DialogContentText, DialogTitle,
     FormControl,
     ListItemText,
     OutlinedInput
@@ -17,13 +17,23 @@ import {
 import axios from "axios";
 import InputLabel from "@mui/material/InputLabel";
 
+interface PostResultList {
+    results:Array<PostResult>,
+}
+
+interface PostResult {
+    name:string,
+    status:string
+}
+
 interface SendPollState {
   data: Array<any>,
   loading: boolean,
   error: boolean,
   selected_poll_id:string,
   users:string[],
-  popup_status:boolean
+  popup_status:boolean,
+  popup_results:PostResultList
 
 }
 interface UserProps {
@@ -154,7 +164,8 @@ class SendPoll extends React.Component<Props,SendPollState> {
           error: false,
           selected_poll_id:"",
           users:[],
-          popup_status:false
+          popup_status:false,
+          popup_results:{results:[]}
         };
 
     sleep = (milliseconds: number) => {
@@ -185,7 +196,21 @@ componentDidMount() {
   }
 render() {
     const {data} = this.state;
-        return (
+
+    function render_severity(status: string):AlertColor {
+        if(status=="PollAlreadySent") {
+            return "warning";
+        }
+        if(status=="PollSentAgain") {
+            return "error";
+        }
+        if(status=="DatabaseUnknownError") {
+            return "error";
+        }
+        return "success";
+    }
+
+    return (
             <div className="SendPoll">
                 <SelectPoll selected_poll_id={this.state.selected_poll_id} setSelectPoll={(selected_poll_id:string)=>{this.setState({
                     selected_poll_id: selected_poll_id})}} data={data}/>
@@ -201,8 +226,12 @@ render() {
                             Authorization: 'Bearer ' + this.props.token
                           },
                               data:{'poll':this.state.selected_poll_id, 'users':this.state.users}
-                        }).then(()=>this.refresh()).then(() => this.setState({
-                    popup_status: true, users:[]}))
+                        }).then((result) => this.setState({popup_results: result.data})).then(()=>console.log(this.state.popup_results))
+                          .then(()=>this.refresh())
+                            .then(() => this.setState({
+                    popup_status: true, users:[]})).catch(error => {
+    this.setState({popup_results: {results:[]}})
+})
                                             }}
                         disabled={this.state.users.length===0}>
                     Submit
@@ -215,12 +244,17 @@ render() {
                     popup_status: false})}}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-      >
-            <Alert severity={"success"}>
-              <AlertTitle>All polls sent</AlertTitle>
-                <Button onClick={()=>{this.setState({
-                    popup_status: false})}}>Close</Button>
-            </Alert>
+      ><DialogTitle id="alert-dialog-title">
+          Sent results:
+        </DialogTitle>
+        <DialogContent>
+                {this.state.popup_results.results.map((user_data: PostResult) => (
+                    <Alert severity={render_severity(user_data.status)}><strong>{user_data.name}</strong> - {user_data.status}</Alert>
+                    ))}
+            </DialogContent>
+            <DialogActions>
+          <Button onClick={()=>{this.setState({
+                    popup_status: false})}}>Close</Button>        </DialogActions>
       </Dialog>
       </div>
     </div>

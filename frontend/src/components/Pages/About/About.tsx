@@ -54,7 +54,7 @@ export const About: React.FC<AboutProps> = ({
       setProfileData(res.username)
     }).catch((error) => {
       if (error.response) {
-          if(Math.floor(error.response.status/100)===4){removeToken()}
+          if(Math.floor(error.response.status/100)!==2){removeToken()}
         console.log(error.response)
         console.log(error.response.status)
         console.log(error.response.headers)

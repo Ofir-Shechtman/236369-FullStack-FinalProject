@@ -129,13 +129,15 @@ def send_poll():
         data = request.get_json()
         poll = db.get_poll(data['poll'])
         users = data['users']
+        results = []
         for name in users:
             chat_id = db.get_user_by_name(name).user_id
-            _send_poll(poll, chat_id)
+            status = _send_poll(poll, chat_id)
+            results.append({"name": name, 'status': status})
 
     except BaseException:
         return Response('Error', 500)
-    return Response()
+    return {"results": results}
 
 
 @app.route('/api/stop_poll', methods=['POST'])
@@ -229,22 +231,31 @@ def _send_message(chat_id: int, text: str, reply_markup=None):
 
 
 def _send_poll(poll, chat_id):
-    regular_poll = poll.poll_type == "Telegram_poll"
-    poll_options = [option.content for option in poll.poll_options]
-    unix_time = int(time.mktime(poll.close_date.timetuple())) if poll.close_date else None
-    if regular_poll:
-        result = _bot_send_poll(chat_id, poll.question, poll_options, unix_time,
-                                poll.allows_multiple_answers)
-    else:
-        reply_markup = {
-            "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(poll_options)]
-        }
-        result = _send_message(chat_id, poll.question, reply_markup=json.dumps(reply_markup))
-
-    data = result.json().get('result')
-    db.add_poll_receiver(chat_id=chat_id, poll_id=poll.poll_id, sent_by=poll.admin.id,
-                         telegram_poll_id=data['poll']['id'] if regular_poll else None,
-                         message_id=data['message_id'])
+    try:
+        if chat_id in [receiver.user_id for receiver in poll.poll_receivers]:
+            return "PollAlreadySent"
+        regular_poll = poll.poll_type == "Telegram_poll"
+        poll_options = [option.content for option in poll.poll_options]
+        unix_time = int(time.mktime(poll.close_date.timetuple())) if poll.close_date else None
+        if regular_poll:
+            result = _bot_send_poll(chat_id, poll.question, poll_options, unix_time,
+                                    poll.allows_multiple_answers)
+        else:
+            reply_markup = {
+                "inline_keyboard": [[dict(text=option, callback_data=i)] for i, option in enumerate(poll_options)]
+            }
+            result = _send_message(chat_id, poll.question, reply_markup=json.dumps(reply_markup))
+        if not result.json().get('ok'):
+            return "PollNotSent"
+        data = result.json().get('result')
+        db.add_poll_receiver(chat_id=chat_id, poll_id=poll.poll_id, sent_by=poll.admin.id,
+                             telegram_poll_id=data['poll']['id'] if regular_poll else None,
+                             message_id=data['message_id'])
+    except db.PollAlreadySent:
+        return "PollSentAgain"
+    except db.UnknownError:
+        return "DatabaseUnknownError"
+    return "Success"
 
 
 def _send_inline_keyboard(receivers, question: str, options: List[str]):
