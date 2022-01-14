@@ -84,6 +84,7 @@ export const About: React.FC<AboutProps> = ({
                     <span> Github</span><br/>
                 </Button>
             </div>
+            <img src='/static/videos/register.gif' alt="this slowpoke moves"  width="250" />
         </div>
     )
 }

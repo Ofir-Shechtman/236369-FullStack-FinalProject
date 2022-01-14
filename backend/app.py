@@ -235,6 +235,7 @@ def _send_poll(poll, chat_id):
         if chat_id in [receiver.user_id for receiver in poll.poll_receivers]:
             return "PollAlreadySent"
         regular_poll = poll.poll_type == "Telegram_poll"
+        poll.poll_options.sort(key=lambda option: option.option_id)
         poll_options = [option.content for option in poll.poll_options]
         unix_time = int(time.mktime(poll.close_date.timetuple())) if poll.close_date else None
         if regular_poll:
