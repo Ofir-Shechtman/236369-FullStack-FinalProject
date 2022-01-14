@@ -48,19 +48,17 @@ export const PollTypeForm: React.FC<PollTypeFormProps> = ({
     }
 
     return (
-        <Box sx={{ minWidth: 220 }}>
+    <Box sx={{ minWidth: 220 }}>
         <FormControl fullWidth>
-        <FormLabel>{name}</FormLabel>
+            <FormLabel>{name}</FormLabel>
             <ToggleButtonGroup
                 value={type_value}
-                exclusive
-                onChange={changeType}
-                >
-            <ToggleButton value={"Telegram_poll"} >Telegram poll
-      </ToggleButton>
-      <ToggleButton value={"Telegram_inline_keyboard"}>Telegram inline keyboard
-      </ToggleButton>
-      </ToggleButtonGroup>
+                    exclusive
+                    onChange={changeType}
+                    >
+                <ToggleButton value={"Telegram_poll"} >Telegram poll</ToggleButton>
+                <ToggleButton value={"Telegram_inline_keyboard"}>Telegram inline keyboard</ToggleButton>
+            </ToggleButtonGroup>
       </FormControl>
     </Box>
     )
@@ -112,16 +110,15 @@ export const MUITextField: React.FC<MUITextFieldProps> = ({
                                                           control,
                                                       }) => {
     return (
-        <Container>
+    <Container>
         <Controller
           render={({ field }) =>
 
               <TextField {...field}
                 placeholder={name}
                 variant="outlined"
-                         label={name}
-                         // helperText={"Please enter your " + name.toLowerCase()}
-                         required={true}
+                label={name}
+                required={true}
               />}
           name={value}
           rules={{ required: true }}
@@ -261,31 +258,28 @@ export const CloseTimePicker: React.FC<CloseTimeProps> = ({
 
 
     return (
-
-                    <Grid container spacing={4}>
-                        <Grid item xs={5}>
-                    <InputLabel>{name_switch}</InputLabel>
-                <Switch value={switch_value}
+        <Grid container>
+            <Grid item lg={2}>
+                <InputLabel>{name_switch}</InputLabel>
+                    <Switch value={switch_value}
                         checked={switch_value}
                         disabled={!multiple_enable}
                         onChange={toggleSwitch}
                     />
-                  </Grid>
-                  <Grid item xs={7}>
-                    <InputLabel>{name_slider}</InputLabel>
-
-        <Slider value={slider_value}
-                onChange={changeSlider}
-                aria-label={name_slider}
-                valueLabelDisplay="auto"
-                step={1}
-                marks
-                min={1}
-                max={10}
-                disabled={!switch_value}
-    />
-                  </Grid>
-                    </Grid>
-
+            </Grid>
+        <Grid item lg={4}>
+            <InputLabel>{name_slider}</InputLabel>
+            <Slider value={slider_value}
+                    onChange={changeSlider}
+                    aria-label={name_slider}
+                    valueLabelDisplay="auto"
+                    step={1}
+                    marks
+                    min={1}
+                    max={10}
+                    disabled={!switch_value}
+            />
+            </Grid>
+        </Grid>
   );
 }

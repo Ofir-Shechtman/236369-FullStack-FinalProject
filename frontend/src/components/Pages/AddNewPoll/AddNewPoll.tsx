@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { useForm } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import { Paper, Typography } from '@mui/material';
 
 
 import '../../../App.css';
@@ -126,23 +127,26 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     }
     return (
     <div className="Page">
-      <form onSubmit={handleSubmit(onSubmit)}>
-<Stack spacing={3}>
-        <MUITextField name={"Poll Name"} value={"PollName"} control={control}/>
-        <MUITextField name={"Poll Question"} value={"PollQuestion"} control={control}/>
-        <PollTypeForm name={"Poll Type"} onChange={setPollSwitch} type_value={poll_type} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>
-        <SwitchForm name={"Allow Multiple Answers"} type_value={poll_type} multiple_enable={multiple_enable} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>
-        <CloseTimePicker name_switch={"Auto Closing"} name_slider={"Minutes to close"} multiple_enable={multiple_enable} switch_value={switch_value} setSwitch={setTimeSwitch} slider_value={slider_value} setSlider={setTimeSlider}/>
-        <MultipleOptions name={"Multiple Options"} inputFields={inputFields} setInputFields={setInputFields} data={data}/>
-        <Button variant="contained" component="label">
-            Add Poll
-              <input type="submit" hidden />
-        </Button>
-        <Popup open={popup_status} alert_header={alert_header} alert_body={alert_body}
-               handleClose={()=>setPopupStatus(false)}
-        />
-  </Stack>
-      </form>
+        <Paper elevation={12} className="Paper">
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <Stack spacing={3}>
+                    <Typography variant={"h4"}>Poll Details</Typography>
+                    <MUITextField name={"Poll Name"} value={"PollName"} control={control}/>
+                    <MUITextField name={"Poll Question"} value={"PollQuestion"} control={control}/>
+                    <PollTypeForm name={"Poll Type"} onChange={setPollSwitch} type_value={poll_type} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>
+                    <SwitchForm name={"Allow Multiple Answers"} type_value={poll_type} multiple_enable={multiple_enable} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>
+                    <CloseTimePicker name_switch={"Auto Closing"} name_slider={"Minutes to close"} multiple_enable={multiple_enable} switch_value={switch_value} setSwitch={setTimeSwitch} slider_value={slider_value} setSlider={setTimeSlider}/>
+                    <MultipleOptions name={"Multiple Options"} inputFields={inputFields} setInputFields={setInputFields} data={data}/>
+                    <Button variant="contained" component="label">
+                        Add Poll
+                          <input type="submit" hidden />
+                    </Button>
+                    <Popup open={popup_status} alert_header={alert_header} alert_body={alert_body}
+                           handleClose={()=>setPopupStatus(false)}
+                    />
+                </Stack>
+            </form>
+        </Paper>
     </div>
   );
 }

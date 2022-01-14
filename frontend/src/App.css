@@ -7,7 +7,6 @@ body {
 #root,
 .App {
   height: 100%;
-  display: flex;
   position: relative;
   background: #adadad;
 }
@@ -46,10 +45,11 @@ body {
 }
 
 .App .PageLayout {
-  margin-left: 10px;
-  padding-left: 262px;
-  width: 100%;
-  display: flex;
+  padding-top: 10px;
+  width: 75%;
+  padding-left: 250px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .App .Header {
@@ -65,6 +65,7 @@ body {
 
 .App .PageLayout .tableContainer {
   border-radius: 15px;
+  box-shadow: 5px 5px gray;
 }
 
 .App .PageLayout .TableHeader {
@@ -90,4 +91,9 @@ body {
 .App .PageLayout .name {
   font-weight: bold;
   margin-top: 3px ;
+}
+
+.App .PageLayout .Paper {
+  font-weight: bold;
+  padding: 50px 50px;
 }

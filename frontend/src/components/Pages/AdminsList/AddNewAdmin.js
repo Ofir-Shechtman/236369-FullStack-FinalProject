@@ -141,7 +141,7 @@ export default function AddNewAdmin(props) {
             paddingRight: 0
           }
         },
-        required: true
+        required: true,
       },
       validations: {
         required: true,

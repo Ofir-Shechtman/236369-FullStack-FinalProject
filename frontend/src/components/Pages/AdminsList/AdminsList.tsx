@@ -117,7 +117,7 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
 
     return (
         <div>
-            <TableContainer component={Paper} className={"tableContainer"}>
+            <TableContainer component={Paper} className={"tableContainer"} style={{width: "500px"}}>
               <Table aria-label="collapsible table">
                 <TableHead>
                   <TableRow>
@@ -156,7 +156,7 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
                   {!loading && !error &&
                       <TableRow>
                         <TableCell/>
-                        <TableCell>
+                        <TableCell align="center">
                             <Button onClick={handleClickOpen} variant="contained" startIcon={<AddIcon />}>
                               Add
                             </Button>
