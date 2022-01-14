@@ -6,6 +6,7 @@ import os
 
 
 SCHEMA = 'schema.sql'
+INSERT = 'insert.sql'
 COMMAND = 'flask-sqlacodegen --flask {database_url} --tables {tables} > {output_filename}'
 TABLES = ['poll_answers', 'poll_options', 'poll_receivers', 'polls', 'users', 'admins']
 FILENAME = 'models_new.py'
@@ -37,6 +38,21 @@ def reset_database():
     conn.close()
 
 
+
+def insert_data(insert):
+    url = up.urlparse(DATABASE_URL)
+    conn = psycopg2.connect(database=url.path[1:],
+                            user=url.username,
+                            password=url.password,
+                            host=url.hostname,
+                            )
+    with conn.cursor() as cursor:
+        with open(insert, "r") as schema:
+            cursor.execute(schema.read())
+    conn.commit()
+    conn.close()
+
+
 # def generate_model(host, user, password, database, outfile = None):
 #     engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}/{database}')
 #     metadata = MetaData(bind=engine)
@@ -58,6 +74,7 @@ def create_models(install: bool):
 if __name__ == '__main__':
     print('reset_database...')
     reset_database()
+    insert_data(INSERT)
     print('create_models...')
     # create_models(False)
     print('DONE')
