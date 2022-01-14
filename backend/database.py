@@ -196,10 +196,10 @@ def _add_answer(answer: PollAnswer):
 def add_answer_by_poll_id(chat_id, telegram_poll_id, option_id):
     _get_user(chat_id)
     poll_receiver = _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id)
-    option = _get_option(poll_receiver.poll_id, option_id)
+    _get_option(poll_receiver.poll_id, option_id)
     new_answer = PollAnswer(user_id=chat_id, poll_id=poll_receiver.poll_id, option_id=option_id)
     _add_answer(new_answer)
-    return option.followup_poll
+    return new_answer
 
 
 def add_answer_by_message_id(chat_id, message_id, option_id):
