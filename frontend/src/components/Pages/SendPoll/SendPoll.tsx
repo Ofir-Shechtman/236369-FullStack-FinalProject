@@ -189,7 +189,7 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 headers: {
                     Authorization: 'Bearer ' + this.props.token
                 },
-                data: {'poll': this.state.selected_poll_id, 'users': this.state.users}
+                data: {'poll': this.state.selected_poll_id, 'users': this.state.users.filter((v: UserProps) => v.checked)}
             }).then((result) => this.setState({popup_results: result.data})).then(() => console.log(this.state.popup_results))
                 .then(() => this.refresh())
                 .then(() => this.setState({popup_status: true, users: []}))
