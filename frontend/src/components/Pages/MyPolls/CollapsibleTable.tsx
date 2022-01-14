@@ -278,7 +278,7 @@ export default class CollapsibleTable extends React.Component<Props, Collapsible
     const { data, loading, error } = this.state;
     return (
         <div>
-          <TableContainer component={Paper} className={"tableContainer"}>
+          <TableContainer component={Paper} elevation={24} className={"tableContainer"}>
             <Table aria-label="collapsible table">
               <TableHead>
                 <TableRow>

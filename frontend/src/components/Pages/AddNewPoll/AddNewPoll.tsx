@@ -1,8 +1,5 @@
 import React, {useState} from 'react';
 import { useForm } from 'react-hook-form';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import { Paper, Typography } from '@mui/material';
 
 
 import '../../../App.css';
@@ -11,7 +8,7 @@ import {PollType, FormValues} from "./FormValues";
 import {PollTypeForm, SwitchForm, MUITextField, MultipleOptions, CloseTimePicker} from './Forms'
 import {v4 as uuidv4} from "uuid";
 import axios, {AxiosResponse} from "axios";
-import {Alert, AlertColor, AlertTitle, Dialog, DialogActions, DialogContent} from "@mui/material";
+import {Alert, AlertColor, AlertTitle, Dialog, Paper, Typography, Button, Stack} from "@mui/material";
 
 
 export interface AddNewPollProps {
@@ -22,23 +19,19 @@ function Popup(props: { handleClose: () => void, open: boolean, alert_header: Al
 
 
     return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div style={{ width: "60%" }}>
+    <div className={"Dialog"}>
         <Dialog
         open={props.open}
         onClose={props.handleClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
             <Alert severity={props.alert_header}>
               <AlertTitle>{props.alert_header.charAt(0).toUpperCase() + props.alert_header.slice(1)}</AlertTitle>
                 <Stack><div>{props.alert_body}</div>
                 <Button onClick={props.handleClose}>Close</Button>
                 </Stack>
-
             </Alert>
-      </Dialog>
-      </div>
+        </Dialog>
     </div>
   );
 }
@@ -69,9 +62,9 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     refresh()
   }, []);
   const {handleSubmit, control} = useForm<FormValues>();
-  const [multiple_enable, multipleSwitch] = React.useState<boolean>(false);
+  const [multiple_enable, multipleSwitch] = React.useState<boolean>(true);
   const [poll_type, setPollSwitch] = React.useState<PollType>("Telegram_poll");
-  const [switch_value, setTimeSwitch] = React.useState<boolean>(false);
+  const [switch_value, setTimeSwitch] = React.useState<boolean>(true);
   const [slider_value, setTimeSlider] = React.useState<number>(5);
 
 
@@ -115,22 +108,23 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
       data['AutoClosingSwitch'] = switch_value
       data['AutoCloseTime'] = slider_value
       axios({
-      method: "POST",
-      url:"/api/add_poll",
-      headers: {
-        Authorization: 'Bearer ' + token
-      },
+          method: "POST",
+          url:"/api/add_poll",
+          headers: {
+            Authorization: 'Bearer ' + token
+          },
           data:data
-    }).then((result) => updatePostReturn(result)).catch(error => {
-    updatePostReturn(error.response)
-}).then(()=>refresh()).then(() => setPopupStatus(true))
+        }).then((result) => updatePostReturn(result))
+          .catch(error => {updatePostReturn(error.response)})
+          .then(()=>refresh())
+          .then(() => setPopupStatus(true))
     }
     return (
     <div className="Page">
-        <Paper elevation={12} className="Paper">
+        <Paper elevation={24} className="Paper">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack spacing={3}>
-                    <Typography variant={"h4"}>Poll Details</Typography>
+                    <Typography variant={"h4"}>Add New Poll</Typography>
                     <MUITextField name={"Poll Name"} value={"PollName"} control={control}/>
                     <MUITextField name={"Poll Question"} value={"PollQuestion"} control={control}/>
                     <PollTypeForm name={"Poll Type"} onChange={setPollSwitch} type_value={poll_type} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>

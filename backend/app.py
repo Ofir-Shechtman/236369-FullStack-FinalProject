@@ -130,11 +130,9 @@ def send_poll():
         poll = db.get_poll(data['poll'])
         users = data['users']
         results = []
-        for name in users:
-            chat_id = db.get_user_by_name(name).user_id
-            status = _send_poll(poll, chat_id)
-            results.append({"name": name, 'status': status})
-
+        for user in users:
+            status = _send_poll(poll, user['chat_id'])
+            results.append({"name": user['user'], 'status': status})
     except BaseException:
         return Response('Error', 500)
     return {"results": results}

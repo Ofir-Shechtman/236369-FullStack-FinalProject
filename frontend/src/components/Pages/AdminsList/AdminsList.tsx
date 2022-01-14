@@ -117,7 +117,7 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
 
     return (
         <div>
-            <TableContainer component={Paper} className={"tableContainer"} style={{width: "500px"}}>
+            <TableContainer component={Paper} elevation={24} className={"tableContainer"} style={{width: "500px"}}>
               <Table aria-label="collapsible table">
                 <TableHead>
                   <TableRow>

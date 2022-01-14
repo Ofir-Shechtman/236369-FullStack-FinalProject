@@ -59,13 +59,13 @@ body {
 }
 
 .App .PageLayout .Page {
+  width: 60%;
   padding-top: 10px;
   padding-left: 50px;
 }
 
 .App .PageLayout .tableContainer {
   border-radius: 15px;
-  box-shadow: 5px 5px gray;
 }
 
 .App .PageLayout .TableHeader {
@@ -94,6 +94,12 @@ body {
 }
 
 .App .PageLayout .Paper {
-  font-weight: bold;
+  border-radius: 15px;
   padding: 50px 50px;
+}
+
+.App .PageLayout .Dialog {
+  display: flex;
+  justify-content: center;
+  width: 60%;
 }

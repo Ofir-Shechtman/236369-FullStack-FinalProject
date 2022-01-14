@@ -332,7 +332,9 @@ def get_poll_to_send(admin_id):
             'poll_id': poll.poll_id,
             'poll_name': poll.poll_name,
             'unsent_users': [{'user': get_name(user),
-                              'chat_id': user.user_id}
+                              'chat_id': user.user_id,
+                              'checked': False
+                              }
                              for user in all_users if user not in [receiver.user for receiver in poll.poll_receivers]],
         }
 
