@@ -7,8 +7,6 @@ import {
   Button, Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   IconButton,
   InputAdornment
 } from "@mui/material";
@@ -19,7 +17,7 @@ import axios from "axios";
 
 async function validate(refs, form) {
   for (const [attribute, ref] of Object.entries(refs.current)) {
-    var errors;
+    let errors;
     if (ref.validate) {
       errors = await ref.validate(get(form, attribute));
     }
@@ -37,9 +35,11 @@ export default function AddNewAdmin(props) {
   const open = props.open;
   const handleClose = props.handleClose;
   const refreshPage = props.refreshPage;
+  const setAlertHeader = props.setAlertHeader;
+  const setAlertBody = props.setAlertBody;
+  const setPopupStatus = props.setPopupStatus;
   const [form, setForm] = useState({});
   const [showPassword, setShowPassword] = useState();
-
   const refs = useRef({});
 
   const updateForm = (updates) => {
@@ -49,7 +49,21 @@ export default function AddNewAdmin(props) {
     }
     setForm(copy);
   };
-
+  const updatePostReturn = (status) => {
+      if(status.status===200){
+          setAlertHeader("success");
+          setAlertBody("Admin Successfully added!");
+      }
+      else{
+          setAlertHeader("error");
+          if(status.data === "UserExists"){
+              setAlertBody("Admin already exist, choose another");
+          }
+          else{
+              setAlertBody("Connection UnknownError");
+          }
+      }
+  };
   const handleSubmit = async () => {
     const ok = await validate(refs, form);
     if (!ok) {
@@ -62,7 +76,11 @@ export default function AddNewAdmin(props) {
         Authorization: 'Bearer ' + token
       },
       data:form
-    }).then(() => handleClose()).then(() => refreshPage()) //TODO: Catch exceptions
+    }).then((result) => updatePostReturn(result))
+      .catch(error => {updatePostReturn(error.response)})
+      .then(() => handleClose())
+      .then(() => refreshPage())
+      .then(() => setPopupStatus(true))
   };
 
   const fields = [
@@ -132,8 +150,25 @@ export default function AddNewAdmin(props) {
         test: {
           name: "specialChar",
           test: (value) =>
-            /[0-9~!@#$%^&*()_+\-={}|[\]\\:";'<>?,./]/.test(value),
+              /[0-9~!@#$%^&*()_+\-={}|[\]\\:";'<>?,./]/.test(value),
           message: "At least 1 number or special character"
+        }
+      }
+    },
+    {
+      attribute: "password-password_confirmation",
+      component: "text-field",
+      label: "Confirm Password",
+      props: {
+        type: "text",
+        required: true
+      },
+      validations: {
+        required: true,
+        test: {
+          name: "password_confirmation",
+          test: (value) => form.password === value,
+          message: "Passwords doesn't match"
         }
       }
     },

@@ -295,7 +295,7 @@ def get_polls_data(admin_id):
             'question': poll.question,
             'poll_type': poll.poll_type,
             'allows_multiple_answers': poll.allows_multiple_answers,
-            'close_date': poll.close_date,
+            'close_date': poll.close_date.strftime("%d-%m-%Y, %H:%M:%S") if poll.close_date else "",
             'created_by': poll.created_by,
             'poll_options': [option.content for option in poll.poll_options],
             'poll_answers': [
@@ -310,7 +310,9 @@ def get_polls_data(admin_id):
         }
 
     admin = get_admin(admin_id)
-    return jsonify([serialize_poll(poll) for poll in admin.polls])
+    polls = [serialize_poll(poll) for poll in admin.polls]
+    polls.sort(key=lambda x: x.get('poll_name'))
+    return jsonify(polls)
 
 
 def get_name(user: User):
@@ -355,6 +357,8 @@ def get_verified_admin(username, password):
 def get_admins():
     def serialize(admin):
         return {
-            'admin': admin.username}
-
-    return jsonify([serialize(admin) for admin in _db.session.query(Admin)])
+            'admin': admin.username
+        }
+    polls = [serialize(admin) for admin in _db.session.query(Admin)]
+    polls.sort(key=lambda x: x.get('admin'))
+    return jsonify(polls)

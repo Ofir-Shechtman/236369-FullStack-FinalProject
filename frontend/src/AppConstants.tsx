@@ -5,7 +5,7 @@ export const TableColumns = [
     },
     {
         title: 'Poll Type',
-        width: '150px'
+        width: '200px'
     },
     {
         title: 'Allow Multiple',

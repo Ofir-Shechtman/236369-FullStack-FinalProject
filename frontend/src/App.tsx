@@ -1,26 +1,24 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import {Login} from './components/Login'
 import Profile from './components/Profile'
-import {Header} from './components/Header/Header'
 import useToken from './components/useToken'
 import './App.css'
 
 function App() {
   const { token, removeToken, setToken } = useToken();
-
-    return (
+  return (
     <BrowserRouter>
-      <div className="App">
-        {!token && token!=="" &&token!== undefined?
-        <Login setToken={setToken} />
-        :(
-          <>
-            <Routes>
-              <Route index element={<Profile removeToken={removeToken} token={token}/>}/>
-            </Routes>
-          </>
-        )}
-      </div>
+        <div className="App">
+          {!token && token!=="" &&token!== undefined?
+          <Login setToken={setToken} />
+          :(
+            <>
+              <Routes>
+                <Route index element={<Profile removeToken={removeToken} token={token}/>}/>
+              </Routes>
+            </>
+          )}
+        </div>
     </BrowserRouter>
   );
 }

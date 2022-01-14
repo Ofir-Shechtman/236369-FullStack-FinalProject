@@ -9,40 +9,20 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
 import {TableColumns} from '../../../AppConstants'
-import { grey } from '@mui/material/colors';
-import { Theme, createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
+import '../../../App.css'
 import {BarChart} from './BarChart'
 import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
-import CircleIcon from '@mui/icons-material/Circle';
+import CircleTwoToneIcon from '@mui/icons-material/CircleTwoTone';
 import ReportIcon from '@mui/icons-material/Report';
 import axios from "axios";
 import {FaClock} from "react-icons/fa";
 
-const useStyles = (theme: Theme) => createStyles({
-  tableContainer:{
-    borderRadius: 15,
-  },
-  tableHeader:{
-    fontWeight: 'bold',
-    backgroundColor: grey[800],
-    color: theme.palette.getContrastText(grey[900])
-  },
-  tableSecondaryHeader:{
-    fontWeight: 'bold',
-    backgroundColor: grey[500],
-    color: theme.palette.getContrastText(grey[500])
-  },
-  refresh_icon:{
-    color: 'white'
-  }
-})
-
 function Row(props: any) {
-  const { row, refreshPage, token} = props;
+  const { row, refreshPage} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
@@ -101,15 +81,15 @@ function Row(props: any) {
           </IconButton>
         </TableCell>
         <TableCell align="center">{row.poll_name}</TableCell>
-        <TableCell align="center">{row.poll_type}</TableCell>
+        <TableCell align="center">{row.poll_type == "Telegram_poll"? "Telegram Poll": "Telegram Inline Keyboard"}</TableCell>
         <TableCell align="center">
           {row.allows_multiple_answers? <CheckRoundedIcon color="success" />:<ClearRoundedIcon color = "error" />}
         </TableCell>
         <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
         <TableCell align="center">{row.close_date}</TableCell>
-        <TableCell align="center"><CircleIcon sx={{ color: row.open? "green" :"red"}}/></TableCell>
+        <TableCell align="center"><CircleTwoToneIcon sx={{ color: row.open? "green" :"red"}}/></TableCell>
         <TableCell align="center">
-          <IconButton disabled={!row.open}>
+          <IconButton disabled={row.poll_type != "Telegram_poll" || !row.open}>
             <StopCircleIcon onClick={() => handleStopPoll(row.poll_id, props.token)}/>
           </IconButton>
         </TableCell>
@@ -129,7 +109,7 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Charts</TableCell>
+                    <TableCell className={"tableSecondHeader"}>Charts</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -155,9 +135,9 @@ function Row(props: any) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Username</TableCell>
-                    <TableCell align="center">Answers</TableCell>
-                    <TableCell align="center">Date</TableCell>
+                    <TableCell className={"tableSecondHeader"}>Username</TableCell>
+                    <TableCell className={"tableSecondHeader"} align="center">Answers</TableCell>
+                    <TableCell className={"tableSecondHeader"} align="center">Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -230,8 +210,7 @@ Row.propTypes = {
     receivers: PropTypes.number.isRequired,
     open: PropTypes.bool.isRequired
   }).isRequired,
-  refreshPage: PropTypes.func.isRequired,
-  token:PropTypes.string.isRequired
+  refreshPage: PropTypes.func.isRequired
 };
 
 
@@ -256,9 +235,11 @@ interface CollapsibleTableState {
   error: boolean,
 }
 
-interface Props extends WithStyles<typeof useStyles> {token:string}
+interface Props {
+  token: string,
+}
 
-class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
+export default class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
   state = {
       data: [],
       loading: true,
@@ -295,51 +276,47 @@ class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
 
   render() {
     const { data, loading, error } = this.state;
-    const { classes } = this.props;
     return (
         <div>
-            <TableContainer component={Paper} className={classes.tableContainer}>
-              <Table aria-label="collapsible table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.tableHeader} />
-                    {TableColumns.map((column: { width: string, title: string }) => (
-                        <TableCell align="center" className={classes.tableHeader}
-                                   style={{width: column.width}}>{column.title}</TableCell>
-                    ))}
-                    <TableCell className={classes.tableHeader} onClick={this.refreshPage}>
-                      <IconButton>
-                        <RefreshRoundedIcon className={classes.refresh_icon}/>
-                      </IconButton>
+          <TableContainer component={Paper} className={"tableContainer"}>
+            <Table aria-label="collapsible table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={"TableHeader"} />
+                  {TableColumns.map((column: { width: string, title: string }) => (
+                      <TableCell align="center" className={"TableHeader"}
+                                 style={{width: column.width}}>{column.title}</TableCell>
+                  ))}
+                  <TableCell className={"TableHeader"} onClick={this.refreshPage}>
+                    <IconButton>
+                      <RefreshRoundedIcon className={"refresh_icon"}/>
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {loading &&
+                    <TableCell sx={{ display: 'flex' }}>
+                      <CircularProgress />
                     </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {loading &&
-                      <TableCell sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                      </TableCell>
-                  }
-                  {!loading && !error &&
-                        data.map((row: PollProps) => (
-                            <Row key={row.poll_id}
-                                 row={row}
-                                 refreshPage={this.refreshPage}
-                                 token={this.props.token}
-                            />
-                        ))
-                  }
-                  {error &&
-                      <TableCell sx={{display: 'flex'}}>
-                        <ReportIcon fontSize="large" color = "error" />
-                      </TableCell>
-                  }
-                </TableBody>
-              </Table>
-            </TableContainer>
+                }
+                {!loading && !error &&
+                      data.map((row: PollProps) => (
+                          <Row key={row.poll_id}
+                               row={row}
+                               refreshPage={this.refreshPage}
+                          />
+                      ))
+                }
+                {error &&
+                    <TableCell sx={{display: 'flex'}}>
+                      <ReportIcon fontSize="large" color = "error" />
+                    </TableCell>
+                }
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
     );
   }
 }
-
-export default withStyles(useStyles)(CollapsibleTable)
