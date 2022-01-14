@@ -6,8 +6,10 @@ body {
 
 #root,
 .App {
-  height: 100%;
   position: relative;
+  font-size: 100%;
+  min-height: 100%;
+  background-size: 100% 100%;
   background: #adadad;
 }
 
@@ -46,6 +48,7 @@ body {
 
 .App .PageLayout {
   padding-top: 10px;
+  height: 100%;
   width: 75%;
   padding-left: 250px;
   margin-left: auto;
@@ -76,7 +79,7 @@ body {
 .App .PageLayout .tableSecondHeader {
   font-weight: bold;
   background: #b6b6b6;
-  color: black
+  color: black;
 }
 
 .App .PageLayout .refresh_icon {
