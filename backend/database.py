@@ -260,9 +260,9 @@ def add_poll(poll_name, question, options, poll_type, created_by, allows_multipl
     return poll_id
 
 
-def is_poll_active(close_date):
-    if close_date:
-        return close_date.replace(tzinfo=None) > datetime.datetime.now().replace(tzinfo=None)
+def is_poll_active(poll):
+    if poll.close_date:
+        return poll.close_date.replace(tzinfo=None) > datetime.datetime.now().replace(tzinfo=None)
     return True
 
 
@@ -306,7 +306,7 @@ def get_polls_data(admin_id):
             'receivers': len(poll.poll_receivers),
             'answers_count': len([receiver for receiver in poll.poll_receivers if receiver.poll_answers]),
             'answers': [len(option.poll_answers) for option in poll.poll_options],
-            'open': is_poll_active(poll.close_date)
+            'open': is_poll_active(poll)
         }
 
     admin = get_admin(admin_id)
@@ -335,7 +335,7 @@ def get_poll_to_send(admin_id):
         }
 
     admin = get_admin(admin_id)
-    return jsonify([serialize_poll(poll) for poll in admin.polls if is_poll_active(poll.close_date)])
+    return jsonify([serialize_poll(poll) for poll in admin.polls if is_poll_active(poll)])
 
 
 def delete_poll(poll_id):

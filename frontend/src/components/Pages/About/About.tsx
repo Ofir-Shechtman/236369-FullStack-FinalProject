@@ -70,7 +70,7 @@ export const About: React.FC<AboutProps> = ({
             <h1> Polling System </h1>
             <h2> 236369 Managing Data on The World-Wide Web Final Project </h2>
             <h3> Submitters: Ofir Shechtman & Ben Lugasi </h3>
-            <body>
+            <div>
                 <p className={classes.body}>
                 This is the admin poll managing system,<br/>
                 here you can Add, Delete and Review your Telegram poll results.<br/>
@@ -83,7 +83,7 @@ export const About: React.FC<AboutProps> = ({
                   <FaGithub />
                     <span> Github</span><br/>
                 </Button>
-            </body>
+            </div>
         </div>
     )
 }

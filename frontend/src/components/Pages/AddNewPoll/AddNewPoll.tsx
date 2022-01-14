@@ -68,15 +68,11 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     refresh()
   }, []);
   const {handleSubmit, control} = useForm<FormValues>();
-  const [multiple_enable, multiple_switch] = React.useState<Boolean>(true);
-  const [is_poll_type, poll_type_switch] = React.useState<PollType>("Telegram_poll");
-  // @ts-ignore
-    const handleTypeChange = (event, newType) => {
-      if (newType !== null) {
-        poll_type_switch(newType);
-        multiple_switch(newType === "Telegram_poll");
-      }
-    };
+  const [multiple_enable, multipleSwitch] = React.useState<boolean>(false);
+  const [poll_type, setPollSwitch] = React.useState<PollType>("Telegram_poll");
+  const [switch_value, setTimeSwitch] = React.useState<boolean>(false);
+  const [slider_value, setTimeSlider] = React.useState<number>(5);
+
 
     const [inputFields, setInputFields] = useState([
     { id: uuidv4(), Option: '', FollowupPoll:'None'}, { id: uuidv4(), Option: '', FollowupPoll:'None'}
@@ -112,15 +108,12 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
 
 
     const onSubmit = (data: any) => {
+      data['MultipleAnswers'] = multiple_enable
       data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll:unknown}) => ({"option":inputField.Option, "poll_id":inputField.FollowupPoll}))
-      data['PollType'] = is_poll_type
-      if(!data.AutoCloseTime){
-          data['AutoCloseTime']=5;
-      }
-      if(!data.AutoClosingSwitch){
-          data['AutoClosingSwitch']=false;
-      }
-        alert(JSON.stringify(data))
+      data['PollType'] = poll_type
+      data['AutoClosingSwitch'] = switch_value
+      data['AutoCloseTime'] = slider_value
+      alert(JSON.stringify(data))
       axios({
       method: "POST",
       url:"/api/add_poll",
@@ -138,9 +131,9 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
 <Stack spacing={3}>
         <MUITextField name={"Poll Name"} value={"PollName"} control={control}/>
         <MUITextField name={"Poll Question"} value={"PollQuestion"} control={control}/>
-        <PollTypeForm name={"Poll Type"} value={"PollType"} control={control} onChange={handleTypeChange} type_value={is_poll_type}/>
-        <SwitchForm name={"Allow Multiple Answers"} value={"MultipleAnswers"} control={control} multiple_enable={multiple_enable}/>
-        <CloseTimePicker name_switch={"Auto Closing"} name_slider={"Minutes to close"} value_switch={"AutoClosingSwitch"} value_slider={"AutoCloseTime"}  control={control} multiple_enable={multiple_enable}/>
+        <PollTypeForm name={"Poll Type"} onChange={setPollSwitch} type_value={poll_type} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>
+        <SwitchForm name={"Allow Multiple Answers"} type_value={poll_type} multiple_enable={multiple_enable} multipleSwitch={multipleSwitch} timeSwitch={setTimeSwitch}/>
+        <CloseTimePicker name_switch={"Auto Closing"} name_slider={"Minutes to close"} multiple_enable={multiple_enable} switch_value={switch_value} setSwitch={setTimeSwitch} slider_value={slider_value} setSlider={setTimeSlider}/>
         <MultipleOptions name={"Multiple Options"} inputFields={inputFields} setInputFields={setInputFields} data={data}/>
         <Button variant="contained" component="label">
             Add Poll

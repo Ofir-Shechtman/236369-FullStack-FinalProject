@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {PageLayoutProps} from "../PageLayout";
-import {FormValues} from "./FormValues";
+import {FormValues, PollType} from "./FormValues";
 import {Controller, FieldPath} from 'react-hook-form';
 import {Switch} from "@material-ui/core";
 import {TextField} from '@material-ui/core';
@@ -16,114 +16,97 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import AddIcon from "@material-ui/icons/Add";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-
 import { v4 as uuidv4 } from 'uuid';
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Checkbox from "@mui/material/Checkbox";
-import ListItemText from "@mui/material/ListItemText";
-import axios from "axios";
 
 
-export interface TextFieldProps {
+
+
+export interface PollTypeFormProps {
     name: string;
-    value: FieldPath<FormValues>;
-    register: any,
-    error: any
-
+    onChange:(value:PollType)=>void;
+    type_value:PollType;
+    multipleSwitch: (value:boolean)=>void;
+    timeSwitch:(value:boolean)=>void;
 }
 
-export const TextFieldForm: React.FC<TextFieldProps> = ({
+
+export const PollTypeForm: React.FC<PollTypeFormProps> = ({
                                                           name,
-                                                          value,
-                                                          register,
-                                                          error
-                                                      }) => {
-    return (
-        <div>
-          <label>{name}</label>
-          <input
-              {...register(value,
-                  {required: "Name is required",minLength: {value:5, message: "Min length is 5"}})} placeholder={name}
-          />
-          <p>{error}</p>
-        </div>
-    )
-}
-
-
-export interface ControlledProps {
-    name: string;
-    value: FieldPath<FormValues>;
-    control?: any;
-    error?: string;
-    multiple_enable?: Boolean;
-    onChange?: any;
-    type_value?: string;
-}
-
-export const PollTypeForm: React.FC<ControlledProps> = ({
-                                                          name,
-                                                          value,
-                                                          control,
                                                           onChange,
-                                                          type_value
+                                                          type_value,
+                                                          multipleSwitch,
+                                                          timeSwitch
                                                       }) => {
+    // @ts-ignore
+    const changeType = (event: MouseEvent<HTMLElement, MouseEvent>, value: any) => {
+        if(value==null) return;
+        if(type_value=="Telegram_poll"){
+            multipleSwitch(false)
+            timeSwitch(false)
+        }
+        onChange(value)
+    }
 
     return (
         <Box sx={{ minWidth: 220 }}>
         <FormControl fullWidth>
         <FormLabel>{name}</FormLabel>
-            <Controller
-          name={value}
-          control={control}
-          render={({ field }) => (
             <ToggleButtonGroup
-                {...field}
                 value={type_value}
                 exclusive
-                onChange={onChange}
+                onChange={changeType}
                 >
             <ToggleButton value={"Telegram_poll"} >Telegram poll
       </ToggleButton>
       <ToggleButton value={"Telegram_inline_keyboard"}>Telegram inline keyboard
       </ToggleButton>
       </ToggleButtonGroup>
-          )}
-        />
       </FormControl>
     </Box>
     )
 }
 
+export interface SwitchProps {
+    name: string;
+    multipleSwitch:(value:boolean)=>void;
+    timeSwitch:(value:boolean)=>void;
+    type_value:PollType;
+    multiple_enable: boolean;
+}
 
-export const SwitchForm: React.FC<ControlledProps> = ({
-                                                          name,
-                                                          value,
-                                                          control,
-                                                          multiple_enable
+export const SwitchForm: React.FC<SwitchProps> = ({
+                                                        name,
+                                                        multipleSwitch,
+                                                        timeSwitch,
+                                                        type_value,
+                                                        multiple_enable
                                                       }) => {
+    const toggleSwitch = (e: { target: { value: any; }; }) => {
+        if(multiple_enable){
+            timeSwitch(false)
+        }
+        multipleSwitch(!multiple_enable);
+    }
     return (
         <section>
-        <FormControlLabel control={
-            <Controller
-                name={value}
-                control={control}
-                defaultValue = {multiple_enable}
-                render={({field}) => (
+            <InputLabel>{name}</InputLabel>
                     <Switch
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        checked={!!field.value && !!multiple_enable}
-                        disabled={!multiple_enable}
+                        value={multiple_enable}
+                        checked={multiple_enable}
+                        onChange={toggleSwitch}
+                        disabled={type_value=="Telegram_inline_keyboard"}
                     />
-                )}
-            />}
-                          label={name}
-        />
     </section>
     )
 }
 
-export const MUITextField: React.FC<ControlledProps> = ({
+export interface MUITextFieldProps {
+    name: string;
+    value: FieldPath<FormValues>;
+    control: any;
+}
+
+export const MUITextField: React.FC<MUITextFieldProps> = ({
                                                           name,
                                                           value,
                                                           control,
@@ -249,57 +232,57 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
 export interface CloseTimeProps {
     name_switch: string;
     name_slider: string;
-    value_switch: FieldPath<FormValues>;
-    value_slider: FieldPath<FormValues>;
-    control: any;
-    multiple_enable: Boolean;
+    multiple_enable: boolean;
+    switch_value:boolean;
+    setSwitch: (value:boolean)=>void;
+    slider_value:number;
+    setSlider: (value:number)=>void;
 }
 
 
 export const CloseTimePicker: React.FC<CloseTimeProps> = ({
                                                           name_switch,
                                                           name_slider,
-                                                          value_switch,
-                                                          value_slider,
-                                                          control,
-                                                          multiple_enable
+                                                          multiple_enable,
+                                                          switch_value,
+                                                          setSwitch,
+                                                          slider_value,
+                                                          setSlider
                                                       }) => {
-    const [auto_close_switch, SetSwitch] = React.useState<Boolean>(false);
-    const ToggleSwitch = (e: { target: { value: any; }; }) => {
-        SetSwitch(!auto_close_switch);
+
+    const toggleSwitch = (e: { target: { value: any; }; }) => {
+        setSwitch(!switch_value);
     }
+    const changeSlider = (event: Event, value: number | Array<number>, activeThumb: number) => {
+        if(typeof value == "number") {
+            setSlider(value);
+        }
+    }
+
+
     return (
 
                     <Grid container spacing={4}>
                         <Grid item xs={5}>
                     <InputLabel>{name_switch}</InputLabel>
-                            <Controller
-                name = {value_switch}
-                control={control}
-                render={({field}) => (
-                    <Switch {...field}
-                    disabled={!multiple_enable}
-                    checked={!!auto_close_switch}
-                    onChange={ToggleSwitch}
-                    /> )}
+                <Switch value={switch_value}
+                        checked={switch_value}
+                        disabled={!multiple_enable}
+                        onChange={toggleSwitch}
                     />
                   </Grid>
                   <Grid item xs={7}>
                     <InputLabel>{name_slider}</InputLabel>
-                      <Controller
-    name = {value_slider}
-    control={control}
-    render={({field}) => (
-        <Slider {...field}
+
+        <Slider value={slider_value}
+                onChange={changeSlider}
                 aria-label={name_slider}
-                defaultValue={5}
                 valueLabelDisplay="auto"
                 step={1}
                 marks
                 min={1}
                 max={10}
-                disabled={!!auto_close_switch || !multiple_enable}
-        />)}
+                disabled={!switch_value}
     />
                   </Grid>
                     </Grid>
