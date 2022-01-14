@@ -103,3 +103,6 @@ body {
   justify-content: center;
   width: 60%;
 }
+.App .PageLayout .MultipleOptionsList {
+  margin-top: 8px;
+}

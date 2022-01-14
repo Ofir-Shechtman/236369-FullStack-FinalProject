@@ -200,6 +200,7 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
               placeholder={name}
               variant="outlined"
               required={true}
+              className={"MultipleOptionsList"}
             />
             <IconButton disabled={inputFields.length === 2} onClick={() => handleRemoveFields(inputField.id)}>
               <RemoveIcon />
@@ -209,17 +210,18 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
             >
               <AddIcon />
             </IconButton>
-                    <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel>Follow-up Poll</InputLabel>
-            <Select onChange={event => {onPollChange(inputField.id, event)}}
-                    value={inputField.FollowupPoll}
-                    label="Follow-up Poll"
-            >
-                <MenuItem key={-1} value={"None"}>None</MenuItem>
-                {data.map((poll: Poll) => (
-                    <MenuItem key={poll.poll_id} value={poll.poll_id}>{poll.poll_name}</MenuItem>
-                ))}
-            </Select></FormControl>
+            <FormControl sx={{ m: 1, width: 300 }}>
+                <InputLabel>Follow-up Poll</InputLabel>
+                <Select onChange={event => {onPollChange(inputField.id, event)}}
+                        value={inputField.FollowupPoll}
+                        label="Follow-up Poll"
+                >
+                    <MenuItem key={-1} value={"None"}>None</MenuItem>
+                    {data.map((poll: Poll) => (
+                        <MenuItem key={poll.poll_id} value={poll.poll_id}>{poll.poll_name}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
           </div>
         )) }
     </Container>
