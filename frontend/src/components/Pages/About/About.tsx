@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import '../../../App.css';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { FaGithub } from "react-icons/fa";
-import { Button } from "@mui/material"
+import GitHubIcon from '@mui/icons-material/GitHub';
+import { Button, Paper } from "@mui/material"
 import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -39,7 +39,7 @@ export interface AboutProps {
 export const About: React.FC<AboutProps> = ({
                                                           token,removeToken
                                                       }) => {
-    const classes = useStyles();
+    const classes = useStyles(); // Do Not Delete it keeps mui styles alive for all pages
     const [username, setProfileData] = useState<string>("")
     function getData() {
     axios({
@@ -65,26 +65,31 @@ export const About: React.FC<AboutProps> = ({
   }, []);
 
     return (
-        <div className="Page" >
-            <h1> Hello {username} welcome!</h1>
-            <h1> Polling System </h1>
-            <h2> 236369 Managing Data on The World-Wide Web Final Project </h2>
-            <h3> Submitters: Ofir Shechtman & Ben Lugasi </h3>
-            <div>
-                <p className={classes.body}>
-                This is the admin poll managing system,<br/>
-                here you can Add, Delete and Review your Telegram poll results.<br/>
-                register our bot by starting a conversation with @FullStackBenOfirBot<br/>
-                for more information, see:
-                </p>
-                <Button className={classes.button}
-                        size="large"
-                        href="https://github.com/Ofir-Shechtman/236369-FullStack-FinalProject">
-                  <FaGithub />
-                    <span> Github</span><br/>
-                </Button>
-            </div>
-            <img src='/static/videos/register.gif' alt="this slowpoke moves"  width="250" />
+        <div className="About" >
+            <Paper elevation={24} className="PaperAbout">
+                <h1> Hello {username.charAt(0).toUpperCase()+ username.slice(1)} Welcome!</h1>
+                <h2> 236369 Managing Data on The World-Wide Web Final Project </h2>
+                <h3> Submitters: Ofir Shechtman & Ben Lugasi </h3>
+                <div>
+                    <p>
+                    This is the admin poll managing system,<br/>
+                    here you can Add, Delete and Review your Telegram poll results.<br/>
+                    register our bot by starting a conversation with @FullStackBenOfirBot here is a short demo:
+                    </p>
+                    <img src='/static/videos/register.gif' alt="this slowpoke moves"  width="250" />
+                </div>
+                <div>
+                    <p>
+                        for more information, see:
+                    </p>
+                    <Button variant="contained"
+                            href="https://github.com/Ofir-Shechtman/236369-FullStack-FinalProject"
+                            target="_blank"
+                            startIcon={<GitHubIcon />}>
+                                      GitHub
+                    </Button>
+                </div>
+            </Paper>
         </div>
     )
 }

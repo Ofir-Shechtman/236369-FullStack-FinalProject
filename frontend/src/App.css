@@ -106,3 +106,13 @@ body {
 .App .PageLayout .MultipleOptionsList {
   margin-top: 8px;
 }
+.App .PageLayout .About {
+  line-height: 1.5;
+  padding: 10px 50px;
+}
+
+.App .PageLayout .PaperAbout {
+  border-radius: 15px;
+  padding: 10px 50px 100px;
+  line-height: 1.5;
+}

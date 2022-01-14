@@ -16,8 +16,6 @@ export interface AddNewPollProps {
 }
 
 function Popup(props: { handleClose: () => void, open: boolean, alert_header: AlertColor, alert_body:string }) {
-
-
     return (
     <div className={"Dialog"}>
         <Dialog
