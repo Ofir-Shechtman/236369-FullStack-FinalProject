@@ -15,7 +15,7 @@ from statuses import Status, StatusInline
 from flask_jwt_extended import create_access_token, get_jwt, \
     unset_jwt_cookies, jwt_required, JWTManager
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = SECRET_KEY
@@ -26,6 +26,9 @@ jwt = JWTManager(app)
 
 super_admin = db.init(app, SUPER_ADMIN)
 
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 @app.route('/token', methods=["POST"])
 def create_token():

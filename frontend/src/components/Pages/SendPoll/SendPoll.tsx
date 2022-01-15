@@ -72,7 +72,7 @@ const SelectPoll: React.FC<SelectPollProps> = ({
                                       value={poll.poll_id}
                                       disabled={poll.users!== undefined && Array.from(poll.users).filter((v) => !v.sent).length == 0}
                                       control={<Radio/>}
-                                      label={poll.poll_name}/>
+                                      label={""+poll.poll_name}/>
                 ))}
             </RadioGroup>
         </FormControl>

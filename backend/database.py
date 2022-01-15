@@ -349,9 +349,12 @@ def delete_poll(poll_id):
     _db.session.commit()
 
 
-def get_verified_admin(username, password):
-    admin = get_admin(username=username)
-    return admin.verify_password(password)
+def get_verified_admin(username, password) -> bool:
+    try:
+        admin = get_admin(username=username)
+        return admin.verify_password(password)
+    except Exception:
+        return False
 
 
 
