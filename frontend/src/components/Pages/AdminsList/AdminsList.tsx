@@ -2,27 +2,13 @@ import React from 'react';
 import '../../../App.css';
 import axios from "axios";
 import {
-    CircularProgress,
-    IconButton,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Avatar,
-    Grid,
-    Typography,
-    Button, Dialog, Alert, AlertTitle
+    CircularProgress, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    Avatar, Grid, Typography, Button, Dialog, Alert, AlertTitle, Stack
 } from "@mui/material";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import ReportIcon from "@mui/icons-material/Report";
-import AddNewAdmin from './AddNewAdmin';
 import AddIcon from '@mui/icons-material/Add';
-import Stack from "@mui/material/Stack";
-
-
+import AddNewAdmin from './AddNewAdmin';
 interface ListProps {
     admin: string
 }
@@ -121,7 +107,8 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
 
         return (
             <div>
-                <TableContainer component={Paper} elevation={24} className={"tableContainer"} style={{width: "500px"}}>
+                <TableContainer component={Paper} elevation={24} className={"tableContainer"}
+                                style={{width: "500px"}}>
                     <Table aria-label="collapsible table">
                         <TableHead>
                             <TableRow>
@@ -135,50 +122,51 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
                         </TableHead>
                         <TableBody>
                             {loading &&
-                            <TableCell sx={{display: 'flex'}}>
-                                <CircularProgress/>
-                            </TableCell>
+                                <TableCell sx={{display: 'flex'}}>
+                                    <CircularProgress/>
+                                </TableCell>
                             }
                             {!loading && !error &&
-                            Array.from(data).map((row: ListProps) => (
-                                    <TableRow key={row.admin}>
-                                        <TableCell colSpan={2} align="left">
-                                            <Grid container>
-                                                <Grid item lg={2}>
-                                                    <Avatar alt={row.admin} src='.' className={"avatar"}/>
+                                Array.from(data).map((row: ListProps) => (
+                                        <TableRow key={row.admin}>
+                                            <TableCell colSpan={2} align="left">
+                                                <Grid container>
+                                                    <Grid item lg={2}>
+                                                        <Avatar alt={row.admin} src='.' className={"avatar"}/>
+                                                    </Grid>
+                                                    <Grid item lg={2} className={"name"}>
+                                                        <Typography variant="h6">
+                                                            {row.admin}
+                                                        </Typography>
+                                                    </Grid>
                                                 </Grid>
-                                                <Grid item lg={2} className={"name"}>
-                                                    <Typography variant="h6">
-                                                        {row.admin}
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            )}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                )}
                             {!loading && !error &&
-                            <TableRow>
-                                <TableCell/>
-                                <TableCell align="center">
-                                    <Button onClick={handleClickOpen} variant="contained" startIcon={<AddIcon/>}>
-                                        Add
-                                    </Button>
-                                    <AddNewAdmin token={this.props.token}
-                                                 open={this.state.openDialog}
-                                                 handleClose={handleClose}
-                                                 refreshPage={this.refreshPage}
-                                                 setAlertHeader={(header: any) => this.setState({alert_header: header})}
-                                                 setAlertBody={(body: string) => this.setState({alert_body: body})}
-                                                 setPopupStatus={(status: boolean) => this.setState({popup_status: status})}
-                                    />
-                                </TableCell>
-                            </TableRow>
+                                <TableRow>
+                                    <TableCell/>
+                                    <TableCell align="center">
+                                        <Button onClick={handleClickOpen} variant="contained"
+                                                startIcon={<AddIcon/>}>
+                                            Add
+                                        </Button>
+                                        <AddNewAdmin token={this.props.token}
+                                                     open={this.state.openDialog}
+                                                     handleClose={handleClose}
+                                                     refreshPage={this.refreshPage}
+                                                     setAlertHeader={(header: any) => this.setState({alert_header: header})}
+                                                     setAlertBody={(body: string) => this.setState({alert_body: body})}
+                                                     setPopupStatus={(status: boolean) => this.setState({popup_status: status})}
+                                        />
+                                    </TableCell>
+                                </TableRow>
                             }
                             {error &&
-                            <TableCell sx={{display: 'flex'}}>
-                                <ReportIcon fontSize="large" color="error"/>
-                            </TableCell>
+                                <TableCell sx={{display: 'flex'}}>
+                                    <ReportIcon fontSize="large" color="error"/>
+                                </TableCell>
                             }
                         </TableBody>
                     </Table>

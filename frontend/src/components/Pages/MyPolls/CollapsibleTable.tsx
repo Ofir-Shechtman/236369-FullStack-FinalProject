@@ -8,8 +8,6 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from "@material-ui/icons/Delete";
-import {TableColumns} from '../../../AppConstants'
-import '../../../App.css'
 import {BarChart} from './BarChart'
 import {PieChart} from './PieChart'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -18,11 +16,13 @@ import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import CircleTwoToneIcon from '@mui/icons-material/CircleTwoTone';
 import ReportIcon from '@mui/icons-material/Report';
-import axios from "axios";
 import {FaClock} from "react-icons/fa";
+import '../../../App.css'
+import {TableColumns} from '../../../AppConstants'
+import axios from "axios";
 
 function Row(props: any) {
-    const {row, refreshPage, token} = props;
+    const {row, refreshPage} = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [open, setOpen] = React.useState(false);
@@ -95,7 +95,7 @@ function Row(props: any) {
                 <TableCell align="center">{""+row.answers_count + '/' + row.receivers}</TableCell>
                 <TableCell align="center">{row.close_date}</TableCell>
                 <TableCell align="center">
-                    <Tooltip title={row.open?"Poll Active": "Poll Closed"}>
+                    <Tooltip title={row.open ? "Poll Active" : "Poll Closed"}>
                         <CircleTwoToneIcon sx={{color: row.open ? "green" : "red"}}/>
                     </Tooltip>
                 </TableCell>

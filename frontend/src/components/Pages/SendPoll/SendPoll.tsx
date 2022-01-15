@@ -130,7 +130,7 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
             error={error}
             component="fieldset"
             variant="standard"
-            >
+        >
             <FormLabel component="legend">Receivers</FormLabel>
             <FormGroup onChange={onSelectedUsersChange}>
                 {Array.from(data).map((poll: PollProps) => (
@@ -197,7 +197,7 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 data: resp,
                 loading: false
             }))
-            .catch(error => this.setState({
+            .catch(() => this.setState({
                 loading: false,
                 error: true
             }));
