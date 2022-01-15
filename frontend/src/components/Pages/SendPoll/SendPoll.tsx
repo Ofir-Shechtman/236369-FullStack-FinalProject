@@ -25,7 +25,7 @@ interface UserProps {
 interface PollProps {
   poll_id: string,
   poll_name: string,
-  users:Array<UserProps>
+  users: Array<UserProps>
 }
 
 interface SelectPollProps {
@@ -81,7 +81,7 @@ const SelectPoll: React.FC<SelectPollProps> = ({
 
 interface SelectUsersProps {
     selected_poll_id: string;
-    setUsers:any;
+    setUsers: any;
     users: Array<UserProps>;
     data: PollProps[];
 }
@@ -127,32 +127,32 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
 }
 
 
-    interface Props {
-        token: string
-    }
+interface Props {
+    token: string
+}
 
-    export interface MyPollsProps {
-        token: string;
-    }
+export interface MyPollsProps {
+    token: string;
+}
 
-    interface PostResult {
-        name: string,
-        status: string
-    }
+interface PostResult {
+    name: string,
+    status: string
+}
 
-    interface PostResultList {
-        results: Array<PostResult>,
-    }
+interface PostResultList {
+    results: Array<PostResult>,
+}
 
-    interface SendPollState {
-        data: Array<any>,
-        loading: boolean,
-        error: boolean,
-        selected_poll_id: string,
-        users: Array<UserProps>,
-        popup_status: boolean,
-        popup_results: PostResultList,
-    }
+interface SendPollState {
+    data: Array<any>,
+    loading: boolean,
+    error: boolean,
+    selected_poll_id: string,
+    users: Array<UserProps>,
+    popup_status: boolean,
+    popup_results: PostResultList,
+}
 
 export default class SendPoll extends React.Component<Props, SendPollState> {
     state = {
@@ -217,7 +217,10 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 headers: {
                     Authorization: 'Bearer ' + this.props.token
                 },
-                data: {'poll': this.state.selected_poll_id, 'users': this.state.users.filter((v: UserProps) => v.checked)}
+                data: {
+                    'poll': this.state.selected_poll_id,
+                    'users': this.state.users.filter((v: UserProps) => v.checked)
+                }
             }).then((result) => this.setState({popup_results: result.data})).then(() => console.log(this.state.popup_results))
                 .then(() => this.refresh())
                 .then(() => this.setState({popup_status: true}))
@@ -232,6 +235,9 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 return "warning";
             }
             if (status == "PollSentAgain") {
+                return "error";
+            }
+            if (status == "PollNotSent") {
                 return "error";
             }
             if (status == "DatabaseUnknownError") {
@@ -254,8 +260,8 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                                                 })
                                             }}
                                             setUsers={(users: Array<UserProps>) => {
-                                                 this.setState({users: users})
-                                             }}
+                                                this.setState({users: users})
+                                            }}
                                             data={data}/>
                             </Grid>
                             <Grid item lg={4}>

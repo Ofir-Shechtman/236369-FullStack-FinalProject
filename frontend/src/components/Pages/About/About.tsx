@@ -17,7 +17,8 @@ import {
     CardActionArea,
     CardContent,
     Grid,
-    AppBar
+    AppBar,
+    Toolbar
 } from "@mui/material"
 import axios from "axios";
 
@@ -100,25 +101,29 @@ export const About: React.FC<AboutProps> = ({
     // @ts-ignore
     return (
         <div><AppBar position="static">
-            <Typography variant="h3"> Hello {username.charAt(0).toUpperCase() + username.slice(1)} Welcome!</Typography>
+            <Toolbar variant="dense">
+                <Typography variant="h6" color="inherit" component="div">
+                    236369 Final Project
+                </Typography>
+            </Toolbar>
         </AppBar>
+
             <Paper elevation={24} className="PaperAbout" style={styles.paperContainer}>
                 <Grid container spacing={2} justifyContent="center" alignItems="center">
                     <Grid item xs={8}>
                         <Card className="Card">
                             <CardActionArea>
                                 <CardContent>
-                                    <h2> 236369 Managing Data on The World-Wide Web Final Project </h2>
-                                    <h3> Submitters: Ofir Shechtman & Ben Lugasi </h3>
-                                    <div>
-                                        <p>
-                                            This is the admin poll managing system,<br/>
-                                            here you can Add, Delete and Review your Telegram poll results.<br/>
-                                            register our bot by starting a conversation with @FullStackBenOfirBot here
-                                            is a
-                                            short demo:
-                                        </p>
-                                    </div>
+                                    <Typography gutterBottom variant="h5" component="div">
+                                        Hello <strong>{username.charAt(0).toUpperCase() + username.slice(1)}</strong>,
+                                    </Typography>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        Welcome to our <i>'Managing Data on The World-Wide-Web'</i> Final Project.
+                                    </Typography>
+                                    <Typography gutterBottom variant="body1" component="div">
+                                        This is the admin poll managing system,<br/>
+                                        here you can Add, Delete and Review your Telegram poll results.<br/>
+                                    </Typography>
                                     <div>
                                         <p>
                                             for more information, see:
@@ -153,21 +158,22 @@ export const About: React.FC<AboutProps> = ({
                         <Card className="Card">
                             <CardActionArea>
                                 <Grid container justifyContent="center" alignItems="center">
-                                    <Grid item sx={{maxWidth: 345}} >
+                                    <Grid item sx={{maxWidth: 345}}>
                                         <CardMedia
                                             component="img"
                                             height={345 * 650 / 418}
                                             image={register_gif}
                                             alt="register gif"/>
                                     </Grid>
-                                    <Grid item xs >
+                                    <Grid item xs>
                                         <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div">
-                                                Lizard
+                                            <Typography gutterBottom variant="h4" component="div">
+                                                Register flow
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Lizards are a widespread group of squamate reptiles, with over 6,000
-                                                species, ranging across all continents except Antarctica
+                                            <Typography variant="h6" color="text.secondary">
+                                                Users can join the polling system by using the <a
+                                                href={"https://github.com/Ofir-Shechtman/236369-FullStack-FinalProject"}>Telegram
+                                                bot</a>.
                                             </Typography>
                                         </CardContent>
                                     </Grid>
@@ -181,10 +187,10 @@ export const About: React.FC<AboutProps> = ({
                                 <Grid container justifyContent="center" alignItems="center">
                                     <Grid item xs>
                                         <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div"  align='center'>
-                                                Lizard
+                                            <Typography gutterBottom variant="h4" component="div">
+                                                Answer flow
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
+                                            <Typography variant="h6" color="text.secondary">
                                                 Lizards are a widespread group of squamate reptiles, with over 6,000
                                                 species, ranging across all continents except Antarctica
                                             </Typography>

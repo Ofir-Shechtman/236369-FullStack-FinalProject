@@ -8,14 +8,14 @@ export interface BarChartProps {
 }
 
 export const PieChart: React.FC<BarChartProps> = ({
-  categories, data
-}) => {
+                                                      categories, data
+                                                  }) => {
 
     const options = {
         labels: categories,
         theme: {
             monochrome: {
-            enabled: false
+                enabled: false
             }
         },
         responsive: [
@@ -24,20 +24,20 @@ export const PieChart: React.FC<BarChartProps> = ({
                 options: {
                     chart: {
                         width: "100%"
-                        },
+                    },
                     legend: {
-                    show: false
+                        show: false
                     }
                 }
             }],
-        }
+    }
     return (
         <div className="mixed-chart">
             <Chart
-            options={options}
-            series={data}
-            type="pie"
-            width="500"
+                options={options}
+                series={data}
+                type="pie"
+                width="500"
             />
         </div>
     );
