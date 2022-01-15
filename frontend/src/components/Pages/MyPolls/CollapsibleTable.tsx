@@ -22,7 +22,7 @@ import {TableColumns} from '../../../AppConstants'
 import axios from "axios";
 
 function Row(props: any) {
-    const {row, refreshPage, token} = props;
+    const {row, refreshPage} = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [open, setOpen] = React.useState(false);

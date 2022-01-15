@@ -197,7 +197,7 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 data: resp,
                 loading: false
             }))
-            .catch(error => this.setState({
+            .catch(() => this.setState({
                 loading: false,
                 error: true
             }));

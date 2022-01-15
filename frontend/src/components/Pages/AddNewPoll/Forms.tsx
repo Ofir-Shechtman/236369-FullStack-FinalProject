@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {FormValues, PollType} from "./FormValues";
 import {Controller, FieldPath} from 'react-hook-form';
 import {
@@ -137,7 +137,7 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
                                                                 }) => {
 
 
-    const handleChangeInput = (id: any, event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | SelectChangeEvent<string>>) => {
+    const handleChangeInput = (id: any, event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | SelectChangeEvent>) => {
         const newInputFields = inputFields.map((i: { [x: string]: string; id: any; }) => {
             if (id === i.id) {
                 // @ts-ignore
@@ -239,10 +239,10 @@ export const CloseTimePicker: React.FC<CloseTimeProps> = ({
                                                               setSlider
                                                           }) => {
 
-    const toggleSwitch = (e: { target: { value: any; }; }) => {
+    const toggleSwitch = () => {
         setSwitch(!switch_value);
     }
-    const changeSlider = (event: Event, value: number | Array<number>, activeThumb: number) => {
+    const changeSlider = (event: Event, value: number | Array<number>) => {
         if (typeof value == "number") {
             setSlider(value);
         }

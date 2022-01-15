@@ -73,7 +73,7 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
     const [alert_header, setAlertHeader] = React.useState<AlertColor>('success');
     const [alert_body, setAlertBody] = React.useState<string>("Error");
 
-    const updatePostReturn = (status: AxiosResponse<any, any>) => {
+    const updatePostReturn = (status: AxiosResponse) => {
         if (status.status === 200) {
             setAlertHeader("success");
             setAlertBody("Your poll successfully added!");

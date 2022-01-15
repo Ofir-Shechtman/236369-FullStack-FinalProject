@@ -118,8 +118,8 @@ export const About: React.FC<AboutProps> = ({
                                         component="img"
                                         image={qr}
                                         alt="QR code"
-                                        onMouseOver={((e: any) => (setQR(QR_green)))}
-                                        onMouseOut={((e: any) => (setQR(QR_blue)))}
+                                        onMouseOver={(() => (setQR(QR_green)))}
+                                        onMouseOut={(() => (setQR(QR_blue)))}
                                     />
                                 </CardActionArea>
                             </Card>
@@ -162,8 +162,8 @@ export const About: React.FC<AboutProps> = ({
                                                 Answer flow
                                             </Typography>
                                             <Typography variant="h6" color="text.secondary">
-                                                Lizards are a widespread group of squamate reptiles, with over 6,000
-                                                species, ranging across all continents except Antarctica
+                                                As an of  admin our Polling System you can send
+                                                polls to registered users and they will receive and answer polls as shown here
                                             </Typography>
                                         </CardContent>
                                     </Grid>

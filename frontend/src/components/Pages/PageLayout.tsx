@@ -5,7 +5,6 @@ import {AddNewPoll} from "./AddNewPoll/AddNewPoll"
 import {MyPolls} from './MyPolls/MyPolls';
 import AdminsList from './AdminsList/AdminsList';
 import SendPoll from './SendPoll/SendPoll';
-import Background from "../../images/about_wallpaper.png";
 
 export interface PageLayoutProps {
     page: number;
@@ -15,15 +14,6 @@ export interface PageLayoutProps {
 
     removeToken(): void
 }
-
-const background_styles = {
-    paperContainer: {
-        backgroundImage: `url(${Background})`,
-        backgroundRepeat: 'repeat',
-        backgroundSize: '30%'
-    }
-};
-
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
                                                           page,

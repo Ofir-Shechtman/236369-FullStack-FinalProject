@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import "react-pro-sidebar/dist/css/styles.css";
 import '../App.css';
 import {Header} from "./Header/Header";

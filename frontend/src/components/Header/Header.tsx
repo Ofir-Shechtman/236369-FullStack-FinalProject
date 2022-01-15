@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
             method: "POST",
             url: "/logout",
         })
-            .then((response) => {
+            .then(() => {
                 removeToken()
             }).catch((error) => {
             if (error.response) {
