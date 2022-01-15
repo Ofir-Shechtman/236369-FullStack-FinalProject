@@ -95,13 +95,15 @@ export const About: React.FC<AboutProps> = ({
         }
     };
 
+    const [qr, setQR] = React.useState<string>(QR_blue);
+
     // @ts-ignore
     return (
         <div><AppBar position="static">
             <Typography variant="h3"> Hello {username.charAt(0).toUpperCase() + username.slice(1)} Welcome!</Typography>
         </AppBar>
             <Paper elevation={24} className="PaperAbout" style={styles.paperContainer}>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} justifyContent="center" alignItems="center">
                     <Grid item xs={8}>
                         <Card className="Card">
                             <CardActionArea>
@@ -138,9 +140,10 @@ export const About: React.FC<AboutProps> = ({
                                 <CardActionArea>
                                     <CardMedia
                                         component="img"
-                                        image={QR_blue}
+                                        image={qr}
                                         alt="QR code"
-                                        // onMouseOver={(e: MouseEventHandler<HTMLDivElement>) => (e.currentTarget.src = {QR_green})}
+                                        onMouseOver={((e: any) => (setQR(QR_green)))}
+                                        onMouseOut={((e: any) => (setQR(QR_blue)))}
                                     />
                                 </CardActionArea>
                             </Card>
@@ -149,17 +152,17 @@ export const About: React.FC<AboutProps> = ({
                     <Grid item xs={12}>
                         <Card className="Card">
                             <CardActionArea>
-                                <Grid container>
-                                    <Grid item sx={{maxWidth: 345}}>
+                                <Grid container justifyContent="center" alignItems="center">
+                                    <Grid item sx={{maxWidth: 345}} >
                                         <CardMedia
                                             component="img"
                                             height={345 * 650 / 418}
                                             image={register_gif}
                                             alt="register gif"/>
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs >
                                         <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div" align='center'>
+                                            <Typography gutterBottom variant="h5" component="div">
                                                 Lizard
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
@@ -175,10 +178,10 @@ export const About: React.FC<AboutProps> = ({
                     <Grid item xs={12}>
                         <Card className="Card">
                             <CardActionArea>
-                                <Grid container>
+                                <Grid container justifyContent="center" alignItems="center">
                                     <Grid item xs>
                                         <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div">
+                                            <Typography gutterBottom variant="h5" component="div"  align='center'>
                                                 Lizard
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
