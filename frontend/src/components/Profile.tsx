@@ -21,7 +21,7 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   return (
-    <div className="App">
+    <div className="Profile">
       <Header changePage={changePage} removeToken={removeToken}/>
       <PageLayout changePage={changePage} page={page} token={token} removeToken={removeToken}/>
     </div>

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import '../../App.css';
-import { About } from './About/About';
+import {About, AboutProps} from './About/About';
 import {AddNewPoll} from "./AddNewPoll/AddNewPoll"
 import { MyPolls } from './MyPolls/MyPolls';
 import AdminsList from './AdminsList/AdminsList';
 import SendPoll from './SendPoll/SendPoll';
+import axios from "axios";
 
 export interface PageLayoutProps {
     page: number;
@@ -12,6 +13,7 @@ export interface PageLayoutProps {
     changePage(newPage: number): void,
     removeToken():void
 }
+
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
                                                           page,
@@ -22,7 +24,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 
     switch(page) {
         case 0:
-            return <div className="PageLayout" ><About token={token} removeToken={removeToken}/></div>
+            return <div className="AboutPage" ><About token={token} removeToken={removeToken}/></div>
         case 1:
             return <div className="PageLayout" ><AdminsList changePage={changePage} token={token}/></div>
         case 2:
