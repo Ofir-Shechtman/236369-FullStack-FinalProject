@@ -180,24 +180,29 @@ def respond() -> Response:
         except (db.UserNotFound, db.UserNotActive) as e:
             return Status('DBUserNotFound')
     elif method == 'receive_poll_answer':
-        for answer in data['answers']:
+        try:
+            for answer in data['answers']:
+                chat_id = int(data.get('chat_id'))
+                answer = db.add_answer_by_poll_id(chat_id=chat_id,
+                                                  telegram_poll_id=data.get('poll_id'),
+                                                  option_id=int(answer))
+                if answer.option.followup_poll:
+                    _send_poll(answer.option.followup_poll, chat_id)
+        except Exception:
+            return Status('Unknown')
+    elif method == 'button':
+        try:
             chat_id = int(data.get('chat_id'))
-            answer = db.add_answer_by_poll_id(chat_id=chat_id,
-                                              telegram_poll_id=data.get('poll_id'),
-                                              option_id=int(answer))
+            answer = db.add_answer_by_message_id(chat_id=chat_id,
+                                                 message_id=int(data.get('message_id')),
+                                                 option_id=int(data['answers']))
             if answer.option.followup_poll:
                 _send_poll(answer.option.followup_poll, chat_id)
-
-    elif method == 'button':
-        chat_id = int(data.get('chat_id'))
-        answer = db.add_answer_by_message_id(chat_id=chat_id,
-                                             message_id=int(data.get('message_id')),
-                                             option_id=int(data['answers']))
-        if answer.option.followup_poll:
-            _send_poll(answer.option.followup_poll, chat_id)
-        return {"question": answer.option.poll.question, 'option': answer.option.content}
+            return {"question": answer.option.poll.question, 'option': answer.option.content}
+        except Exception:
+            return Status('Unknown')
     else:
-        raise Exception
+        return Status('Unknown')
     return Status('SUCCESS')
 
 

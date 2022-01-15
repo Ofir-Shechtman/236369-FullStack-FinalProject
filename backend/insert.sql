@@ -3,18 +3,18 @@ INSERT INTO admins(username, password_hash) VALUES (
 
 
 INSERT INTO users(user_id, first_name, last_name)  VALUES
-                                                           (569667677, 'Ofir', 'Shechtman');
---                                                            (2, 'Ben2', 'Lugasi');
+                                                           (569667677, 'Ofir', 'Shechtman'),
+                                                           (2123387537, 'Ben', 'Lugasi');
 
 INSERT INTO polls(poll_name, question, poll_type, allows_multiple_answers, created_by) VALUES
             ('Exposure', 'Are you exposed to verified covid?', 'Telegram_inline_keyboard', FALSE, 1),
             ('Vaccinated', 'What is your vaccine status?', 'Telegram_poll', TRUE, 1),
-            ('60 Vaccinated', 'Are you 60+ or in a risk group', 'Telegram_poll', FALSE, 1),
-            ('60 Not Vaccinated', 'Are you 60+ or in a risk group', 'Telegram_poll', FALSE, 1),
-            ('PCR 60+ Vaccinated', 'preform a PCR test.\n What are the results?', 'Telegram_poll', FALSE, 1),
-            ('Antigen at home 60- Vaccinated', 'preform a antigen test at home.\n What are the results?', 'Telegram_poll', FALSE, 1),
-            ('PCR 60+ Not Vaccinated', 'preform a PCR test.\n What are the results?', 'Telegram_poll', FALSE, 1),
-            ('Antigen at home 60- Not Vaccinated', 'preform a antigen test at home.\n What are the results?', 'Telegram_poll', FALSE, 1),
+            ('60 Vaccinated', 'Are you 60+ or in a risk group?', 'Telegram_inline_keyboard', FALSE, 1),
+            ('60 Not Vaccinated', 'Are you 60+ or in a risk group?', 'Telegram_inline_keyboard', FALSE, 1),
+            ('PCR 60+ Vaccinated', 'preform a PCR test. What are the results?', 'Telegram_poll', FALSE, 1),
+            ('Antigen at home 60- Vaccinated', 'preform a antigen test at home. What are the results?', 'Telegram_poll', FALSE, 1),
+            ('PCR 60+ Not Vaccinated', 'preform a PCR test. What are the results?', 'Telegram_poll', FALSE, 1),
+            ('Antigen at home 60- Not Vaccinated', 'preform a antigen test at home. What are the results?', 'Telegram_poll', FALSE, 1),
             ('Quarantine 0 days', 'Quarantine 0 days', 'Telegram_inline_keyboard', FALSE, 1),
             ('Quarantine 7 days', 'Quarantine 7 days', 'Telegram_inline_keyboard', FALSE, 1),
             ('Quarantine 10 days', 'Quarantine 10 days', 'Telegram_inline_keyboard', FALSE, 1),
@@ -26,8 +26,8 @@ INSERT INTO poll_options(option_id, poll_id, content, followup_poll_id) VALUES
             (0, 1, 'Yes', 2),
             (1, 1, 'No', 9),
             (0, 2, 'vaccinated', 3),
-            (0, 2, 'recovered', 3),
-            (1, 2, 'None', 4),
+            (1, 2, 'recovered', 3),
+            (2, 2, 'None', 4),
             (0, 3, 'Yes', 5),
             (1, 3, 'No', 6),
             (0, 4, 'Yes', 7),

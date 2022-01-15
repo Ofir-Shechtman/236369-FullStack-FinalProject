@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import '../../../App.css';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { Button, Paper } from "@mui/material"
+import {Button, Paper, Card, CardMedia} from "@mui/material"
 import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -39,7 +39,7 @@ export interface AboutProps {
 export const About: React.FC<AboutProps> = ({
                                                           token,removeToken
                                                       }) => {
-    const classes = useStyles(); // Do Not Delete it keeps mui styles alive for all pages
+    const classes = useStyles();
     const [username, setProfileData] = useState<string>("")
     function getData() {
     axios({
@@ -89,6 +89,22 @@ export const About: React.FC<AboutProps> = ({
                                       GitHub
                     </Button>
                 </div>
+                 {/*<img src='/static/videos/register.gif' alt="register" />*/}
+            {/*<img src='/static/videos/answer.gif' alt="answer"  />*/}
+            <Card sx={{ maxWidth: 345 }}>
+      <CardMedia
+        component="img"
+        height="140"
+        image="/static/videos/register.gif"
+        alt="green iguana"
+      /></Card>
+            <Card sx={{ maxWidth: 345 }}>
+      <CardMedia
+        component="img"
+        height="140"
+        image="/static/videos/answer.gif"
+        alt="green iguana"
+      /></Card>
             </Paper>
         </div>
     )

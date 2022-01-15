@@ -22,7 +22,7 @@ import axios from "axios";
 import {FaClock} from "react-icons/fa";
 
 function Row(props: any) {
-  const { row, refreshPage} = props;
+  const { row, refreshPage, token} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
@@ -210,7 +210,8 @@ Row.propTypes = {
     receivers: PropTypes.number.isRequired,
     open: PropTypes.bool.isRequired
   }).isRequired,
-  refreshPage: PropTypes.func.isRequired
+  refreshPage: PropTypes.func.isRequired,
+  token: PropTypes.string.isRequired
 };
 
 
@@ -232,19 +233,20 @@ interface PollProps {
 interface CollapsibleTableState {
   data: Array<any>,
   loading: boolean,
-  error: boolean,
+  error: boolean
 }
 
 interface Props {
   token: string,
 }
 
-export default class CollapsibleTable extends React.Component<Props, CollapsibleTableState> {
+export default class CollapsibleTable extends React.Component<Props, CollapsibleTableState>{
   state = {
       data: [],
       loading: true,
-      error: false
+      error: false,
     }
+
 
 
   refreshPage = () => {
@@ -305,6 +307,7 @@ export default class CollapsibleTable extends React.Component<Props, Collapsible
                           <Row key={row.poll_id}
                                row={row}
                                refreshPage={this.refreshPage}
+                               token={this.props.token}
                           />
                       ))
                 }
