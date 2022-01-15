@@ -18,13 +18,14 @@ import axios from "axios";
 interface UserProps {
     user: string,
     chat_id: string,
-    checked: boolean
+    checked: boolean,
+    sent: boolean
 }
 
 interface PollProps {
   poll_id: string,
   poll_name: string,
-  unsent_users:Array<UserProps>
+  users:Array<UserProps>
 }
 
 interface SelectPollProps {
@@ -47,7 +48,10 @@ const SelectPoll: React.FC<SelectPollProps> = ({
         setSelectPoll(event.target.value)
         let selected_poll = data.find(({ poll_id }) => poll_id == event.target.value)
         if (selected_poll != null){
-            setUsers(selected_poll.unsent_users)
+            for(let user of selected_poll.users){
+                user.checked = false
+            }
+            setUsers(selected_poll.users)
         }
     };
 
@@ -64,7 +68,11 @@ const SelectPoll: React.FC<SelectPollProps> = ({
             onChange={onPollChange}
             >
               {data.map((poll: PollProps) => (
-                  <FormControlLabel key={poll.poll_id} value={poll.poll_id} control={<Radio />} label={poll.poll_name} />
+                  <FormControlLabel key={poll.poll_id}
+                                    value={poll.poll_id}
+                                    disabled={poll.users.filter((v) => !v.sent).length == 0}
+                                    control={<Radio />}
+                                    label={poll.poll_name} />
                 ))}
             </RadioGroup>
         </FormControl>
@@ -79,13 +87,17 @@ interface SelectUsersProps {
 }
 
 const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, users, data}) => {
-    const error = users.filter((v) => v.checked).length == 0;
+    const error = users.filter((user) => (!user.sent) && user.checked).length == 0;
 
     const get_users = (poll: PollProps, selected_poll_id: string) => {
         if (poll.poll_id == selected_poll_id) {
             return (
-                poll.unsent_users.map((user: UserProps) => (
-                <FormControlLabel key={user.chat_id} value={user.chat_id} control={<Checkbox/>} label={user.user}/>
+                poll.users.map((user: UserProps) => (
+                <FormControlLabel key={user.chat_id}
+                                  value={user.chat_id}
+                                  disabled={user.sent}
+                                  control={<Checkbox/>}
+                                  label={user.user}/>
             )))
         }
     }
@@ -182,6 +194,22 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
 
     render() {
         const {data} = this.state;
+
+        const setUsers = (users: Array<UserProps>) => {
+            this.setState({users: users})
+        }
+
+        const setUserForSelectedPoll = () => {
+            let found_poll = data.find(({ poll_id }) => poll_id == this.state.selected_poll_id)
+            if (found_poll != null){
+                let selected_poll: PollProps = found_poll
+                for(let user of selected_poll.users){
+                    user.checked = false
+                }
+                setUsers(selected_poll.users)
+            }
+        }
+
         const sendPoll = () => {
             axios({
                 method: "POST",
@@ -192,7 +220,8 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 data: {'poll': this.state.selected_poll_id, 'users': this.state.users.filter((v: UserProps) => v.checked)}
             }).then((result) => this.setState({popup_results: result.data})).then(() => console.log(this.state.popup_results))
                 .then(() => this.refresh())
-                .then(() => this.setState({popup_status: true, users: []}))
+                .then(() => this.setState({popup_status: true}))
+                .then(() => setUserForSelectedPoll())
                 .catch(() => {
                     this.setState({popup_results: {results: []}})
                 })
@@ -231,16 +260,14 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                             </Grid>
                             <Grid item lg={4}>
                                 <SelectUsers selected_poll_id={this.state.selected_poll_id}
-                                             setUsers={(users: Array<UserProps>) => {
-                                                 this.setState({users: users})
-                                             }}
+                                             setUsers={setUsers}
                                              users={this.state.users}
                                              data={data}/>
                             </Grid>
                         </Grid>
                         <Button variant="contained"
                                 component="label"
-                                disabled={this.state.users.filter((v: UserProps) => v.checked).length == 0}
+                                disabled={this.state.users.filter((user: UserProps) => user.checked).length == 0}
                                 onClick={sendPoll}>
                             Send Poll
                         </Button>

@@ -62,7 +62,7 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
   const {handleSubmit, control} = useForm<FormValues>();
   const [multiple_enable, multipleSwitch] = React.useState<boolean>(true);
   const [poll_type, setPollSwitch] = React.useState<PollType>("Telegram_poll");
-  const [switch_value, setTimeSwitch] = React.useState<boolean>(true);
+  const [switch_value, setTimeSwitch] = React.useState<boolean>(false);
   const [slider_value, setTimeSlider] = React.useState<number>(5);
 
 

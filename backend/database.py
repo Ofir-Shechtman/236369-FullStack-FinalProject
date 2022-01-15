@@ -331,11 +331,12 @@ def get_poll_to_send(admin_id):
         return {
             'poll_id': poll.poll_id,
             'poll_name': poll.poll_name,
-            'unsent_users': [{'user': get_name(user),
-                              'chat_id': user.user_id,
-                              'checked': False
-                              }
-                             for user in all_users if user not in [receiver.user for receiver in poll.poll_receivers]],
+            'users': [{'user': get_name(user),
+                       'chat_id': user.user_id,
+                       'checked': user not in [receiver.user for receiver in poll.poll_receivers],
+                       'sent': user in [receiver.user for receiver in poll.poll_receivers]
+                       }
+                      for user in all_users],
         }
 
     admin = get_admin(admin_id)
@@ -361,6 +362,7 @@ def get_admins():
         return {
             'admin': admin.username
         }
+
     polls = [serialize(admin) for admin in _db.session.query(Admin)]
     polls.sort(key=lambda x: x.get('admin'))
     return jsonify(polls)
