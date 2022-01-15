@@ -22,9 +22,9 @@ interface UserProps {
 }
 
 interface PollProps {
-  poll_id: string,
-  poll_name: string,
-  unsent_users:Array<UserProps>
+    poll_id: string,
+    poll_name: string,
+    unsent_users: Array<UserProps>
 }
 
 interface SelectPollProps {
@@ -45,8 +45,8 @@ const SelectPoll: React.FC<SelectPollProps> = ({
 
     const onPollChange = (event: any) => {
         setSelectPoll(event.target.value)
-        let selected_poll = data.find(({ poll_id }) => poll_id == event.target.value)
-        if (selected_poll != null){
+        let selected_poll = data.find(({poll_id}) => poll_id == event.target.value)
+        if (selected_poll != null) {
             setUsers(selected_poll.unsent_users)
         }
     };
@@ -58,13 +58,14 @@ const SelectPoll: React.FC<SelectPollProps> = ({
             error={error}>
             <FormLabel component="legend">Poll</FormLabel>
             <RadioGroup
-            aria-label="Poll"
-            name="controlled-radio-buttons-group"
-            value={selected_poll_id}
-            onChange={onPollChange}
+                aria-label="Poll"
+                name="controlled-radio-buttons-group"
+                value={selected_poll_id}
+                onChange={onPollChange}
             >
-              {data.map((poll: PollProps) => (
-                  <FormControlLabel key={poll.poll_id} value={poll.poll_id} control={<Radio />} label={poll.poll_name} />
+                {data.map((poll: PollProps) => (
+                    <FormControlLabel key={poll.poll_id} value={poll.poll_id} control={<Radio/>}
+                                      label={poll.poll_name}/>
                 ))}
             </RadioGroup>
         </FormControl>
@@ -73,7 +74,7 @@ const SelectPoll: React.FC<SelectPollProps> = ({
 
 interface SelectUsersProps {
     selected_poll_id: string;
-    setUsers:any;
+    setUsers: any;
     users: Array<UserProps>;
     data: PollProps[];
 }
@@ -85,8 +86,8 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
         if (poll.poll_id == selected_poll_id) {
             return (
                 poll.unsent_users.map((user: UserProps) => (
-                <FormControlLabel key={user.chat_id} value={user.chat_id} control={<Checkbox/>} label={user.user}/>
-            )))
+                    <FormControlLabel key={user.chat_id} value={user.chat_id} control={<Checkbox/>} label={user.user}/>
+                )))
         }
     }
 
@@ -115,32 +116,32 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
 }
 
 
-    interface Props {
-        token: string
-    }
+interface Props {
+    token: string
+}
 
-    export interface MyPollsProps {
-        token: string;
-    }
+export interface MyPollsProps {
+    token: string;
+}
 
-    interface PostResult {
-        name: string,
-        status: string
-    }
+interface PostResult {
+    name: string,
+    status: string
+}
 
-    interface PostResultList {
-        results: Array<PostResult>,
-    }
+interface PostResultList {
+    results: Array<PostResult>,
+}
 
-    interface SendPollState {
-        data: Array<any>,
-        loading: boolean,
-        error: boolean,
-        selected_poll_id: string,
-        users: Array<UserProps>,
-        popup_status: boolean,
-        popup_results: PostResultList,
-    }
+interface SendPollState {
+    data: Array<any>,
+    loading: boolean,
+    error: boolean,
+    selected_poll_id: string,
+    users: Array<UserProps>,
+    popup_status: boolean,
+    popup_results: PostResultList,
+}
 
 export default class SendPoll extends React.Component<Props, SendPollState> {
     state = {
@@ -189,7 +190,10 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 headers: {
                     Authorization: 'Bearer ' + this.props.token
                 },
-                data: {'poll': this.state.selected_poll_id, 'users': this.state.users.filter((v: UserProps) => v.checked)}
+                data: {
+                    'poll': this.state.selected_poll_id,
+                    'users': this.state.users.filter((v: UserProps) => v.checked)
+                }
             }).then((result) => this.setState({popup_results: result.data})).then(() => console.log(this.state.popup_results))
                 .then(() => this.refresh())
                 .then(() => this.setState({popup_status: true, users: []}))
@@ -203,6 +207,9 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                 return "warning";
             }
             if (status == "PollSentAgain") {
+                return "error";
+            }
+            if (status == "PollNotSent") {
                 return "error";
             }
             if (status == "DatabaseUnknownError") {
@@ -225,8 +232,8 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
                                                 })
                                             }}
                                             setUsers={(users: Array<UserProps>) => {
-                                                 this.setState({users: users})
-                                             }}
+                                                this.setState({users: users})
+                                            }}
                                             data={data}/>
                             </Grid>
                             <Grid item lg={4}>

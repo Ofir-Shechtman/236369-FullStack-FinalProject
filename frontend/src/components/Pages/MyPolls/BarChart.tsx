@@ -8,8 +8,8 @@ export interface BarChartProps {
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
-  categories, data
-}) => {
+                                                      categories, data
+                                                  }) => {
     const options = {
         chart: {
             id: "basic-bar"
@@ -25,16 +25,16 @@ export const BarChart: React.FC<BarChartProps> = ({
         }
     }
     const series = [{
-      name: "answers",
-      data: data
+        name: "answers",
+        data: data
     }]
     return (
         <div className="mixed-chart">
             <Chart
-            options={options}
-            series={series}
-            type="bar"
-            width="500"
+                options={options}
+                series={series}
+                type="bar"
+                width="500"
             />
         </div>
     );

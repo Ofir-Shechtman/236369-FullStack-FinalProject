@@ -67,7 +67,6 @@ export const PollTypeForm: React.FC<PollTypeFormProps> = ({
 export interface SwitchProps {
     name: string;
     multipleSwitch:(value:boolean)=>void;
-    timeSwitch:(value:boolean)=>void;
     type_value:PollType;
     multiple_enable: boolean;
 }
@@ -75,14 +74,10 @@ export interface SwitchProps {
 export const SwitchForm: React.FC<SwitchProps> = ({
                                                         name,
                                                         multipleSwitch,
-                                                        timeSwitch,
                                                         type_value,
                                                         multiple_enable
                                                       }) => {
     const toggleSwitch = (e: { target: { value: any; }; }) => {
-        if(multiple_enable){
-            timeSwitch(false)
-        }
         multipleSwitch(!multiple_enable);
     }
     return (
@@ -231,23 +226,23 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
 export interface CloseTimeProps {
     name_switch: string;
     name_slider: string;
-    multiple_enable: boolean;
-    switch_value:boolean;
-    setSwitch: (value:boolean)=>void;
-    slider_value:number;
-    setSlider: (value:number)=>void;
+    type_value: PollType;
+    switch_value: boolean;
+    setSwitch: (value: boolean) => void;
+    slider_value: number;
+    setSlider: (value: number) => void;
 }
 
 
 export const CloseTimePicker: React.FC<CloseTimeProps> = ({
-                                                          name_switch,
-                                                          name_slider,
-                                                          multiple_enable,
-                                                          switch_value,
-                                                          setSwitch,
-                                                          slider_value,
-                                                          setSlider
-                                                      }) => {
+                                                              name_switch,
+                                                              name_slider,
+                                                              type_value,
+                                                              switch_value,
+                                                              setSwitch,
+                                                              slider_value,
+                                                              setSlider
+                                                          }) => {
 
     const toggleSwitch = (e: { target: { value: any; }; }) => {
         setSwitch(!switch_value);
@@ -264,9 +259,9 @@ export const CloseTimePicker: React.FC<CloseTimeProps> = ({
             <Grid item lg={2}>
                 <InputLabel>{name_switch}</InputLabel>
                     <Switch value={switch_value}
-                        checked={switch_value}
-                        disabled={!multiple_enable}
-                        onChange={toggleSwitch}
+                            checked={switch_value}
+                            disabled={type_value == "Telegram_inline_keyboard"}
+                            onChange={toggleSwitch}
                     />
             </Grid>
         <Grid item lg={4}>

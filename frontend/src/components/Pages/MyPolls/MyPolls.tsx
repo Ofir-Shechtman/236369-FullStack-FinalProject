@@ -8,8 +8,8 @@ export interface MyPollsProps {
 }
 
 export const MyPolls: React.FC<MyPollsProps> = ({
-                                                          token
-                                                      }) => {
+                                                    token
+                                                }) => {
     return (
         <div className="MyPolls">
             <CollapsibleTable token={token}/>
