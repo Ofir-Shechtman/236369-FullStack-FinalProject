@@ -1,3 +1,5 @@
+import threading
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import logging
 import requests
@@ -107,9 +109,14 @@ class TelegramBot(Updater):
                                   BotCommand("register", "Subscribe to our polling system"),
                                   BotCommand("remove", "Unsubscribe from our polling system")])
 
-    def run(self):
-        self.start_polling()
-        self.idle()
+    def run(self, threaded=False):
+        if threaded:
+            t = threading.Thread(target=self.start_polling)
+            t.start()
+            t.join()
+        else:
+            self.start_polling()
+            self.idle()
 
 
 if __name__ == '__main__':
