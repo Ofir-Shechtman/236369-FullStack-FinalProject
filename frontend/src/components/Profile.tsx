@@ -1,5 +1,4 @@
-import React, {useState, useEffect} from 'react';
-import logo from '../logo.svg';
+import React, {useState} from 'react';
 import "react-pro-sidebar/dist/css/styles.css";
 import '../App.css';
 import {Header} from "./Header/Header";

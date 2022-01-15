@@ -130,7 +130,7 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
             error={error}
             component="fieldset"
             variant="standard"
-            >
+        >
             <FormLabel component="legend">Receivers</FormLabel>
             <FormGroup onChange={onSelectedUsersChange}>
                 {data.map((poll: PollProps) => (

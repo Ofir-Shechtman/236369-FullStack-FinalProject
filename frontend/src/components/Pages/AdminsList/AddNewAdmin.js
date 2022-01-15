@@ -3,12 +3,7 @@ import '../../../App.css';
 import {get, isEmpty, set} from "lodash-es";
 import {FormBuilder} from "@jeremyling/react-material-ui-form-builder";
 import {
-    Avatar,
-    Button, Dialog,
-    DialogActions,
-    DialogContent,
-    IconButton,
-    InputAdornment
+    Avatar, Button, Dialog, DialogActions, DialogContent, IconButton, InputAdornment
 } from "@mui/material";
 import {LockOutlined, Visibility, VisibilityOff} from "@mui/icons-material";
 import {red} from "@mui/material/colors";

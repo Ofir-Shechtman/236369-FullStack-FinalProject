@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import '../../App.css';
-import {About, AboutProps} from './About/About';
+import {About} from './About/About';
 import {AddNewPoll} from "./AddNewPoll/AddNewPoll"
 import {MyPolls} from './MyPolls/MyPolls';
 import AdminsList from './AdminsList/AdminsList';

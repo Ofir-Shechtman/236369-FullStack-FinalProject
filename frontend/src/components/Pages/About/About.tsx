@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
 import '../../../App.css';
-import {makeStyles, Theme, createStyles} from "@material-ui/core/styles";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Background from '../../../images/about_wallpaper.png';
 import QR_blue from '../../../images/qr_blue.jpg';
 import QR_green from '../../../images/qr_green.jpg';
-
 import register_gif from '../../../videos/register.gif';
 import answer_gif from '../../../videos/answer.gif';
 import {
@@ -22,31 +20,6 @@ import {
 } from "@mui/material"
 import axios from "axios";
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-    body: {
-        color: '#272e5d',
-        fontSize: 24,
-        textAlign: 'justify',
-        lineHeight: 1.5,
-    },
-    button: {
-        borderRadius: 15,
-        display: "block",
-        float: "left",
-        margin: "0 7px 0 0",
-        color: "#f5f5f5",
-        borderTop: "1px solid #eee",
-        borderLeft: "1px solid #eee",
-        fontFamily: "Lucida Grande, Tahoma, Arial, Verdana, sans-serif",
-        fontSize: "100%",
-        lineHeight: "130%",
-        textDecoration: "none",
-        fontWeight: "bold",
-        backgroundColor: "#565656",
-        cursor: "pointer",
-        padding: "5px 10px 6px 7px"
-    }
-}))
 
 export interface AboutProps {
     token: string;
@@ -57,7 +30,6 @@ export interface AboutProps {
 export const About: React.FC<AboutProps> = ({
                                                 token, removeToken
                                             }) => {
-    const classes = useStyles();
     const [username, setProfileData] = useState<string>("")
 
     function getData() {
@@ -107,7 +79,6 @@ export const About: React.FC<AboutProps> = ({
                 </Typography>
             </Toolbar>
         </AppBar>
-
             <Paper elevation={24} className="PaperAbout" style={styles.paperContainer}>
                 <Grid container spacing={2} justifyContent="center" alignItems="center">
                     <Grid item xs={8}>
