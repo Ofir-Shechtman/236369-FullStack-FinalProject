@@ -7,13 +7,13 @@ import {
     Dialog, DialogActions,
     DialogContent, DialogTitle,
     FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
-    Grid, FormGroup,
+    Grid, FormGroup, Tooltip,
     Paper,
     Stack,
     Typography
 } from "@mui/material";
 import axios from "axios";
-
+import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
 
 interface UserProps {
     user: string,
@@ -93,11 +93,25 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
         if (poll.poll_id == selected_poll_id) {
             return (
                 poll.users.map((user: UserProps) => (
+
                     <FormControlLabel key={user.chat_id}
                                       value={user.chat_id}
                                       disabled={user.sent}
                                       control={<Checkbox/>}
-                                      label={user.user}/>
+                                      label={
+                                          <Grid container style={{minWidth: '200px'}}>
+                                              <Grid item lg={10}>
+                                                  {user.user}
+                                              </Grid>
+                                              <Grid item lg={2} zeroMinWidth>
+                                                  {user.sent &&
+                                                      <Tooltip title={"Already sent"}>
+                                                          <CheckCircleTwoToneIcon color={"success"}/>
+                                                      </Tooltip>
+                                                  }
+                                              </Grid>
+                                          </Grid>
+                                      }/>
                 )))
         }
     }
@@ -115,7 +129,8 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
         <FormControl
             error={error}
             component="fieldset"
-            variant="standard">
+            variant="standard"
+            >
             <FormLabel component="legend">Receivers</FormLabel>
             <FormGroup onChange={onSelectedUsersChange}>
                 {data.map((poll: PollProps) => (

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
     Box, Collapse, IconButton, Table, TablePagination, TableBody, TableCell, TableContainer, TableHead,
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button,
-    TableRow, Typography, Paper, TableFooter, Grid, CircularProgress
+    TableRow, Typography, Paper, TableFooter, Grid, CircularProgress, Tooltip
 } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -72,33 +72,44 @@ function Row(props: any) {
         <React.Fragment>
             <TableRow sx={{'& > *': {borderBottom: 'unset'}}}>
                 <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
-                    </IconButton>
+                    <Tooltip title="Expand">
+                        <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => setOpen(!open)}
+                        >
+                            {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+                        </IconButton>
+                    </Tooltip>
                 </TableCell>
                 <TableCell align="center">{row.poll_name}</TableCell>
                 <TableCell
                     align="center">{row.poll_type == "Telegram_poll" ? "Telegram Poll" : "Telegram Inline Keyboard"}</TableCell>
                 <TableCell align="center">
-                    {row.allows_multiple_answers ? <CheckRoundedIcon color="success"/> :
-                        <ClearRoundedIcon color="error"/>}
+                    {row.allows_multiple_answers ?
+                        <Tooltip title="Multiple answers allowed"><CheckRoundedIcon color="success"/></Tooltip> :
+                        <Tooltip title="Multiple answers not allowed"><ClearRoundedIcon color="error"/></Tooltip>}
                 </TableCell>
                 <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
                 <TableCell align="center">{row.close_date}</TableCell>
-                <TableCell align="center"><CircleTwoToneIcon sx={{color: row.open ? "green" : "red"}}/></TableCell>
                 <TableCell align="center">
-                    <IconButton disabled={row.poll_type != "Telegram_poll" || !row.open}>
-                        <StopCircleIcon onClick={() => handleStopPoll(row.poll_id, props.token)}/>
-                    </IconButton>
+                    <Tooltip title={row.open?"Poll Active": "Poll Closed"}>
+                        <CircleTwoToneIcon sx={{color: row.open ? "green" : "red"}}/>
+                    </Tooltip>
                 </TableCell>
                 <TableCell align="center">
-                    <IconButton>
-                        <DeleteIcon onClick={handleClickOpen}/>
-                    </IconButton>
+                    <Tooltip title="Stop Poll">
+                        <IconButton disabled={row.poll_type != "Telegram_poll" || !row.open}>
+                            <StopCircleIcon onClick={() => handleStopPoll(row.poll_id, props.token)}/>
+                        </IconButton>
+                    </Tooltip>
+                </TableCell>
+                <TableCell align="center">
+                    <Tooltip title="Delete Poll">
+                        <IconButton>
+                            <DeleteIcon onClick={handleClickOpen}/>
+                        </IconButton>
+                    </Tooltip>
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -294,31 +305,37 @@ export default class CollapsibleTable extends React.Component<Props, Collapsible
                                                style={{width: column.width}}>{column.title}</TableCell>
                                 ))}
                                 <TableCell className={"TableHeader"} onClick={this.refreshPage}>
-                                    <IconButton>
-                                        <RefreshRoundedIcon className={"refresh_icon"}/>
-                                    </IconButton>
+                                    <Tooltip title="Refresh">
+                                        <IconButton>
+                                            <RefreshRoundedIcon className={"refresh_icon"}/>
+                                        </IconButton>
+                                    </Tooltip>
                                 </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {loading &&
-                            <TableCell sx={{display: 'flex'}}>
-                                <CircularProgress/>
-                            </TableCell>
+                                <TableCell sx={{display: 'flex'}}>
+                                    <Tooltip title="Loading">
+                                        <CircularProgress/>
+                                    </Tooltip>
+                                </TableCell>
                             }
                             {!loading && !error &&
-                            data.map((row: PollProps) => (
-                                <Row key={row.poll_id}
-                                     row={row}
-                                     refreshPage={this.refreshPage}
-                                     token={this.props.token}
-                                />
-                            ))
+                                data.map((row: PollProps) => (
+                                    <Row key={row.poll_id}
+                                         row={row}
+                                         refreshPage={this.refreshPage}
+                                         token={this.props.token}
+                                    />
+                                ))
                             }
                             {error &&
-                            <TableCell sx={{display: 'flex'}}>
-                                <ReportIcon fontSize="large" color="error"/>
-                            </TableCell>
+                                <TableCell sx={{display: 'flex'}}>
+                                    <Tooltip title="Can't load data">
+                                        <ReportIcon fontSize="large" color="error"/>
+                                    </Tooltip>
+                                </TableCell>
                             }
                         </TableBody>
                     </Table>

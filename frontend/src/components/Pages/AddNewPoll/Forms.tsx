@@ -1,24 +1,16 @@
 import React, {useState} from 'react';
-import {PageLayoutProps} from "../PageLayout";
 import {FormValues, PollType} from "./FormValues";
 import {Controller, FieldPath} from 'react-hook-form';
-import {Switch} from "@material-ui/core";
-import {TextField} from '@material-ui/core';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Slider from '@mui/material/Slider';
-import FormControl from '@mui/material/FormControl';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
-import {ToggleButtonGroup, ToggleButton, FormControlLabel, FormLabel} from "@mui/material";
-import IconButton from "@material-ui/core/IconButton";
+import {
+    ToggleButtonGroup, ToggleButton, FormLabel, Switch, TextField, Box, InputLabel, MenuItem,
+    Slider, FormControl, Select, SelectChangeEvent, IconButton, Grid, Container
+}
+from "@mui/material";
 import RemoveIcon from "@material-ui/icons/Remove";
 import AddIcon from "@material-ui/icons/Add";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import '../../../App.css';
+
 import { v4 as uuidv4 } from 'uuid';
-
-
 
 
 export interface PollTypeFormProps {
@@ -77,19 +69,20 @@ export const SwitchForm: React.FC<SwitchProps> = ({
                                                         type_value,
                                                         multiple_enable
                                                       }) => {
-    const toggleSwitch = (e: { target: { value: any; }; }) => {
-        multipleSwitch(!multiple_enable);
+    const toggleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        multipleSwitch(e.target.checked);
     }
     return (
-        <section>
+        <div>
             <InputLabel>{name}</InputLabel>
-                    <Switch
-                        value={multiple_enable}
-                        checked={multiple_enable}
-                        onChange={toggleSwitch}
-                        disabled={type_value=="Telegram_inline_keyboard"}
-                    />
-    </section>
+            <Switch
+                value={multiple_enable}
+                checked={multiple_enable}
+                onChange={toggleSwitch}
+                disabled={type_value=="Telegram_inline_keyboard"}
+            />
+        </div>
     )
 }
 

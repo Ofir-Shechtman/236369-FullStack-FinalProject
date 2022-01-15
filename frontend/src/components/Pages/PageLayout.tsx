@@ -5,10 +5,7 @@ import {AddNewPoll} from "./AddNewPoll/AddNewPoll"
 import {MyPolls} from './MyPolls/MyPolls';
 import AdminsList from './AdminsList/AdminsList';
 import SendPoll from './SendPoll/SendPoll';
-import axios from "axios";
 import Background from "../../images/about_wallpaper.png";
-import {Paper} from "@mui/material";
-import {inspect} from "util";
 
 export interface PageLayoutProps {
     page: number;
