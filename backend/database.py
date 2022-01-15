@@ -350,11 +350,9 @@ def delete_poll(poll_id):
 
 
 def get_verified_admin(username, password):
-    try:
-        admin = get_admin(username=username)
-        return admin.verify_password(password)
-    except BaseException:
-        return False
+    admin = get_admin(username=username)
+    return admin.verify_password(password)
+
 
 
 def get_admins():

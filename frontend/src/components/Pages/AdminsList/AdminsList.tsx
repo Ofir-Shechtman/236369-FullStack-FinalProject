@@ -140,7 +140,7 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
                             </TableCell>
                             }
                             {!loading && !error &&
-                            data.map((row: ListProps) => (
+                            Array.from(data).map((row: ListProps) => (
                                     <TableRow key={row.admin}>
                                         <TableCell colSpan={2} align="left">
                                             <Grid container>

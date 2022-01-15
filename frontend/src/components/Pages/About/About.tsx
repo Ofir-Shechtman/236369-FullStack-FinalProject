@@ -58,7 +58,7 @@ export const About: React.FC<AboutProps> = ({
                                                 token, removeToken
                                             }) => {
     const classes = useStyles();
-    const [username, setProfileData] = useState<string>("")
+    const [username, setProfileData] = useState<string>("Username")
 
     function getData() {
         axios({
@@ -115,7 +115,7 @@ export const About: React.FC<AboutProps> = ({
                             <CardActionArea>
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
-                                        Hello <strong>{username.charAt(0).toUpperCase() + username.slice(1)}</strong>,
+                                        Hello <strong>{username}</strong>,
                                     </Typography>
                                     <Typography gutterBottom variant="h6" component="div">
                                         Welcome to our <i>'Managing Data on The World-Wide-Web'</i> Final Project.

@@ -68,6 +68,8 @@ function Row(props: any) {
         }).then(() => refreshPage())
     }
 
+
+
     return (
         <React.Fragment>
             <TableRow sx={{'& > *': {borderBottom: 'unset'}}}>
@@ -90,7 +92,7 @@ function Row(props: any) {
                         <Tooltip title="Multiple answers allowed"><CheckRoundedIcon color="success"/></Tooltip> :
                         <Tooltip title="Multiple answers not allowed"><ClearRoundedIcon color="error"/></Tooltip>}
                 </TableCell>
-                <TableCell align="center">{row.answers_count.toString() + '/' + row.receivers.toString()}</TableCell>
+                <TableCell align="center">{""+row.answers_count + '/' + row.receivers}</TableCell>
                 <TableCell align="center">{row.close_date}</TableCell>
                 <TableCell align="center">
                     <Tooltip title={row.open?"Poll Active": "Poll Closed"}>
@@ -156,7 +158,7 @@ function Row(props: any) {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {row.poll_answers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((answer: any) => (
+                                    {Array.from(Array.from(row.poll_answers).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)).map((answer: any) => (
                                         <TableRow key={answer.user}>
                                             <TableCell component="th" scope="row">{answer.user}</TableCell>
                                             <TableCell align="center">
@@ -300,7 +302,7 @@ export default class CollapsibleTable extends React.Component<Props, Collapsible
                         <TableHead>
                             <TableRow>
                                 <TableCell className={"TableHeader"}/>
-                                {TableColumns.map((column: { width: string, title: string }) => (
+                                {Array.from(TableColumns).map((column: { width: string, title: string }) => (
                                     <TableCell align="center" className={"TableHeader"}
                                                style={{width: column.width}}>{column.title}</TableCell>
                                 ))}
@@ -322,7 +324,7 @@ export default class CollapsibleTable extends React.Component<Props, Collapsible
                                 </TableCell>
                             }
                             {!loading && !error &&
-                                data.map((row: PollProps) => (
+                                Array.from(data).map((row: PollProps) => (
                                     <Row key={row.poll_id}
                                          row={row}
                                          refreshPage={this.refreshPage}

@@ -3,16 +3,14 @@ import {Login} from './components/Login'
 import Profile from './components/Profile'
 import useToken from './components/useToken'
 import './App.css'
-import { ThemeProvider, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 
 function App() {
   const { token, removeToken, setToken } = useToken();
-  const theme = useTheme();
 
   return (
     <BrowserRouter>
-        <ThemeProvider theme={theme}>
             <div className="App">
               {!token && token!=="" &&token!== undefined?
               <Login setToken={setToken} />
@@ -24,7 +22,6 @@ function App() {
                 </>
               )}
             </div>
-        </ThemeProvider>
     </BrowserRouter>
   );
 }

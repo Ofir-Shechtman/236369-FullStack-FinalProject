@@ -100,7 +100,7 @@ export const AddNewPoll: React.FC<AddNewPollProps> = ({
 
     const onSubmit = (data: any) => {
       data['MultipleAnswers'] = multiple_enable
-      data['MultipleOptions'] = inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll:unknown}) => ({"option":inputField.Option, "poll_id":inputField.FollowupPoll}))
+      data['MultipleOptions'] = Array.from(inputFields).map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll:unknown}) => ({"option":inputField.Option, "poll_id":inputField.FollowupPoll}))
       data['PollType'] = poll_type
       data['AutoClosingSwitch'] = switch_value
       data['AutoCloseTime'] = slider_value

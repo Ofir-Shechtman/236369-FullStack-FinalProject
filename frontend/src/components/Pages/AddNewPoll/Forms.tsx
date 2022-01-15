@@ -121,7 +121,7 @@ export const MUITextField: React.FC<MUITextFieldProps> = ({
 }
 export interface MultipleOptionsProps {
     name: string;
-    inputFields: any,
+    inputFields: { id: string; Option: string; FollowupPoll: string; }[],
     setInputFields: any,
     data:Poll[]
 
@@ -136,7 +136,8 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
 
 
   const handleChangeInput = (id: any, event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | SelectChangeEvent<string>>) => {
-    const newInputFields = inputFields.map((i: { [x: string]: string; id: any; }) => {
+    // @ts-ignore
+      const newInputFields = Array.from(inputFields).map((i: { [x: string]: string; id: any; }) => {
       if(id === i.id) {
           // @ts-ignore
           i[event.target.name] = event.target.value
@@ -166,7 +167,8 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
   //   };
 
     function onPollChange(id: React.Key | null | undefined, event:any) {
-        const newInputFields = inputFields.map((i: { [x: string]: string; id: any; }) => {
+        // @ts-ignore
+        const newInputFields = Array.from(inputFields).map((i: { [x: string]: string; id: any; }) => {
       if(id === i.id) {
           i["FollowupPoll"] = event.target.value
       }
@@ -175,22 +177,25 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
         setInputFields(newInputFields);
     }
 
+
+
+
     return (
         <Container>
         <InputLabel>{name}</InputLabel>
-        {inputFields.map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll:string }) => (
-          <div key={inputField.id}>
+        {Array.from(inputFields).map((v:{ id: string; Option: string; FollowupPoll: string; }) => (
+          <div key={v.id}>
               <TextField
               name="Option"
-              label={'Option '+parseInt(String(inputFields.indexOf(inputField) + 1))}
-              value={inputField.Option}
-              onChange={event => handleChangeInput(inputField.id, event)}
+              label={'Option '+parseInt(String(inputFields.indexOf(v) + 1))}
+              value={v.Option}
+              onChange={event => handleChangeInput(v.id, event)}
               placeholder={name}
               variant="outlined"
               required={true}
               className={"MultipleOptionsList"}
             />
-            <IconButton disabled={inputFields.length === 2} onClick={() => handleRemoveFields(inputField.id)}>
+            <IconButton disabled={inputFields.length === 2} onClick={() => handleRemoveFields(v.id)}>
               <RemoveIcon />
             </IconButton>
             <IconButton
@@ -200,8 +205,8 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
             </IconButton>
             <FormControl sx={{ m: 1, width: 300 }}>
                 <InputLabel>Follow-up Poll</InputLabel>
-                <Select onChange={event => {onPollChange(inputField.id, event)}}
-                        value={inputField.FollowupPoll}
+                <Select onChange={event => {onPollChange(v.id, event)}}
+                        value={v.FollowupPoll}
                         label="Follow-up Poll"
                 >
                     <MenuItem key={-1} value={"None"}>None</MenuItem>

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "mini-css-extract-plugin": "2.4.5",
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@material-ui/core": "latest",
