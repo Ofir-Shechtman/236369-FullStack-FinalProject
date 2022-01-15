@@ -23,9 +23,9 @@ interface UserProps {
 }
 
 interface PollProps {
-  poll_id: string,
-  poll_name: string,
-  users: Array<UserProps>
+    poll_id: string,
+    poll_name: string,
+    users: Array<UserProps>
 }
 
 interface SelectPollProps {
@@ -46,9 +46,9 @@ const SelectPoll: React.FC<SelectPollProps> = ({
 
     const onPollChange = (event: any) => {
         setSelectPoll(event.target.value)
-        let selected_poll = data.find(({ poll_id }) => poll_id == event.target.value)
-        if (selected_poll != null){
-            for(let user of selected_poll.users){
+        let selected_poll = data.find(({poll_id}) => poll_id == event.target.value)
+        if (selected_poll != null) {
+            for (let user of selected_poll.users) {
                 user.checked = false
             }
             setUsers(selected_poll.users)
@@ -62,17 +62,17 @@ const SelectPoll: React.FC<SelectPollProps> = ({
             error={error}>
             <FormLabel component="legend">Poll</FormLabel>
             <RadioGroup
-            aria-label="Poll"
-            name="controlled-radio-buttons-group"
-            value={selected_poll_id}
-            onChange={onPollChange}
+                aria-label="Poll"
+                name="controlled-radio-buttons-group"
+                value={selected_poll_id}
+                onChange={onPollChange}
             >
-              {data.map((poll: PollProps) => (
-                  <FormControlLabel key={poll.poll_id}
-                                    value={poll.poll_id}
-                                    disabled={poll.users.filter((v) => !v.sent).length == 0}
-                                    control={<Radio />}
-                                    label={poll.poll_name} />
+                {data.map((poll: PollProps) => (
+                    <FormControlLabel key={poll.poll_id}
+                                      value={poll.poll_id}
+                                      disabled={poll.users.filter((v) => !v.sent).length == 0}
+                                      control={<Radio/>}
+                                      label={poll.poll_name}/>
                 ))}
             </RadioGroup>
         </FormControl>
@@ -93,12 +93,12 @@ const SelectUsers: React.FC<SelectUsersProps> = ({selected_poll_id, setUsers, us
         if (poll.poll_id == selected_poll_id) {
             return (
                 poll.users.map((user: UserProps) => (
-                <FormControlLabel key={user.chat_id}
-                                  value={user.chat_id}
-                                  disabled={user.sent}
-                                  control={<Checkbox/>}
-                                  label={user.user}/>
-            )))
+                    <FormControlLabel key={user.chat_id}
+                                      value={user.chat_id}
+                                      disabled={user.sent}
+                                      control={<Checkbox/>}
+                                      label={user.user}/>
+                )))
         }
     }
 
@@ -200,10 +200,10 @@ export default class SendPoll extends React.Component<Props, SendPollState> {
         }
 
         const setUserForSelectedPoll = () => {
-            let found_poll = data.find(({ poll_id }) => poll_id == this.state.selected_poll_id)
-            if (found_poll != null){
+            let found_poll = data.find(({poll_id}) => poll_id == this.state.selected_poll_id)
+            if (found_poll != null) {
                 let selected_poll: PollProps = found_poll
-                for(let user of selected_poll.users){
+                for (let user of selected_poll.users) {
                     user.checked = false
                 }
                 setUsers(selected_poll.users)
