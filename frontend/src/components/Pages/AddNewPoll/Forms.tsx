@@ -181,7 +181,7 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
     return (
         <Container>
             <InputLabel>{name}</InputLabel>
-            {Array.from(inputFields).map((inputField: { id: React.Key | null | undefined; Option: unknown; FollowupPoll: string }) => (
+            {Array.from(inputFields).map((inputField: { id: string; Option: string; FollowupPoll: string; }) => (
                 <div key={inputField.id}>
                     <TextField
                         name="Option"
