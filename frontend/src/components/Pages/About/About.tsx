@@ -78,7 +78,7 @@ export const About: React.FC<AboutProps> = ({
                 </Typography>
             </Toolbar>
         </AppBar>
-            <Paper elevation={24} className="PaperAbout" style={styles.paperContainer}>
+            <Paper className="PaperAbout" style={styles.paperContainer}>
                 <Grid container spacing={2} justifyContent="center" alignItems="center">
                     <Grid item xs={8}>
                         <Card className="Card">

@@ -9,8 +9,6 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import ReportIcon from "@mui/icons-material/Report";
 import AddIcon from '@mui/icons-material/Add';
 import AddNewAdmin from './AddNewAdmin';
-
-
 interface ListProps {
     admin: string
 }
@@ -109,7 +107,8 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
 
         return (
             <div>
-                <TableContainer component={Paper} elevation={24} className={"tableContainer"} style={{width: "500px"}}>
+                <TableContainer component={Paper} elevation={24} className={"tableContainer"}
+                                style={{width: "500px"}}>
                     <Table aria-label="collapsible table">
                         <TableHead>
                             <TableRow>
@@ -149,7 +148,8 @@ export default class AdminsList extends React.Component<AdminsListProps, AdminsL
                                 <TableRow>
                                     <TableCell/>
                                     <TableCell align="center">
-                                        <Button onClick={handleClickOpen} variant="contained" startIcon={<AddIcon/>}>
+                                        <Button onClick={handleClickOpen} variant="contained"
+                                                startIcon={<AddIcon/>}>
                                             Add
                                         </Button>
                                         <AddNewAdmin token={this.props.token}
