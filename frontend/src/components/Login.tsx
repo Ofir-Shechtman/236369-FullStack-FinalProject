@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
+import {useState} from "react";
 
 
 
@@ -17,10 +18,11 @@ const theme = createTheme();
 
 export interface LoginProps {
     setToken(token: string): void;
-
 }
 
 export const Login: React.FC<LoginProps> = ({setToken}) => {
+  const [error, setError] = useState<boolean>(false)
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -39,9 +41,9 @@ export const Login: React.FC<LoginProps> = ({setToken}) => {
           console.log(error.response)
           console.log(error.response.status)
           console.log(error.response.headers)
+          setError(true)
           }
       })
-
 
       event.preventDefault()
   };
@@ -52,7 +54,6 @@ export const Login: React.FC<LoginProps> = ({setToken}) => {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -93,6 +94,7 @@ export const Login: React.FC<LoginProps> = ({setToken}) => {
             >
               Log In
             </Button>
+            {error && <div className="error"> Bad username or password </div>}
           </Box>
         </Box>
       </Container>
