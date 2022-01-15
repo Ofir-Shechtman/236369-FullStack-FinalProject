@@ -2,7 +2,7 @@ from flask import Response
 from typing import Literal
 
 Method = Literal['register', 'remove']
-ReturnMessage = Literal['SUCCESS', 'DBUserExists', 'DBUserNotFound']
+ReturnMessage = Literal['SUCCESS', 'DBUserExists', 'DBUserNotFound', 'Unknown']
 
 
 class Status(Response):
