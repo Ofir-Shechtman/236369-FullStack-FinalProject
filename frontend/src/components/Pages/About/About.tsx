@@ -23,7 +23,6 @@ import axios from "axios";
 
 export interface AboutProps {
     token: string;
-
     removeToken(): void
 }
 
@@ -75,7 +74,7 @@ export const About: React.FC<AboutProps> = ({
         <div><AppBar position="static">
             <Toolbar variant="dense">
                 <Typography variant="h6" color="inherit" component="div">
-                    236369 Final Project
+                    236369 Final Project - Submitters: Ofir Shechtman & Ben Lugasi
                 </Typography>
             </Toolbar>
         </AppBar>
