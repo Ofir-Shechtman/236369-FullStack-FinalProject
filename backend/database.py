@@ -1,9 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
-from models import Admin, User, Poll, PollOption, PollAnswer, PollReceiver
-import datetime
-from flask import jsonify
 from sqlalchemy import func
+from flask import jsonify
+from sqlalchemy.exc import IntegrityError
+import datetime
+from backend.models import Admin, User, Poll, PollOption, PollAnswer, PollReceiver
 
 _db = SQLAlchemy()
 
@@ -241,15 +241,14 @@ def _add_option(option_id, poll_id, content, followup_poll_id):
     try:
         _db.session.add(new_option)
         _db.session.commit()
-    except IntegrityError:
-        _db.session.rollback()
-        raise OptionExists
     except BaseException:
         _db.session.rollback()
         raise UnknownError
 
 
 def add_poll(poll_name, question, options, poll_type, created_by, allows_multiple_answers=False, close_date=None):
+    if any(options.count(element) > 1 for element in options):
+        raise OptionExists
     poll_id = _add_only_poll(poll_name=poll_name, question=question, poll_type=poll_type,
                              allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                              created_by=created_by)
@@ -355,7 +354,6 @@ def get_verified_admin(username, password) -> bool:
         return admin.verify_password(password)
     except Exception:
         return False
-
 
 
 def get_admins():

@@ -1,13 +1,13 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import logging
 import requests
 from telegram import Update, Poll, ParseMode
 from telegram.bot import BotCommand
-from config import BOT_TOKEN, URL
 from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext, \
     CallbackQueryHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from statuses import Method, Status, ReturnMessage, StatusInline
 import json
+from backend.config import BOT_TOKEN, FLASK_URL
+from backend.statuses import Method, Status, ReturnMessage, StatusInline
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ def start(update: Update, context: CallbackContext) -> None:
 def post(function):
     def handler(update: Update, context: CallbackContext):
         parsed_request = parse_request(update, function.__name__)
-        result = requests.post(f'{URL}{BOT_TOKEN}', json=json.dumps(parsed_request))
+        result = requests.post(f'{FLASK_URL}{BOT_TOKEN}', json=json.dumps(parsed_request))
         function(update, context, result)
 
     return handler
@@ -81,54 +81,13 @@ def remove(update: Update, context: CallbackContext, result: ReturnMessage):
 def receive_poll_answer(update: Update, context: CallbackContext, result) -> None:
     """Summarize a users poll vote"""
     answer = update.poll_answer
-    poll_id = answer.poll_id
 
-
-def poll(update: Update, context: CallbackContext) -> None:
-    """Sends a predefined poll"""
-    questions = ["Good", "Really good", "Fantastic", "Great"]
-    message = context.bot.send_poll(
-        update.effective_chat.id,
-        "How are you?",
-        questions,
-        is_anonymous=False,
-        allows_multiple_answers=True,
-        open_period=10,
-        type=Poll.QUIZ, correct_option_id=2
-    )
-    # Save some info about the poll the bot_data for later use in receive_poll_answer
-    payload = {
-        message.poll.id: {
-            "questions": questions,
-            "message_id": message.message_id,
-            "chat_id": update.effective_chat.id,
-            "answers": 0,
-        }
-    }
-    context.bot_data.update(payload)
-
-
-def inline(update: Update, context: CallbackContext) -> None:
-    """Sends a message with three inline buttons attached."""
-    keyboard = [
-        [
-            InlineKeyboardButton("Option 1", callback_data='1'),
-            InlineKeyboardButton("Option 2", callback_data='2'),
-        ],
-        [InlineKeyboardButton("Option 3", callback_data='3')],
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    update.message.reply_text('Please choose:', reply_markup=reply_markup)
 
 @post
 def button(update: Update, context: CallbackContext, result) -> None:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
 
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
     data = result.json()
     query.edit_message_text(text=f"<u>{data.get('question')}</u>\n<b>Your answer: </b><i>{data.get('option')}</i>", parse_mode="HTML")
@@ -137,21 +96,16 @@ def button(update: Update, context: CallbackContext, result) -> None:
 class TelegramBot(Updater):
     def __init__(self):
         super().__init__(BOT_TOKEN)
-        # on different commands - answer in Telegram
         self.dispatcher.add_handler(CommandHandler("start", start))
         self.dispatcher.add_handler(CommandHandler("register", register))
         self.dispatcher.add_handler(CommandHandler("remove", remove))
-        self.dispatcher.add_handler(CommandHandler("poll", poll))
-        self.dispatcher.add_handler(CommandHandler("inline", inline))
         self.dispatcher.add_handler(CallbackQueryHandler(button))
         self.dispatcher.add_handler(PollAnswerHandler(receive_poll_answer))
-        # on non command i.e. message - echo the message on Telegram
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, start))
 
         self.bot.set_my_commands([BotCommand("start", "See the menu"),
                                   BotCommand("register", "Subscribe to our polling system"),
                                   BotCommand("remove", "Unsubscribe from our polling system")])
-        # BotCommand("remove", "to unregister to the system")
 
     def run(self):
         self.start_polling()

@@ -1,19 +1,17 @@
 import datetime
-import os
 import time
-
 from flask import Flask, render_template, request, send_from_directory, Response, jsonify
-from config import BOT_TOKEN, URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
 from urllib.parse import urlparse
-import database as db
 import requests
-from typing import List
 import json
 import urllib
 from datetime import timedelta
-from statuses import Status, StatusInline
+from typing import List
 from flask_jwt_extended import create_access_token, get_jwt, \
     unset_jwt_cookies, jwt_required, JWTManager
+from backend.statuses import Status, StatusInline
+from backend.config import BOT_TOKEN, FLASK_URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
+import backend.database as db
 
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
@@ -26,9 +24,11 @@ jwt = JWTManager(app)
 
 super_admin = db.init(app, SUPER_ADMIN)
 
+
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+
 
 @app.route('/token', methods=["POST"])
 def create_token():
@@ -59,7 +59,6 @@ def my_profile():
     response_body = {
         "username": get_admin().username
     }
-
     return response_body
 
 
@@ -209,12 +208,6 @@ def respond() -> Response:
     return Status('SUCCESS')
 
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-
 def _send_bot_post(method: str, query: dict):
     to_post = f'https://api.telegram.org/bot{BOT_TOKEN}/{method}?{urllib.parse.urlencode(query)}'
     return requests.post(to_post)
@@ -275,5 +268,5 @@ def _send_inline_keyboard(receivers, question: str, options: List[str]):
 
 
 if __name__ == '__main__':
-    url = urlparse(URL)
+    url = urlparse(FLASK_URL)
     app.run(host=url.hostname, port=url.port, debug=True)
