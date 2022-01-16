@@ -5,6 +5,7 @@ import datetime
 from models import db, Admin, User, Poll, PollOption, PollAnswer, PollReceiver
 from manage import create_database
 
+
 def init(app, super_admin):
     db.init_app(app)
     create_database()

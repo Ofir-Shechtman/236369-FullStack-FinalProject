@@ -1,6 +1,9 @@
-DROP TYPE POLL_TYPE CASCADE;
-CREATE TYPE POLL_TYPE AS ENUM ('Telegram_poll', 'Telegram_inline_keyboard');
-
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'poll_type') THEN
+        CREATE TYPE POLL_TYPE AS ENUM ('Telegram_poll', 'Telegram_inline_keyboard');
+    END IF;
+END$$;
 
 CREATE TABLE IF NOT EXISTS admins(
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

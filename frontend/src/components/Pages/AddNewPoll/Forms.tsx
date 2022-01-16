@@ -3,7 +3,7 @@ import {FormValues, PollType} from "./FormValues";
 import {Controller, FieldPath} from 'react-hook-form';
 import {
     ToggleButtonGroup, ToggleButton, FormLabel, Switch, TextField, Box, InputLabel, MenuItem,
-    Slider, FormControl, Select, SelectChangeEvent, IconButton, Grid, Container
+    Slider, FormControl, Select, SelectChangeEvent, IconButton, Grid, Container, Tooltip
 }
     from "@mui/material";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -11,6 +11,7 @@ import AddIcon from "@material-ui/icons/Add";
 import '../../../App.css';
 
 import {v4 as uuidv4} from 'uuid';
+import CircleTwoToneIcon from "@mui/icons-material/CircleTwoTone";
 
 
 export interface PollTypeFormProps {
@@ -48,8 +49,16 @@ export const PollTypeForm: React.FC<PollTypeFormProps> = ({
                     exclusive
                     onChange={changeType}
                 >
-                    <ToggleButton value={"Telegram_poll"}>Telegram poll</ToggleButton>
-                    <ToggleButton value={"Telegram_inline_keyboard"}>Telegram inline keyboard</ToggleButton>
+                    <ToggleButton value={"Telegram_poll"}>
+                        <Tooltip title="Use telegram regular poll">
+                            <span>Telegram poll</span>
+                        </Tooltip>
+                    </ToggleButton>
+                    <ToggleButton value={"Telegram_inline_keyboard"}>
+                        <Tooltip title="Use telegram message as poll with inline-keyboard as poll options">
+                            <span>Telegram inline keyboard</span>
+                        </Tooltip>
+                    </ToggleButton>
                 </ToggleButtonGroup>
             </FormControl>
         </Box>
@@ -174,8 +183,6 @@ export const MultipleOptions: React.FC<MultipleOptionsProps> = ({
         })
         setInputFields(newInputFields);
     }
-
-
 
 
     return (
