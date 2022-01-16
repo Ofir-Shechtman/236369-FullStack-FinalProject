@@ -23,6 +23,7 @@ import axios from "axios";
 
 export interface AboutProps {
     token: string;
+
     removeToken(): void
 }
 
@@ -145,6 +146,14 @@ export const About: React.FC<AboutProps> = ({
                                                 href={"https://github.com/Ofir-Shechtman/236369-FullStack-FinalProject"}>Telegram
                                                 bot</a>.
                                             </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                <ul>
+                                                    <li>Admins can send each poll to all signed users through <b><i>Send Poll</i></b> window.</li>
+                                                    <li>Comfortable view of all admins results in <b><i>My Polls</i></b> window.</li>
+                                                    <li>Each admin only has <b>permissions and access</b> to the polls he has created and sent.</li>
+
+                                                </ul>
+                                            </Typography>
                                         </CardContent>
                                     </Grid>
                                 </Grid>
@@ -161,8 +170,24 @@ export const About: React.FC<AboutProps> = ({
                                                 Answer flow
                                             </Typography>
                                             <Typography variant="h6" color="text.secondary">
-                                                As an of  admin our Polling System you can send
-                                                polls to registered users and they will receive and answer polls as shown here
+                                                As an of admin our Polling System you can send
+                                                polls to registered users and they will receive and answer polls as
+                                                shown here.
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                <ul>
+                                                    <li>Support <b>telegram's poll</b> type and <b>inline keyboard
+                                                        poll.</b> type
+                                                    </li>
+                                                    <li>Support allow <b>multiple answer</b> for telegram polls.</li>
+                                                    <li>Admin can <b>stop telegram poll</b> or send it with auto close
+                                                        time in 1-10 minutes.
+                                                    </li>
+                                                    <li><b>Automatic follow-up</b> polls sent to the users by their
+                                                        answers.
+                                                    </li>
+
+                                                </ul>
                                             </Typography>
                                         </CardContent>
                                     </Grid>
