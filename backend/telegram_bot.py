@@ -1,6 +1,4 @@
 import threading
-
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import logging
 import requests
 from telegram import Update, ParseMode
@@ -8,8 +6,8 @@ from telegram.bot import BotCommand
 from telegram.ext import Updater, CommandHandler, PollAnswerHandler, MessageHandler, Filters, CallbackContext, \
     CallbackQueryHandler
 import json
-from config import BOT_TOKEN, FLASK_URL
-from statuses import Method, Status, ReturnMessage, StatusInline
+from .config import BOT_TOKEN, FLASK_URL
+from .statuses import Method, Status, ReturnMessage
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
