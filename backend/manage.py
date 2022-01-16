@@ -12,34 +12,33 @@ TABLES = ['poll_answers', 'poll_options', 'poll_receivers', 'polls', 'users', 'a
 FILENAME = 'models_new.py'
 
 
-def create_tables(conn, schema):
+def _create_tables(conn, schema):
     with conn.cursor() as cursor:
         with open(schema, "r") as schema:
             cursor.execute(schema.read())
 
 
-def drop_database(conn, tables):
+def _drop_database(conn, tables):
     command = '\n'.join([f'DROP TABLE IF EXISTS {table};' for table in tables] + ['DROP TYPE IF EXISTS POLL_TYPE;'])
     with conn.cursor() as cursor:
         cursor.execute(command)
 
 
-def reset_database():
+def _reset_database():
     url = up.urlparse(DATABASE_URL)
     conn = psycopg2.connect(database=url.path[1:],
                             user=url.username,
                             password=url.password,
                             host=url.hostname,
                             )
-    drop_database(conn, TABLES)
+    _drop_database(conn, TABLES)
     conn.commit()
-    create_tables(conn, SCHEMA)
+    _create_tables(conn, SCHEMA)
     conn.commit()
     conn.close()
 
 
-
-def insert_data(insert):
+def _insert_data(insert):
     url = up.urlparse(DATABASE_URL)
     conn = psycopg2.connect(database=url.path[1:],
                             user=url.username,
@@ -53,28 +52,27 @@ def insert_data(insert):
     conn.close()
 
 
-# def generate_model(host, user, password, database, outfile = None):
-#     engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}/{database}')
-#     metadata = MetaData(bind=engine)
-#     metadata.reflect()
-#     outfile = io.open(outfile, 'w', encoding='utf-8') if outfile else sys.stdout
-#     generator = CodeGenerator(metadata)
-#     generator.render(outfile)
-#
-# if __name__ == '__main__':
-#     generate_model('database.example.org', 'dbuser', 'secretpassword', 'mydatabase', 'db.py')
-
-def create_models(install: bool):
+def _create_models(install: bool):
     if install:
         os.system('pip install sqlacodegen==3.0.0b2')
     command = COMMAND.format(database_url=DATABASE_URL, tables=','.join(TABLES), output_filename=FILENAME)
     os.system(command)
 
+def create_database():
+    url = up.urlparse(DATABASE_URL)
+    conn = psycopg2.connect(database=url.path[1:],
+                            user=url.username,
+                            password=url.password,
+                            host=url.hostname,
+                            )
+    _create_tables(conn, SCHEMA)
+    conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     print('reset_database...')
-    reset_database()
-    insert_data(INSERT)
+    _reset_database()
+    _insert_data(INSERT)
     print('create_models...')
-    # create_models(False)
+    # _create_models(False)
     print('DONE')

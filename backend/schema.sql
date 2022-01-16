@@ -1,3 +1,7 @@
+DROP TYPE POLL_TYPE CASCADE;
+CREATE TYPE POLL_TYPE AS ENUM ('Telegram_poll', 'Telegram_inline_keyboard');
+
+
 CREATE TABLE IF NOT EXISTS admins(
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     username VARCHAR(30) UNIQUE NOT NULL,
@@ -17,8 +21,6 @@ CREATE TABLE IF NOT EXISTS users(
     UNIQUE (first_name, last_name)
 
 );
-
-CREATE TYPE POLL_TYPE AS ENUM ('Telegram_poll', 'Telegram_inline_keyboard');
 
 
 CREATE TABLE IF NOT EXISTS polls(

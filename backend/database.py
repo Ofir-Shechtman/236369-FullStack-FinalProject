@@ -1,15 +1,13 @@
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 import datetime
-from backend.models import Admin, User, Poll, PollOption, PollAnswer, PollReceiver
-
-_db = SQLAlchemy()
-
+from models import db, Admin, User, Poll, PollOption, PollAnswer, PollReceiver
+from manage import create_database
 
 def init(app, super_admin):
-    _db.init_app(app)
+    db.init_app(app)
+    create_database()
     username, password = super_admin
     with app.app_context():
         try:
@@ -82,15 +80,15 @@ class UnknownError(BaseException):
 def add_admin(username: str, password: str, created_by: int) -> Admin:
     admin = Admin(username=username, password=password, created_by=created_by)
     try:
-        _db.session.add(admin)
-        _db.session.commit()
+        db.session.add(admin)
+        db.session.commit()
         return admin
     except IntegrityError:
-        _db.session.rollback()
-        raise UserExists
-    # except BaseException:
-    #     _db.session.rollback()
-    #     raise UnknownError
+        db.session.rollback()
+        raise AdminExists
+    except BaseException:
+        db.session.rollback()
+        raise UnknownError
 
 
 def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
@@ -99,24 +97,24 @@ def add_user(chat_id: int, first_name: str, last_name: str = None) -> None:
         if user.is_active:
             raise UserAlreadyActive
         user.is_active = True
-        _db.session.commit()
+        db.session.commit()
         return
     except UserNotFound:
         pass
     new_user = User(user_id=chat_id, first_name=first_name, last_name=last_name)
     try:
-        _db.session.add(new_user)
-        _db.session.commit()
+        db.session.add(new_user)
+        db.session.commit()
     except IntegrityError:
-        _db.session.rollback()
+        db.session.rollback()
         raise UserExists
     except BaseException:
-        _db.session.rollback()
+        db.session.rollback()
         raise UnknownError
 
 
 def _get_user(chat_id):
-    user = _db.session.query(User).get(chat_id)
+    user = db.session.query(User).get(chat_id)
     if not user:
         raise UserNotFound
     return user
@@ -127,43 +125,43 @@ def remove_user(chat_id: int) -> None:
     if not user.is_active:
         raise UserNotActive
     user.is_active = False
-    _db.session.commit()
+    db.session.commit()
 
 
 def delete_user(chat_id: int) -> None:
     user = _get_user(chat_id)
     try:
-        _db.session.delete(user)
-        _db.session.commit()
+        db.session.delete(user)
+        db.session.commit()
     except Exception:
-        _db.session.rollback()
+        db.session.rollback()
         raise UnknownError
 
 
 def get_poll(poll_id):
-    poll = _db.session.query(Poll).get(poll_id)
+    poll = db.session.query(Poll).get(poll_id)
     if not poll:
         raise PollNotFound
     return poll
 
 
 def _get_option(poll_id, option_id):
-    option = _db.session.query(PollOption).get((option_id, poll_id))
+    option = db.session.query(PollOption).get((option_id, poll_id))
     if not option:
         raise OptionNotFound
     return option
 
 
 def _get_poll_receiver_by_poll_id(chat_id, telegram_poll_id):
-    poll_receiver = _db.session.query(PollReceiver).filter_by(user_id=chat_id,
-                                                              telegram_poll_id=telegram_poll_id).first()
+    poll_receiver = db.session.query(PollReceiver).filter_by(user_id=chat_id,
+                                                             telegram_poll_id=telegram_poll_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
 
 
 def get_admin(username: str) -> Admin:
-    admin = _db.session.query(Admin).filter_by(username=username).first()
+    admin = db.session.query(Admin).filter_by(username=username).first()
     if not admin:
         raise AdminNotFound
     return admin
@@ -174,7 +172,7 @@ def load_admin(admin_id):
 
 
 def _get_poll_receiver_by_message_id(chat_id, message_id):
-    poll_receiver = _db.session.query(PollReceiver).filter_by(user_id=chat_id, message_id=message_id).first()
+    poll_receiver = db.session.query(PollReceiver).filter_by(user_id=chat_id, message_id=message_id).first()
     if not poll_receiver:
         raise PollNotSent
     return poll_receiver
@@ -183,13 +181,13 @@ def _get_poll_receiver_by_message_id(chat_id, message_id):
 def _add_answer(answer: PollAnswer):
     # TODO: unactive user can answer poll?
     try:
-        _db.session.add(answer)
-        _db.session.commit()
+        db.session.add(answer)
+        db.session.commit()
     except IntegrityError:
-        _db.session.rollback()
+        db.session.rollback()
         raise AnswerExists
     except BaseException:
-        _db.session.rollback()
+        db.session.rollback()
         raise UnknownError
 
 
@@ -212,8 +210,8 @@ def add_answer_by_message_id(chat_id, message_id, option_id):
 
 
 def _get_answer(chat_id, poll_id, answer_index):
-    answer = _db.session.query(PollAnswer).filter_by(user_id=chat_id, poll_id=poll_id,
-                                                     answer_index=answer_index).first()
+    answer = db.session.query(PollAnswer).filter_by(user_id=chat_id, poll_id=poll_id,
+                                                    answer_index=answer_index).first()
     if not answer:
         raise AnswerNotFound
     return answer
@@ -224,13 +222,13 @@ def _add_only_poll(poll_name, question, poll_type, allows_multiple_answers, clos
         new_poll = Poll(poll_name=poll_name, question=question, poll_type=poll_type,
                         allows_multiple_answers=allows_multiple_answers, close_date=close_date,
                         created_by=created_by)
-        _db.session.add(new_poll)
-        _db.session.commit()
+        db.session.add(new_poll)
+        db.session.commit()
     except IntegrityError:
-        _db.session.rollback()
+        db.session.rollback()
         raise PollExists
     except BaseException:
-        _db.session.rollback()
+        db.session.rollback()
         raise UnknownError
     return new_poll.poll_id
 
@@ -239,10 +237,10 @@ def _add_option(option_id, poll_id, content, followup_poll_id):
     get_poll(poll_id)
     new_option = PollOption(option_id=option_id, poll_id=poll_id, content=content, followup_poll_id=followup_poll_id)
     try:
-        _db.session.add(new_option)
-        _db.session.commit()
+        db.session.add(new_option)
+        db.session.commit()
     except BaseException:
-        _db.session.rollback()
+        db.session.rollback()
         raise UnknownError
 
 
@@ -271,19 +269,19 @@ def add_poll_receiver(chat_id, poll_id, sent_by, message_id, telegram_poll_id):
     new_poll_receiver = PollReceiver(user_id=chat_id, poll_id=poll_id, message_id=message_id,
                                      telegram_poll_id=telegram_poll_id, sent_by=sent_by)
     try:
-        _db.session.add(new_poll_receiver)
-        _db.session.commit()
+        db.session.add(new_poll_receiver)
+        db.session.commit()
     except IntegrityError:
-        _db.session.rollback()
+        db.session.rollback()
         raise PollAlreadySent
     except BaseException:
-        _db.session.rollback()
+        db.session.rollback()
         raise UnknownError
 
 
 def stop_poll(poll: Poll):
     poll.close_date = datetime.datetime.now()
-    _db.session.commit()
+    db.session.commit()
 
 
 def get_polls_data(admin_id):
@@ -319,12 +317,12 @@ def get_name(user: User):
 
 
 def get_user_by_name(name: str):
-    return _db.session.query(User).filter(
+    return db.session.query(User).filter(
         func.trim(func.concat(User.first_name, ' ', User.last_name)) == name).first()
 
 
 def get_poll_to_send(admin_id):
-    all_users = _db.session.query(User).filter_by(is_active=True)
+    all_users = db.session.query(User).filter_by(is_active=True)
 
     def serialize_poll(poll):
         return {
@@ -344,8 +342,8 @@ def get_poll_to_send(admin_id):
 
 def delete_poll(poll_id):
     poll = get_poll(poll_id)
-    _db.session.delete(poll)
-    _db.session.commit()
+    db.session.delete(poll)
+    db.session.commit()
 
 
 def get_verified_admin(username, password) -> bool:
@@ -362,6 +360,6 @@ def get_admins():
             'admin': admin.username
         }
 
-    polls = [serialize(admin) for admin in _db.session.query(Admin)]
+    polls = [serialize(admin) for admin in db.session.query(Admin)]
     polls.sort(key=lambda x: x.get('admin'))
     return jsonify(polls)

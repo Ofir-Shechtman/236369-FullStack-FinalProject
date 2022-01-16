@@ -1,7 +1,7 @@
 # 236369-FullStack-FinalProject
 
-@Ofir-Shechtman
-@benlugasi
+- [Ofir Shechtman](https://github.com/Ofir-Shechtman)
+- [Ben Lugasi](https://github.com/benlugasi)
 
 ## Installation
 
@@ -17,7 +17,7 @@ Create a virtual environment and activate it. This is where dependencies for the
 
 - Using Conda
 ```
-$ conda create --name <venv_name> --file environment.yml
+$ conda env create --name <venv_name> --file environment.yml
 $ conda activte <venv_name>
 ```
 

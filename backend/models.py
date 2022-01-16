@@ -9,7 +9,7 @@ class Admin(db.Model):
     __tablename__ = 'admins'
     id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
     username = db.Column(db.String(30), nullable=False)
-    password_hash = db.Column(db.String(30), nullable=False)
+    password_hash = db.Column(db.Text, nullable=False)
     created_by = db.Column(db.ForeignKey('admins.id'))
     time_created = db.Column(db.DateTime(True), server_default=db.FetchedValue())
 
