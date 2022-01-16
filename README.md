@@ -24,7 +24,6 @@ $ conda activte <venv_name>
 - Using pip:
 
 `$ virtualenv venv`<br>
-`$ source /venv/bin/activate`<br>
 `$ source /venv/bin/activate` [Linux]<br>
 `$ .\venv\Scripts\activate` [Windows]
 
@@ -49,14 +48,14 @@ $ cd frontend
 $ npm install
 ```
 
+## Production [Recommended]
+
+1. In the frontend directory: ```npm run build```
+2. After the build finishes: In the root directory: ```python run_project.py```
+3. Go to [http://localhost:5000/](http://localhost:5000/)
+
 ## Development
 
 1. In the frontend directory: ```npm start```
 2. In a separate terminal, in the root directory: ```python run_project.py```
 3. Go to [http://localhost:3000/](http://localhost:3000/)
-
-## Production
-
-1. In the frontend directory: ```npm run build```
-2. After the build finishes: In the root directory: ```python run_project.py```
-3. Go to [http://localhost:5000/](http://localhost:5000/)

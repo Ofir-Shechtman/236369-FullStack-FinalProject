@@ -2,8 +2,8 @@ from sqlalchemy import func
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 import datetime
-from models import db, Admin, User, Poll, PollOption, PollAnswer, PollReceiver
-from manage import create_database
+from .models import db, Admin, User, Poll, PollOption, PollAnswer, PollReceiver
+from .manage import create_database
 
 
 def init(app, super_admin):
