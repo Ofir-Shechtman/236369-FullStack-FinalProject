@@ -14,13 +14,13 @@ $ cd 236369-FullStack-FinalProject
 ```
 
 Create a virtual environment and activate it. This is where dependencies for the project will be installed.
-
+******************
 - Using Conda
 ```
 $ conda env create --name <venv_name> --file environment.yml
 $ conda activte <venv_name>
 ```
-
+******************
 - Using pip:
 
 `$ virtualenv venv`<br>
@@ -40,6 +40,7 @@ After activating the project virtual environment, install project dependencies.
 ```
 $ pip install -r requirements.txt
 ```
+*********************
 
 Now set up the client side
 
