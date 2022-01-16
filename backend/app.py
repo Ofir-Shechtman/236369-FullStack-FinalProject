@@ -1,6 +1,6 @@
 import datetime
 import time
-from flask import Flask, render_template, request, send_from_directory, Response, jsonify
+from flask import Flask, request, Response, jsonify
 from urllib.parse import urlparse
 import requests
 import json
@@ -9,7 +9,7 @@ from datetime import timedelta
 from typing import List
 from flask_jwt_extended import create_access_token, get_jwt, \
     unset_jwt_cookies, jwt_required, JWTManager
-from backend.statuses import Status, StatusInline
+from backend.statuses import Status
 from backend.config import BOT_TOKEN, FLASK_URL, DATABASE_URL, SUPER_ADMIN, SECRET_KEY
 import backend.database as db
 
