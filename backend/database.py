@@ -134,7 +134,7 @@ def delete_user(chat_id: int) -> None:
     try:
         db.session.delete(user)
         db.session.commit()
-    except Exception:
+    except BaseException:
         db.session.rollback()
         raise UnknownError
 
@@ -351,7 +351,7 @@ def get_verified_admin(username, password) -> bool:
     try:
         admin = get_admin(username=username)
         return admin.verify_password(password)
-    except Exception:
+    except BaseException:
         return False
 
 
