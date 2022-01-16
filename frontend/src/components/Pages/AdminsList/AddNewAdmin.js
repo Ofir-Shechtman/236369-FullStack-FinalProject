@@ -150,23 +150,6 @@ export default function AddNewAdmin(props) {
                 }
             }
         },
-        {
-            attribute: "password-password_confirmation",
-            component: "text-field",
-            label: "Confirm Password",
-            props: {
-                type: "text",
-                required: true
-            },
-            validations: {
-                required: true,
-                test: {
-                    name: "password_confirmation",
-                    test: (value) => form.password === value,
-                    message: "Passwords doesn't match"
-                }
-            }
-        },
     ];
 
     return (

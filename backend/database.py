@@ -360,6 +360,6 @@ def get_admins():
             'admin': admin.username
         }
 
-    polls = [serialize(admin) for admin in db.session.query(Admin)]
-    polls.sort(key=lambda x: x.get('admin'))
-    return jsonify(polls)
+    admins = [admin for admin in db.session.query(Admin)]
+    admins.sort(key=lambda admin: admin.time_created)
+    return jsonify([serialize(admin) for admin in admins])
